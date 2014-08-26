@@ -2,6 +2,7 @@
 """Custom User Manager for user of InaSAFE User Map."""
 from django.contrib.gis.db.models import GeoManager
 from django.contrib.auth.models import BaseUserManager
+from django.contrib.gis.geos import Point
 
 from user_map.models.role import Role
 
@@ -30,7 +31,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
         :type email: str
 
         :param location: The location of the user in (long, lat)
-        :type location: str
+        :type location: Point
 
         :param role: The role of the user.
         :type role: Role
@@ -86,7 +87,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
         """
         # Use predefined location, role, email_updates, is_approved, is_active,
         # is_admin
-        location = 'POINT(144 5)'
+        location = Point(106.8, -6.2)
         role = Role(name='Super User', sort_number=999)
         role.save()
         user = self.create_user(
