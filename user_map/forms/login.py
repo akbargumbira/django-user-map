@@ -8,5 +8,5 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
-        """Association between model and this form."""
+        """Association between models and this form."""
         fields = ['email', 'password']

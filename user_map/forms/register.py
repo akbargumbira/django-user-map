@@ -1,6 +1,8 @@
 # coding=utf-8
 from django import forms
-from user_map.models import User, Role
+
+from user_map.models.user import User
+from user_map.models.role import Role
 
 
 class RegistrationForm(forms.ModelForm):
@@ -14,7 +16,7 @@ class RegistrationForm(forms.ModelForm):
     email_updates = forms.BooleanField(label='Receive project news and updates')
 
     class Meta:
-        """Association between model and this form."""
+        """Association between models and this form."""
         model = User
         fields = ['name', 'email', 'password', 'website', 'role',
                   'email_updates']
