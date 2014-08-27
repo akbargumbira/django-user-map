@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
 from django.contrib.auth import (
     login as django_login,
@@ -9,6 +9,7 @@ from django.contrib.auth import (
     logout as django_logout)
 
 from user_map.forms import RegistrationForm, LoginForm
+from user_map.models import User
 
 
 def index(request):
@@ -20,7 +21,25 @@ def index(request):
     :returns: Response will be a nice looking map page.
     :rtype: HttpResponse
     """
-    return HttpResponse("Hello, world. You're at the user_map index.")
+    information_modal = loader.render_to_string(
+        'user_map/information_modal.html')
+    data_privacy_content = loader.render_to_string('user_map/data_privacy.html')
+    user_menu = dict(
+        add_user=True,
+        download=True,
+        reminder=True
+    )
+    user_menu_button = loader.render_to_string(
+        'user_map/user_menu_button.html',
+        dictionary=user_menu
+    )
+    context = {
+        'data_privacy_content': data_privacy_content,
+        'information_modal': information_modal,
+        'user_menu': user_menu,
+        'user_menu_button': user_menu_button
+    }
+    return render(request, 'user_map/index.html', context)
 
 
 def register(request):
