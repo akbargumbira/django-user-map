@@ -1,0 +1,101 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="shortcut icon" href="{{ app_favicon }}">
+  <title>{% block title %}{{ project_name | safe }} User Map{% endblock %}</title>
+
+  {% block head_resources %}
+    <link rel="stylesheet" href="{% static 'user_map/css/bootstrap.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'user_map/css/leaflet.css' %}"/>
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="{% static 'user_map/css/leaflet.ie.css' %}" />
+    <![endif]-->
+    <link rel="stylesheet" href="{% static 'user_map/css/leaflet.label.css' %}"/>
+    <link rel="stylesheet" href="{% static 'user_map/css/user-map.css' %}" type="text/css"/>
+
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jquery.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/bootstrap.min.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.label.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-component.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-state.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-utilities.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/validate.js' %}"></script>
+  {% endblock head_resources %}
+</head>
+<body>
+
+{% block body %}
+{% endblock body %}
+
+<!-- Map container -->
+<div id="map">
+</div>
+<!-- End of map container -->
+
+<!-- All the templates should go here -->
+{{ user_menu_button | safe }}
+{{ information_modal | safe }}
+{{ data_privacy_content | safe }}
+{{ legend | safe }}
+{{ user_form_template | safe }}
+<!-- endblock of all the template -->
+
+<script type="text/javascript">
+  var map, base_map, data_privacy_content, data_privacy_control,
+      user_menu_control, user_icon, trainer_icon, developer_icon,
+      estimated_location_circle, current_mode;
+
+  // Set current_mode to default one
+  current_mode = DEFAULT_MODE;
+
+  //Initialize Basemap Layer
+  base_map = createBasemap();
+
+  //Create Map with prepared base_map
+  map = L.map('map', {
+    layers: [base_map]
+  });
+  map.fitWorld().zoomIn();
+
+  // Initialize all icons for marker
+  var icons = createAllIcons(
+      '{{ user_icons.user }}',
+      '{{ user_icons.trainer }}',
+      '{{ user_icons.developer }}',
+      '{{ user_icons.shadow }}'
+  );
+  user_icon = icons.user_icon;
+  trainer_icon = icons.trainer_icon;
+  developer_icon = icons.developer_icon;
+
+  // Create Data Privacy Control
+  data_privacy_control = createDataPrivacyControl();
+  map.addControl(new data_privacy_control);
+
+  // Create User Menu Control and add some tooltips
+  user_menu = {
+    "add-user-menu": '{{ user_menu.add_user }}' === 'True',
+    "edit-user-menu": '{{ user_menu.edit_user }}' === 'True',
+    "delete-user-menu": '{{ user_menu.delete_user }}' === 'True',
+    "download-menu": '{{ user_menu.download }}' === 'True',
+    "reminder-menu": '{{ user_menu.reminder }}' === 'True'
+  };
+  user_menu_control = createUserMenuControl(user_menu);
+  map.addControl(new user_menu_control);
+  $(".user-menu-control").tooltip({placement: 'right',
+    container: 'body'});
+
+  // Create Legend Control:
+  legend_control = createLegendControl();
+  map.addControl(new legend_control);
+</script>
+
+{% block js_container %}
+{% endblock %} <!--endblock of js_container -->
+</body>
+</html>

@@ -1,0 +1,99 @@
+{% extends "user_map/base.html" %}
+{% load staticfiles %}
+
+{% block head_resources %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.css' %}"/>
+  <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.user-map.css' %}"/>
+  <!--[if lte IE 8]>
+  <link rel="stylesheet"  href="{% static 'user_map/css/MarkerCluster.user-map.ie.css' %}" />
+  <![endif]-->
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.markercluster-src.js' %}"></script>
+{% endblock head_resources %}
+
+{% block body %}
+  {{ block.super }}
+  <!-- Modal for reminder form -->
+  <div class="modal fade" id="reminder-menu-modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Request Edit Link</h3>
+        </div>
+        <div class="modal-body">
+          <p>
+            Please enter your email address that you used for registration
+            before. We will resend the edit link to that email.
+          </p>
+          <form action="" class="form form-horizontal" id="email_reminder_form" enctype="multipart/form-data">
+            <div class="form-group">
+              <div class="input-group input-group-sm  col-lg-8">
+                <span class="input-group-addon">Email</span>
+                <input type="email" class="form-control" placeholder="Required" id="email_reminder" name="email_reminder" required value=""/>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="sendReminder();">
+            Send!
+          </button>
+          <button class="btn btn-default" onclick="activateDefaultState()" data-dismiss="modal" aria-hidden="true">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js_container %}
+  <script type="text/javascript">
+    var marker_new_user, overlays_layer, users_layer,
+        trainers_layer, developers_layer;
+
+    $(document).ready(function () {
+      //All Users Layer using MarkerCLusterGroup
+      users_layer = new L.markerClusterGroup({
+        iconCreateFunction: function (cluster) {
+          return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+            className: 'marker-cluster marker-cluster-user',
+            iconSize: L.point(40, 40)});
+        }
+      });
+      trainers_layer = new L.markerClusterGroup({
+        iconCreateFunction: function (cluster) {
+          return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+            className: 'marker-cluster marker-cluster-trainer',
+            iconSize: L.point(40, 40)});
+        }
+      });
+      developers_layer = new L.markerClusterGroup(
+          {
+            iconCreateFunction: function (cluster) {
+              return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+                className: 'marker-cluster marker-cluster-developer',
+                iconSize: L.point(40, 40)});
+            }
+          }
+      );
+
+      //Add All Users to the right layer
+      addUsers(users_layer, USER_ROLE);
+      addUsers(trainers_layer, TRAINER_ROLE);
+      addUsers(developers_layer, DEVELOPER_ROLE);
+
+      //Add All users layer to map
+      users_layer.addTo(map);
+      developers_layer.addTo(map);
+      trainers_layer.addTo(map);
+
+      //Specify all layers on overlays_layers control
+      overlays_layer = {
+        "Users": users_layer,
+        "Developers": developers_layer,
+        "Trainers": trainers_layer
+      }
+      L.control.layers(null, overlays_layer).addTo(map)
+    })
+  </script>
+{% endblock %} <!--endblock of js_container -->
