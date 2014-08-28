@@ -1,18 +1,35 @@
 {% extends "user_map/base.html" %}
 {% load staticfiles %}
+{% load leaflet_tags %}
 
 {% block head_resources %}
   {{ block.super }}
+  {% leaflet_js %}
+  {% leaflet_css %}
   <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.css' %}"/>
   <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.user-map.css' %}"/>
   <!--[if lte IE 8]>
   <link rel="stylesheet"  href="{% static 'user_map/css/MarkerCluster.user-map.ie.css' %}" />
   <![endif]-->
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.markercluster-src.js' %}"></script>
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-component.js' %}"></script>
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-state.js' %}"></script>
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-utilities.js' %}"></script>
 {% endblock head_resources %}
 
 {% block body %}
   {{ block.super }}
+  <!-- Leaflet Map div -->
+  {% leaflet_map "map" %}
+
+  <!-- All the templates from view-->
+  {{ user_menu_button | safe }}
+  {{ information_modal | safe }}
+  {{ data_privacy_content | safe }}
+  {{ legend | safe }}
+  {{ user_form_template | safe }}
+
   <!-- Modal for reminder form -->
   <div class="modal fade" id="reminder-menu-modal" role="dialog">
     <div class="modal-dialog">
@@ -45,55 +62,104 @@
       </div>
     </div>
   </div>
-{% endblock %}
+{% endblock body %}
+
+
 {% block js_container %}
+  {{ block.super }}
+
   <script type="text/javascript">
-    var marker_new_user, overlays_layer, users_layer,
-        trainers_layer, developers_layer;
+    var map, base_map, data_privacy_content,
+        data_privacy_control, user_menu_control, user_icon, trainer_icon,
+        developer_icon, estimated_location_circle, current_mode,
+        marker_new_user, overlays_layer, users_layer, trainers_layer,
+        developers_layer;
 
-    $(document).ready(function () {
-      //All Users Layer using MarkerCLusterGroup
-      users_layer = new L.markerClusterGroup({
-        iconCreateFunction: function (cluster) {
-          return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-            className: 'marker-cluster marker-cluster-user',
-            iconSize: L.point(40, 40)});
-        }
-      });
-      trainers_layer = new L.markerClusterGroup({
-        iconCreateFunction: function (cluster) {
-          return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-            className: 'marker-cluster marker-cluster-trainer',
-            iconSize: L.point(40, 40)});
-        }
-      });
-      developers_layer = new L.markerClusterGroup(
-          {
-            iconCreateFunction: function (cluster) {
-              return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-                className: 'marker-cluster marker-cluster-developer',
-                iconSize: L.point(40, 40)});
-            }
-          }
-      );
+    // Set current_mode to default one
+    current_mode = DEFAULT_MODE;
 
-      //Add All Users to the right layer
-      addUsers(users_layer, USER_ROLE);
-      addUsers(trainers_layer, TRAINER_ROLE);
-      addUsers(developers_layer, DEVELOPER_ROLE);
+    //Initialize Basemap Layer
+    base_map = createBasemap();
 
-      //Add All users layer to map
-      users_layer.addTo(map);
-      developers_layer.addTo(map);
-      trainers_layer.addTo(map);
+    //Create Map with prepared base_map
+    map = L.map('map', {
+      layers: [base_map]
+    });
+    map.fitWorld().zoomIn();
 
-      //Specify all layers on overlays_layers control
-      overlays_layer = {
-        "Users": users_layer,
-        "Developers": developers_layer,
-        "Trainers": trainers_layer
+    // Initialize all icons for marker
+    var icons = createAllIcons(
+        '{{ user_icons.user }}',
+        '{{ user_icons.trainer }}',
+        '{{ user_icons.developer }}',
+        '{{ user_icons.shadow }}'
+    );
+    user_icon = icons.user_icon;
+    trainer_icon = icons.trainer_icon;
+    developer_icon = icons.developer_icon;
+
+    // Create Data Privacy Control
+    data_privacy_control = createDataPrivacyControl();
+    map.addControl(new data_privacy_control);
+
+    // Create User Menu Control and add some tooltips
+    user_menu = {
+      "add-user-menu": '{{ user_menu.add_user }}' === 'True',
+      "edit-user-menu": '{{ user_menu.edit_user }}' === 'True',
+      "delete-user-menu": '{{ user_menu.delete_user }}' === 'True',
+      "download-menu": '{{ user_menu.download }}' === 'True',
+      "reminder-menu": '{{ user_menu.reminder }}' === 'True'
+    };
+    user_menu_control = createUserMenuControl(user_menu);
+    map.addControl(new user_menu_control);
+    $(".user-menu-control").tooltip({placement: 'right',
+      container: 'body'});
+
+    // Create Legend Control:
+    legend_control = createLegendControl();
+    map.addControl(new legend_control);
+
+    //All Users Layer using MarkerCLusterGroup
+    users_layer = new L.markerClusterGroup({
+      iconCreateFunction: function (cluster) {
+        return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+          className: 'marker-cluster marker-cluster-user',
+          iconSize: L.point(40, 40)});
       }
-      L.control.layers(null, overlays_layer).addTo(map)
-    })
+    });
+    trainers_layer = new L.markerClusterGroup({
+      iconCreateFunction: function (cluster) {
+        return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+          className: 'marker-cluster marker-cluster-trainer',
+          iconSize: L.point(40, 40)});
+      }
+    });
+    developers_layer = new L.markerClusterGroup(
+        {
+          iconCreateFunction: function (cluster) {
+            return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+              className: 'marker-cluster marker-cluster-developer',
+              iconSize: L.point(40, 40)});
+          }
+        }
+    );
+
+    //Add All Users to the right layer
+    addUsers(users_layer, USER_ROLE);
+    addUsers(trainers_layer, TRAINER_ROLE);
+    addUsers(developers_layer, DEVELOPER_ROLE);
+
+    //Add All users layer to map
+    users_layer.addTo(map);
+    developers_layer.addTo(map);
+    trainers_layer.addTo(map);
+
+    //Specify all layers on overlays_layers control
+    overlays_layer = {
+      "Users": users_layer,
+      "Developers": developers_layer,
+      "Trainers": trainers_layer
+    }
+    L.control.layers(null, overlays_layer).addTo(map);
   </script>
-{% endblock %} <!--endblock of js_container -->
+{% endblock js_container %}

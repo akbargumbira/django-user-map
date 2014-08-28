@@ -1,7 +1,6 @@
 [
   {
     "model": "user_map.role",
-    "pk": 1,
     "fields": {
       "name": "User",
       "sort_number": 1
@@ -9,7 +8,6 @@
   },
   {
     "model": "user_map.role",
-    "pk": 2,
     "fields": {
       "name": "Trainer",
       "sort_number": 2
@@ -17,7 +15,6 @@
   },
   {
     "model": "user_map.role",
-    "pk": 3,
     "fields": {
       "name": "Developer",
       "sort_number": 3

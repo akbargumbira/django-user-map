@@ -1,4 +1,5 @@
 # coding=utf-8
+"""Views of the apps."""
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
@@ -8,7 +9,7 @@ from django.contrib.auth import (
     authenticate,
     logout as django_logout)
 
-from user_map.forms import RegistrationForm, LoginForm
+from user_map.forms import UserForm, LoginForm
 from user_map.models import User
 
 
@@ -49,15 +50,17 @@ def register(request):
     :type request: request
     """
     if request.method == 'POST':
-        form = RegistrationForm(data=request.POST)
+        form = UserForm(data=request.POST)
         if form.is_valid():
             user = form.save()
             return HttpResponseRedirect(reverse('user_map:index'))
     else:
-        form = RegistrationForm()
-    return render_to_response('user_map/register.html', {
-        'form': form,
-    }, context_instance=RequestContext(request))
+        form = UserForm()
+    return render_to_response(
+        'user_map/user_form.html',
+        {'form': form},
+        context_instance=RequestContext(request)
+    )
 
 
 def login(request):
@@ -86,8 +89,10 @@ def login(request):
 
 
 def logout(request):
-    """
-    Log out view
+    """Log out view.
+
+    :param request: A django request object.
+    :type request: request
     """
     django_logout(request)
     return HttpResponseRedirect(reverse('user_map:index'))
