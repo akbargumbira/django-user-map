@@ -24,9 +24,9 @@ var EDIT_USER_MODE = 2;
 var DELETE_USER_MODE = 3;
 var DOWNLOAD_MODE = 4;
 var REMINDER_MODE = 5;
-var USER_ROLE = 0;
-var TRAINER_ROLE = 1;
-var DEVELOPER_ROLE = 2;
+var USER_ROLE = 2;
+var TRAINER_ROLE = 3;
+var DEVELOPER_ROLE = 4;
 
 /**
  * Add users to the respective layer based on user_role.
@@ -42,8 +42,8 @@ var DEVELOPER_ROLE = 2;
  */
 function addUsers(layer, user_role) {
   $.ajax({
-    type: 'POST',
-    url: '/users.json',
+    type: 'GET',
+    url: '/user-map/users.json',
     dataType: 'json',
     data: {
       user_role: user_role

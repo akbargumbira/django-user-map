@@ -1,0 +1,6 @@
+{% spaceless %}
+  <span class='glyphicon glyphicon-user'></span> {{ user.name }}<br>
+  {% if user.website != "" %}
+    <span class='glyphicon glyphicon-home'></span><a href='{{ user.website }}' target='_blank'> Website</a>
+  {% endif %}
+{% endspaceless %}
