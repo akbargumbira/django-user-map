@@ -88,7 +88,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
         # Use predefined location, role, email_updates, is_approved, is_active,
         # is_admin
         location = Point(106.8, -6.2)
-        role = Role(name='Super User', sort_number=999)
+        role = Role(name='Super User', sort_number=-999)
         role.save()
         user = self.create_user(
             name,
