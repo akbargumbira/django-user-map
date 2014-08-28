@@ -89,10 +89,10 @@
 
     // Initialize all icons for marker
     var icons = createAllIcons(
-        '{{ user_icons.user }}',
-        '{{ user_icons.trainer }}',
-        '{{ user_icons.developer }}',
-        '{{ user_icons.shadow }}'
+        "{% static user_icons.user %}",
+        '{% static user_icons.trainer %}',
+        '{% static user_icons.developer %}',
+        '{% static user_icons.shadow %}'
     );
     user_icon = icons.user_icon;
     trainer_icon = icons.trainer_icon;
