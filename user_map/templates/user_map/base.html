@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load leaflet_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,18 +9,13 @@
   <title>{% block title %}{{ project_name | safe }} User Map{% endblock %}</title>
 
   {% block head_resources %}
+    {% leaflet_js %}
+    {% leaflet_css %}
     <link rel="stylesheet" href="{% static 'user_map/css/bootstrap.css' %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static 'user_map/css/leaflet.css' %}"/>
-    <!--[if lte IE 8]>
-    <link rel="stylesheet" href="{% static 'user_map/css/leaflet.ie.css' %}" />
-    <![endif]-->
-    <link rel="stylesheet" href="{% static 'user_map/css/leaflet.label.css' %}"/>
     <link rel="stylesheet" href="{% static 'user_map/css/user-map.css' %}" type="text/css"/>
 
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jquery.js' %}"></script>
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/bootstrap.min.js' %}"></script>
-    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.js' %}"></script>
-    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.label.js' %}"></script>
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-component.js' %}"></script>
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-state.js' %}"></script>
@@ -32,10 +28,9 @@
 {% block body %}
 {% endblock body %}
 
-<!-- Map container -->
-<div id="map">
-</div>
-<!-- End of map container -->
+<!-- Leaflet Map div -->
+{% leaflet_map "map" %}
+<!-- End of Leaflet Map -->
 
 <!-- All the templates should go here -->
 {{ user_menu_button | safe }}
