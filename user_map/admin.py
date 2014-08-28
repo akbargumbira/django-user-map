@@ -2,11 +2,12 @@
 """Model Admin Class."""
 
 from django.contrib.gis import admin
+from leaflet.admin import LeafletGeoAdmin
 
 from user_map.models import User, Role
 
 
-class UserAdmin(admin.GeoModelAdmin):
+class UserAdmin(LeafletGeoAdmin):
     """Admin Class for User Model."""
     list_display = ('name', 'email', 'role', 'website', 'email_updates',
                     'last_login')
