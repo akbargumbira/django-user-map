@@ -4,8 +4,39 @@
 body {
 
 }
+
 html, body, #map {
     height: 100%;
+}
+
+body > .container {
+  margin-top: 70px;
+}
+
+#map .leaflet-top {
+  padding-top: 50px;
+}
+
+.navbar {
+   background-color: rgba(250, 250, 250, 0.5);
+}
+
+.navbar li { color: #000 }
+
+.navbar-header {
+  padding-left: 50px;
+}
+
+.navbar-right {
+  padding-right: 20px;
+}
+.navbar-btn {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.footer {
+  color: rgb(120, 120, 120);
 }
 
 /* ******************** */
