@@ -7,17 +7,40 @@ from user_map.models import User, Role
 class UserForm(forms.ModelForm):
     """Form for user model."""
     name = forms.CharField(
+        required=True,
         label='Your name',
-        widget=forms.TextInput)
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'John Doe',
+            })
+    )
     email = forms.EmailField(
+        required=True,
         label='Your email',
-        widget=forms.EmailInput)
+        widget=forms.EmailInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'john@doe.com',
+            })
+    )
     password = forms.CharField(
+        required=True,
         label='Your password',
-        widget=forms.PasswordInput)
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password2 = forms.CharField(
+        required=True,
+        label='Your password (again)',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     website = forms.URLField(
+        required=False,
         label='Your website',
-        widget=forms.URLInput)
+        widget=forms.URLInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'http://john.doe.com'
+            })
+    )
     location = forms.PointField(
         label='Click your location on the map',
         widget=LeafletWidget())
@@ -25,13 +48,24 @@ class UserForm(forms.ModelForm):
         label='Your role',
         queryset=Role.objects.filter(sort_number__gte=1),
         initial=1)
-    email_updates = forms.BooleanField(label='Receive project news and updates')
+    email_updates = forms.BooleanField(
+        required=False,
+        label='Receive project news and updates')
 
     class Meta:
         """Association between models and this form."""
         model = User
-        fields = ['name', 'email', 'password', 'website', 'role',
+        fields = ['name', 'email', 'password', 'password2', 'website', 'role',
                   'email_updates', 'location']
+
+    def clean(self):
+        """Verifies that the values entered into the password fields match."""
+        cleaned_data = super(UserForm, self).clean()
+        if 'password' in cleaned_data and 'password2' in cleaned_data:
+            if cleaned_data['password'] != cleaned_data['password2']:
+                raise forms.ValidationError(
+                    "Passwords don't match. Please enter both fields again.")
+        return cleaned_data
 
     def save(self, commit=True):
         """Save form.

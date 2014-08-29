@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <link rel="shortcut icon" href="{{ app_favicon }}">
+  <link rel="shortcut icon" href="{% static app_favicon %}">
   <title>{% block title %}{{ project_name | safe }} User Map{% endblock %}</title>
 
   {% block head_resources %}
@@ -21,7 +21,43 @@
 
 <body>
 {% block body %}
+  {% block navbar %}
+    <div class="user_map_navbar">
+      <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <a href="{% url 'user_map:register' %}"
+              button type="button" class="btn btn-default navbar-btn navbar-left">Add Me to Map!</button>
+            </a>
+            <a href="{% url 'user_map:login' %}"
+              <button type="button" class="btn btn-default navbar-btn navbar-left">Sign In</button>
+            </a>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hi, Anonymous <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Edit Profile</a></li>
+                <li><a href="#">Log Out</a></li>
+              </ul>
+            </li>
+          </ul>
+
+        </div><!-- /.navbar-collapse -->
+      </nav>
+    </div>
+  {% endblock navbar%}
 {% endblock body %}
+
+{% block footer %}
+{% endblock footer %}
 
 {% block js_container %}
 {% endblock js_container %}

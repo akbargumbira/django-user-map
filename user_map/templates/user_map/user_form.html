@@ -9,10 +9,62 @@
 
 {% block body %}
   {{ block.super }}
-  <form method="POST">
-      {{ form.as_p }}
-      {% csrf_token %}
-      <input type="submit"/>
-  </form>
+  <div class="container">
+    <div class="page-header">
+    <h2>Add me to map! <br><small>Please provide your information on the
+      form
+      below.</small></h2>
+    </div>
+    <div class="registration-form">
+      <form class="form-horizontal" method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="form-group">
+            <label for="id_{{ field.name }}" class="col-lg-2 control-label">{{ field.label }}</label>
+            {% if field.name == 'location' %}
+              <div class="col-lg-8">
+                {{ field }}
+              </div>
+            {% else %}
+              <div class="col-lg-6">
+                  {{ field }}
+                </div>
+            {% endif %}
+          </div>
+          {% if field.errors %}
+            <div class="form-group">
+              <div class="col-lg-offset-2 col-lg-6">
+                <div class="alert alert-danger">
+                  {{ field.errors }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+        {% if form.non_field_errors %}
+          <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-6">
+              <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        <div class="form-group">
+          <div class="col-lg-offset-2 col-lg-6">
+            <input type="submit" value="Submit" class="btn btn-default">
+          </div>
+        </div>
+      </form>
+     </div>
+  </div>
 {% endblock body %}
 
+{% block footer %}
+    <div class="container centered">
+      <hr>
+      <div class="footer">
+        © 2014 InaSAFE User Map. All rights reserved.
+      </div>
+    </div>
+{% endblock footer %}
