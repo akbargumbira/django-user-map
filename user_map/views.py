@@ -3,13 +3,18 @@
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
+from django.forms.util import ErrorList
+from django.forms.forms import NON_FIELD_ERRORS
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from django.contrib.auth import (
     login as django_login,
     authenticate,
     logout as django_logout)
+from django.contrib.auth.decorators import login_required
 
-from user_map.forms import UserForm, LoginForm
+from user_map.forms import (
+    UserForm, LoginForm, BasicInformationForm, PasswordForm)
 from user_map.models import User
 from user_map.app_settings import PROJECT_NAME, USER_ICONS, FAVICON_FILE
 
@@ -95,7 +100,7 @@ def register(request):
     else:
         form = UserForm()
     return render_to_response(
-        'user_map/user_form.html',
+        'user_map/add_user.html',
         {'form': form},
         context_instance=RequestContext(request)
     )
@@ -108,6 +113,9 @@ def login(request):
     :type request: request
     """
     if request.method == 'POST':
+        next_page = request.GET.get('next', '')
+        if next_page == '':
+            next_page = reverse('user_map:index')
         form = LoginForm(data=request.POST)
         if form.is_valid():
             user = authenticate(
@@ -115,15 +123,81 @@ def login(request):
                 password=request.POST['password']
             )
             if user is not None:
-                if user.is_active:
+                if user.is_active and user.is_approved:
                     django_login(request, user)
-                    return HttpResponseRedirect(reverse('user_map:index'))
+
+                    return HttpResponseRedirect(next_page)
+                if not user.is_active:
+                    errors = form._errors.setdefault(
+                        NON_FIELD_ERRORS, ErrorList())
+                    errors.append(
+                        'The user is not active. Please contact our '
+                        'administrator to resolve this.')
+                if not user.is_approved:
+                    errors = form._errors.setdefault(
+                        NON_FIELD_ERRORS, ErrorList())
+                    errors.append(
+                        'Please confirm you registration email first!')
+            else:
+                errors = form._errors.setdefault(
+                    NON_FIELD_ERRORS, ErrorList())
+                errors.append(
+                    'Please enter a correct email and password. '
+                    'Note that both fields may be case-sensitive.')
+
     else:
         form = LoginForm()
     return render_to_response(
         'user_map/login.html',
         {'form': form},
         context_instance=RequestContext(request))
+
+
+@login_required(login_url='user_map:login')
+def update_user(request):
+    """Update user view.
+
+    :param request: A django request object.
+    :type request: request
+    """
+    if request.method == 'POST':
+        if 'change_basic_info' in request.POST:
+            anchor_id = '#basic-information'
+            basic_info_form = BasicInformationForm(
+                data=request.POST, instance=request.user)
+            change_password_form = PasswordForm(user=request.user)
+            if basic_info_form.is_valid():
+                user = basic_info_form.save()
+                messages.success(
+                    request, 'You have succesfully changed your information!')
+                return HttpResponseRedirect(
+                    reverse('user_map:update_user') + anchor_id)
+        elif 'change_password' in request.POST:
+            anchor_id = '#security'
+            change_password_form = PasswordForm(
+                data=request.POST, user=request.user)
+            basic_info_form = BasicInformationForm(instance=request.user)
+            if change_password_form.is_valid():
+                user = change_password_form.save()
+                messages.success(
+                    request, 'You have successfully changed your password!')
+                return HttpResponseRedirect(
+                    reverse('user_map:update_user') + anchor_id)
+
+    else:
+        anchor_id = '#basic-information'
+        basic_info_form = BasicInformationForm(instance=request.user)
+        change_password_form = PasswordForm(user=request.user)
+
+    return render_to_response(
+        'user_map/edit_user.html',
+        {
+            'basic_info_form': basic_info_form,
+            'change_password_form': change_password_form,
+            'anchor_id': anchor_id,
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 def logout(request):

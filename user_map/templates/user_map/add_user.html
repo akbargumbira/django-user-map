@@ -7,8 +7,7 @@
   {% leaflet_css plugins="forms" %}
 {% endblock head_resources %}
 
-{% block body %}
-  {{ block.super }}
+{% block main_content %}
   <div class="container">
     <div class="page-header">
     <h2>Add me to map! <br><small>Please provide your information on the
@@ -21,15 +20,9 @@
         {% for field in form %}
           <div class="form-group">
             <label for="id_{{ field.name }}" class="col-lg-2 control-label">{{ field.label }}</label>
-            {% if field.name == 'location' %}
-              <div class="col-lg-8">
+            <div class="col-lg-6">
                 {{ field }}
               </div>
-            {% else %}
-              <div class="col-lg-6">
-                  {{ field }}
-                </div>
-            {% endif %}
           </div>
           {% if field.errors %}
             <div class="form-group">
@@ -58,13 +51,13 @@
       </form>
      </div>
   </div>
-{% endblock body %}
+{% endblock main_content %}
 
 {% block footer %}
-    <div class="container centered">
-      <hr>
-      <div class="footer">
-        © 2014 InaSAFE User Map. All rights reserved.
-      </div>
+  <div class="container centered">
+    <hr>
+    <div class="footer">
+      © 2014 InaSAFE User Map. All rights reserved.
     </div>
+  </div>
 {% endblock footer %}

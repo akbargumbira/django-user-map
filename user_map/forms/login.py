@@ -1,9 +1,14 @@
 # coding=utf-8
+"""Django Forms for Login."""
 from django import forms
 
 
 class LoginForm(forms.Form):
     """Form for user to log in."""
+    class Meta:
+        """Meta of the form."""
+        fields = ['email', 'password']
+
     email = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
@@ -19,6 +24,3 @@ class LoginForm(forms.Form):
             })
     )
 
-    class Meta:
-        """Association between models and this form."""
-        fields = ['email', 'password']
