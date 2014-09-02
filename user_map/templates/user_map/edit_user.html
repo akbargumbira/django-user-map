@@ -1,0 +1,154 @@
+{% extends "user_map/base.html" %}
+{% load leaflet_tags %}
+
+{% block head_resources %}
+  {{ block.super }}
+  {% leaflet_js plugins="forms" %}
+  {% leaflet_css plugins="forms" %}
+{% endblock head_resources %}
+
+{% block main_content %}
+  <div class="container">
+    <div class="page-header">
+    <h2>Update Profile
+      <br><small>So I heard you want to update your information </small></h2>
+    </div>
+
+    <div class="update-provile-nav">
+      <div class="col-md-2 well">
+        <ul id="profile_tab" class="nav nav-stacked">
+          <li>
+            <a data-toggle="tab" href="#basic-information">Basic Information</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#security">Security</a>
+          </li>
+        </ul>
+    </div>
+    </div>
+
+    <div class="col-md-9">
+      <div id="profile_content" class="tab-content">
+        <div id="basic-information" class="tab-pane fade">
+          {% if messages %}
+            {% for message in messages %}
+              {% if 'success' in message.tags %}
+                <div class="alert alert-success">
+                  <a class="close" href="#" data-dismiss="alert">x</a>
+                  {{ message }}
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <form id="form-basic-info" class="form-horizontal" method="POST">
+            {% csrf_token %}
+              {% for field in basic_info_form %}
+                <div class="form-group">
+                  <label for="id_{{ field.name }}" class="col-lg-3 control-label">{{ field.label }}</label>
+                  <div class="col-lg-6">
+                      {{ field }}
+                  </div>
+                </div>
+                {% if field.errors %}
+                  <div class="form-group">
+                    <div class="col-lg-offset-3 col-lg-6">
+                      <div class="alert alert-danger">
+                        {{ field.errors }}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% if basic_info_form.non_field_errors %}
+              <div class="form-group">
+                <div class="col-lg-offset-3 col-lg-6">
+                  <div class="alert alert-danger">
+                    {{ basic_info_form.non_field_errors }}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
+          <div class="form-group">
+            <div class="col-lg-offset-3 col-lg-6">
+              <input type="submit" name="change_basic_info" value="Submit" class="btn btn-default">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div id="security" class="tab-pane fade">
+        {% if messages %}
+          {% for message in messages %}
+            {% if 'success' in message.tags %}
+              <div class="alert alert-success">
+                <a class="close" href="#" data-dismiss="alert">x</a>
+                {{ message }}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        <form id="form-security" class="form-horizontal" method="POST">
+          {% csrf_token %}
+          {% for field in change_password_form %}
+            <div class="form-group">
+              <label for="id_{{ field.name }}" class="col-lg-3 control-label">{{ field.label }}</label>
+              <div class="col-lg-6">
+                  {{ field }}
+              </div>
+            </div>
+
+            {% if field.errors %}
+              <div class="form-group">
+                <div class="col-lg-offset-3 col-lg-6">
+                  <div class="alert alert-danger">
+                    {{ field.errors }}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          {% if change_password_form.non_field_errors %}
+            <div class="form-group">
+              <div class="col-lg-offset-3 col-lg-6">
+                <div class="alert alert-danger">
+                  {{ change_password_form.non_field_errors }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="form-group">
+            <div class="col-lg-offset-3 col-lg-6">
+              <input type="submit" name="change_password" value="Submit" class="btn btn-default">
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock main_content %}
+
+
+{% block footer %}
+  <div class="container">
+    <hr>
+    <div class="footer centered">
+      © 2014 InaSAFE User Map. All rights reserved.
+    </div>
+  </div>
+{% endblock footer %}
+
+{% block js_container %}
+  <script type="text/javascript">
+    $(document).ready(function () {
+      var anchor_id = window.location.hash;
+      if (anchor_id == "") {
+        anchor_id = "{{ anchor_id }}";
+      }
+      $('#profile_tab a[href="'+ anchor_id +'"]').tab('show');
+    });
+  </script>
+{% endblock js_container %}

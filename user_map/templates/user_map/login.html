@@ -7,8 +7,7 @@
   {% leaflet_css plugins="forms" %}
 {% endblock head_resources %}
 
-{% block body %}
-  {{ block.super }}
+{% block main_content %}
   <div class="container">
     <div class="main-content autoheight">
       <div class="page-header">
@@ -55,21 +54,19 @@
        </div>
     </div>
   </div>
-{% endblock body %}
+{% endblock main_content %}
 
 {% block footer %}
-    <div class="container">
-      <hr>
-      <div class="footer centered">
-        © 2014 InaSAFE User Map. All rights reserved.
-      </div>
+  <div class="container">
+    <hr>
+    <div class="footer centered">
+      © 2014 InaSAFE User Map. All rights reserved.
     </div>
+  </div>
 {% endblock footer %}
 
 {% block js_container %}
-    {{ block.super }}
-
-    <script type="text/javascript">
+  <script type="text/javascript">
       var setElementHeight = function () {
         var height = $(window).height();
         $('.autoheight').css('min-height', (height-300));

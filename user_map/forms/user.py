@@ -1,4 +1,7 @@
+# coding=utf-8
+"""Django forms for User related routines."""
 from django.contrib.gis import forms
+from django.contrib.auth.forms import PasswordChangeForm
 from leaflet.forms.widgets import LeafletWidget
 
 from user_map.models import User, Role
@@ -78,3 +81,81 @@ class UserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class BasicInformationForm(forms.ModelForm):
+    """Form for Basic Information model."""
+    name = forms.CharField(
+        required=True,
+        label='Your name',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'John Doe',
+            })
+    )
+    email = forms.EmailField(
+        required=True,
+        label='Your email',
+        widget=forms.EmailInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'john@doe.com',
+            })
+    )
+    website = forms.URLField(
+        required=False,
+        label='Your website',
+        widget=forms.URLInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'http://john.doe.com'
+            })
+    )
+    role = forms.ModelChoiceField(
+        label='Your role',
+        queryset=Role.objects.filter(sort_number__gte=1),
+        initial=1)
+    email_updates = forms.BooleanField(
+        required=False,
+        label='Receive project news and updates')
+    location = forms.PointField(
+        label='Click your location on the map',
+        widget=LeafletWidget())
+
+    class Meta:
+        """Association between models and this form."""
+        model = User
+        fields = ['name', 'email', 'website', 'role', 'location',
+                  'email_updates']
+
+    def save(self, commit=True):
+        """Save form.
+
+        :param commit: Whether committed to db or not.
+        :type commit: bool
+        """
+        user = super(BasicInformationForm, self).save(commit=False)
+        if commit:
+            user.save()
+        return user
+
+
+class PasswordForm(PasswordChangeForm):
+    """Form for password change."""
+    old_password = forms.CharField(
+        required=True,
+        label='Old password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password1 = forms.CharField(
+        required=True,
+        label='New password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password2 = forms.CharField(
+        required=True,
+        label='New password (again)',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        """Association between models and this form."""
+        model = User
