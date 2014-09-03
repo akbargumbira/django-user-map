@@ -6,17 +6,29 @@ from django.template import RequestContext, loader, Context
 from django.forms.util import ErrorList
 from django.forms.forms import NON_FIELD_ERRORS
 from django.core.urlresolvers import reverse
+from django.core.mail import send_mail
 from django.contrib import messages
 from django.contrib.auth import (
     login as django_login,
     authenticate,
     logout as django_logout)
+from django.contrib.auth.views import (
+    password_reset as django_password_reset,
+    password_reset_done as django_password_reset_done,
+    password_reset_confirm as django_password_reset_confirm,
+    password_reset_complete as django_password_reset_complete)
 from django.contrib.auth.decorators import login_required
 
 from user_map.forms import (
-    UserForm, LoginForm, BasicInformationForm, PasswordForm)
+    UserForm,
+    LoginForm,
+    BasicInformationForm,
+    PasswordForm,
+    CustomPasswordResetForm,
+    CustomSetPasswordForm)
 from user_map.models import User
 from user_map.app_settings import PROJECT_NAME, USER_ICONS, FAVICON_FILE
+from user_map.utilities.decorators import login_forbidden
 
 
 def index(request):
@@ -86,6 +98,7 @@ def get_users(request):
     return HttpResponse(users_json, mimetype='application/json')
 
 
+@login_forbidden
 def register(request):
     """User registration view.
 
@@ -96,16 +109,20 @@ def register(request):
         form = UserForm(data=request.POST)
         if form.is_valid():
             user = form.save()
+            send_mail('Registration', 'Here is the message.',
+                      'akbargumbira@gmail.com',
+                      [user.email], fail_silently=False)
             return HttpResponseRedirect(reverse('user_map:index'))
     else:
         form = UserForm()
     return render_to_response(
-        'user_map/add_user.html',
+        'user_map/account/add_user.html',
         {'form': form},
         context_instance=RequestContext(request)
     )
 
 
+@login_forbidden
 def login(request):
     """Login view.
 
@@ -148,7 +165,7 @@ def login(request):
     else:
         form = LoginForm()
     return render_to_response(
-        'user_map/login.html',
+        'user_map/account/login.html',
         {'form': form},
         context_instance=RequestContext(request))
 
@@ -160,6 +177,7 @@ def update_user(request):
     :param request: A django request object.
     :type request: request
     """
+    anchor_id = '#basic-information'
     if request.method == 'POST':
         if 'change_basic_info' in request.POST:
             anchor_id = '#basic-information'
@@ -172,6 +190,8 @@ def update_user(request):
                     request, 'You have succesfully changed your information!')
                 return HttpResponseRedirect(
                     reverse('user_map:update_user') + anchor_id)
+            else:
+                anchor_id = '#basic-information'
         elif 'change_password' in request.POST:
             anchor_id = '#security'
             change_password_form = PasswordForm(
@@ -183,14 +203,15 @@ def update_user(request):
                     request, 'You have successfully changed your password!')
                 return HttpResponseRedirect(
                     reverse('user_map:update_user') + anchor_id)
+            else:
+                anchor_id = '#security'
 
     else:
-        anchor_id = '#basic-information'
         basic_info_form = BasicInformationForm(instance=request.user)
         change_password_form = PasswordForm(user=request.user)
 
     return render_to_response(
-        'user_map/edit_user.html',
+        'user_map/account/edit_user.html',
         {
             'basic_info_form': basic_info_form,
             'change_password_form': change_password_form,
@@ -198,6 +219,67 @@ def update_user(request):
         },
         context_instance=RequestContext(request)
     )
+
+
+@login_forbidden
+def password_reset(request):
+    """The view for reset password that contains a form to ask for email.
+
+    :param request: A django request object.
+    :type request: request
+    """
+    return django_password_reset(
+        request,
+        password_reset_form=CustomPasswordResetForm,
+        template_name='user_map/account/password_reset_form.html',
+        email_template_name='user_map/account/password_reset_email.html',
+        post_reset_redirect=reverse('user_map:password_reset_done'))
+
+
+@login_forbidden
+def password_reset_done(request):
+    """The view telling the user that an email has been sent.
+
+    :param request: A django request object.
+    :type request: request
+    """
+    return django_password_reset_done(
+        request,
+        template_name='user_map/account/password_reset_done.html')
+
+
+@login_forbidden
+def password_reset_confirm(request, uidb64=None, token=None):
+    """The view containing form to reset password and process it.
+
+    :param request: A django request object.
+    :type request: request
+
+    :param uidb64: An unique ID of the user.
+    :type uidb64: str
+
+    :param token: Token to check if the reset password link is valid.
+    :type token: str
+    """
+    return django_password_reset_confirm(
+        request,
+        uidb64=uidb64,
+        token=token,
+        template_name='user_map/account/password_reset_confirm.html',
+        set_password_form=CustomSetPasswordForm,
+        post_reset_redirect=reverse('user_map:password_reset_complete'))
+
+
+@login_forbidden
+def password_reset_complete(request):
+    """The view telling the user that reset password process has been completed.
+
+    :param request: A django request object.
+    :type request: request
+    """
+    return django_password_reset_complete(
+        request,
+        template_name='user_map/account/password_reset_complete.html')
 
 
 def logout(request):
@@ -208,3 +290,4 @@ def logout(request):
     """
     django_logout(request)
     return HttpResponseRedirect(reverse('user_map:index'))
+

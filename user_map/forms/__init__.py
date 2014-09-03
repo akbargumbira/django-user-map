@@ -1,2 +1,2 @@
-from login import LoginForm
-from user import UserForm, BasicInformationForm, PasswordForm
+from login import *
+from user import *

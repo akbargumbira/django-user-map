@@ -20,53 +20,18 @@
 </head>
 
 <body>
-{% block navbar %}
-    <div class="user_map_navbar ">
-    <nav class="navbar navbar-fixed-top" role="navigation">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-      </div>
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav navbar-right">
-          {% if not user.is_authenticated %}
-            <a href="{% url 'user_map:login' %}">
-              <button type="button"
-                      class="btn btn-default navbar-btn navbar-left">Log In</button>
-            </a>
-            <a href="{% url 'user_map:register' %}">
-              <button type="button"
-                      class="btn btn-default navbar-btn navbar-left">Sign Up</button>
-            </a>
-          {% endif %}
-          {% if user.is_authenticated %}
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Hi, {{ user.name }}</b> <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'user_map:update_user' %}">Edit Profile</a></li>
-                <li><a href="{% url 'user_map:logout' %}">Log Out</a></li>
-              </ul>
-            </li>
-          {% endif %}
-        </ul>
+  <div class="user_map_navbar ">
+    {% block navbar %}
+    {% endblock navbar %}
+   </div>
 
-      </div><!-- /.navbar-collapse -->
-    </nav>
-  </div>
-{% endblock navbar%}
+  {% block main_content %}
+  {% endblock main_content %}
 
-{% block main_content %}
-{% endblock main_content %}
+  {% block footer %}
+  {% endblock footer %}
 
-{% block footer %}
-{% endblock footer %}
-
-{% block js_container %}
-{% endblock js_container %}
-</body>
+  {% block js_container %}
+  {% endblock js_container %}
+  </body>
 </html>
