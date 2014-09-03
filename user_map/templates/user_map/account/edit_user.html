@@ -133,10 +133,16 @@
 
 {% block js_container %}
   <script type="text/javascript">
+    $(document).on('shown.bs.tab', function(event) {
+      var scrollmem = $('body').scrollTop();
+      window.location.hash = $(event.target).attr('href');
+      $('html,body').scrollTop(scrollmem);
+    });
+
     $(document).ready(function () {
       var anchor_id = window.location.hash;
       if (anchor_id == "") {
-        anchor_id = "{{ anchor_id }}";
+        anchor_id = "{{ anchor_id }}"
       }
       $('#profile_tab a[href="'+ anchor_id +'"]').tab('show');
     });

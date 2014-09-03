@@ -1,7 +1,10 @@
 # coding=utf-8
 """Django forms for User related routines."""
 from django.contrib.gis import forms
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import (
+    PasswordChangeForm,
+    PasswordResetForm,
+    SetPasswordForm)
 from leaflet.forms.widgets import LeafletWidget
 
 from user_map.models import User, Role
@@ -142,7 +145,7 @@ class BasicInformationForm(forms.ModelForm):
 
 
 class PasswordForm(PasswordChangeForm):
-    """Form for password change."""
+    """Form for password change using old password field."""
     old_password = forms.CharField(
         required=True,
         label='Old password',
@@ -155,6 +158,39 @@ class PasswordForm(PasswordChangeForm):
         required=True,
         label='New password (again)',
         widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        """Association between models and this form."""
+        model = User
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+    """Form for password change without using old password field."""
+    new_password1 = forms.CharField(
+        required=True,
+        label='New password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password2 = forms.CharField(
+        required=True,
+        label='New password (again)',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        """Association between models and this form."""
+        model = User
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    """Form for password reset containing email input."""
+    email = forms.EmailField(
+        required=True,
+        label='Email',
+        widget=forms.EmailInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'john@doe.com',
+            })
+    )
 
     class Meta:
         """Association between models and this form."""

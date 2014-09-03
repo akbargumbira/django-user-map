@@ -36,7 +36,7 @@
       </ul>
     </div><!-- /.navbar-collapse -->
   </nav>
-{% endblock navbar%}
+{% endblock navbar %}
 
 {% block main_content %}
 {% endblock main_content %}
@@ -51,6 +51,14 @@
 {% endblock footer %}
 
 {% block js_container %}
+  <script type="text/javascript">
+    var setElementHeight = function () {
+      var height = $(window).height();
+      $('.autoheight').css('min-height', (height-250));
+    };
+
+    $(window).on("resize", function () {
+        setElementHeight();
+    }).resize();
+  </script>
 {% endblock js_container %}
-</body>
-</html>
