@@ -28,6 +28,7 @@ from user_map.forms import (
     CustomSetPasswordForm)
 from user_map.models import User
 from user_map.app_settings import PROJECT_NAME, USER_ICONS, FAVICON_FILE
+from user_map.utilities.decorators import login_forbidden
 
 
 def index(request):
@@ -97,6 +98,7 @@ def get_users(request):
     return HttpResponse(users_json, mimetype='application/json')
 
 
+@login_forbidden
 def register(request):
     """User registration view.
 
@@ -120,6 +122,7 @@ def register(request):
     )
 
 
+@login_forbidden
 def login(request):
     """Login view.
 
@@ -218,6 +221,7 @@ def update_user(request):
     )
 
 
+@login_forbidden
 def password_reset(request):
     """The view for reset password that contains a form to ask for email.
 
@@ -232,6 +236,7 @@ def password_reset(request):
         post_reset_redirect=reverse('user_map:password_reset_done'))
 
 
+@login_forbidden
 def password_reset_done(request):
     """The view telling the user that an email has been sent.
 
@@ -243,6 +248,7 @@ def password_reset_done(request):
         template_name='user_map/account/password_reset_done.html')
 
 
+@login_forbidden
 def password_reset_confirm(request, uidb64=None, token=None):
     """The view containing form to reset password and process it.
 
@@ -264,6 +270,7 @@ def password_reset_confirm(request, uidb64=None, token=None):
         post_reset_redirect=reverse('user_map:password_reset_complete'))
 
 
+@login_forbidden
 def password_reset_complete(request):
     """The view telling the user that reset password process has been completed.
 
