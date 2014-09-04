@@ -85,7 +85,6 @@ def get_users(request):
     user_role = int(request.GET['user_role'])
 
     # Get user
-    filtered = filter(User.is_confirmed, User.objects)
     users = User.objects.filter(
         role=user_role,
         is_confirmed=True,
@@ -125,7 +124,7 @@ def register(request):
                 'site_name': site_name,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'user': user,
-                'key': user.confirmation_key
+                'key': user.key
             }
             email = loader.render_to_string(
                 'user_map/account/registration_confirmation_email.html',
@@ -166,7 +165,8 @@ def confirm_registration(request, uid, key):
         user = User.objects.get(pk=decoded_uid)
 
         if not user.is_confirmed:
-            user.confirm_email(key)
+            user.is_confirmed = True
+            user.save(update_fields=['is_confirmed'])
             information = (
                 'Congratulations! Your account has been successfully '
                 'confirmed. Please continue to log in.')

@@ -2,14 +2,13 @@
 """Model class of custom user for InaSAFE User Map."""
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.gis.db import models
-
-from simple_email_confirmation import SimpleEmailConfirmationUserMixin
+from django.utils.crypto import get_random_string
 
 from user_map.models.user_manager import CustomUserManager
 from user_map.models.role import Role
 
 
-class User(AbstractBaseUser, SimpleEmailConfirmationUserMixin):
+class User(AbstractBaseUser):
     """User class for InaSAFE User Map."""
     class Meta:
         """Meta class."""
@@ -46,6 +45,14 @@ class User(AbstractBaseUser, SimpleEmailConfirmationUserMixin):
     is_admin = models.BooleanField(
         help_text='Whether this user is admin or not.',
         default=False)
+    is_confirmed = models.BooleanField(
+        help_text='Whether this user has approved their entry by email.',
+        null=False,
+        default=False)
+    key = models.CharField(
+        help_text='Confirmation key for user to activate their account.',
+        max_length=40)
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -107,3 +114,10 @@ class User(AbstractBaseUser, SimpleEmailConfirmationUserMixin):
         :rtype: bool
         """
         return self.is_admin
+
+    def save(self, *args, **kwargs):
+        """Override save method."""
+        if not self.pk:
+            # New object here
+            self.key = get_random_string()
+        super(User, self).save()
