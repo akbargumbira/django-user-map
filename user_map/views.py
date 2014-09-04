@@ -31,7 +31,7 @@ from user_map.forms import (
     CustomSetPasswordForm)
 from user_map.models import User
 from user_map.app_settings import (
-    PROJECT_NAME, USER_ICONS, FAVICON_FILE, DEFAULT_FROM_MAIL)
+    PROJECT_NAME, USER_ICONS, DEFAULT_FROM_MAIL)
 from user_map.utilities.decorators import login_forbidden
 
 
@@ -61,8 +61,6 @@ def index(request):
     legend = legend_template.render(legend_context)
 
     context = {
-        'project_name': PROJECT_NAME,
-        'app_favicon': FAVICON_FILE,
         'data_privacy_content': data_privacy_content,
         'information_modal': information_modal,
         'user_menu': user_menu,
