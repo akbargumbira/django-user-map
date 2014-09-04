@@ -85,8 +85,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
         :param password: The password of the superuser.
         :type password:  str
         """
-        # Use predefined location, role, email_updates, is_approved, is_active,
-        # is_admin
+        # Use predefined location, role, email_updates, is_active, is_admin
         location = Point(106.8, -6.2)
         role = Role(name='Super User', sort_number=-999)
         role.save()
@@ -98,7 +97,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
             email_updates=True,
             password=password)
         user.email_updates = True
-        user.is_approved = True
+        user.confirm_email(user.confirmation_key)
         user.is_active = True
         user.is_admin = True
         user.save(using=self._db)

@@ -18,6 +18,9 @@ from django.contrib.auth.views import (
     password_reset_confirm as django_password_reset_confirm,
     password_reset_complete as django_password_reset_complete)
 from django.contrib.auth.decorators import login_required
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.contrib.sites.models import get_current_site
 
 from user_map.forms import (
     UserForm,
@@ -27,7 +30,8 @@ from user_map.forms import (
     CustomPasswordResetForm,
     CustomSetPasswordForm)
 from user_map.models import User
-from user_map.app_settings import PROJECT_NAME, USER_ICONS, FAVICON_FILE
+from user_map.app_settings import (
+    PROJECT_NAME, USER_ICONS, FAVICON_FILE, DEFAULT_FROM_MAIL)
 from user_map.utilities.decorators import login_forbidden
 
 
@@ -81,9 +85,10 @@ def get_users(request):
     user_role = int(request.GET['user_role'])
 
     # Get user
+    filtered = filter(User.is_confirmed, User.objects)
     users = User.objects.filter(
         role=user_role,
-        is_approved=True,
+        is_confirmed=True,
         is_active=True)
     json_users_template = loader.get_template('user_map/users.json')
     context = Context({'users': users})
@@ -109,15 +114,76 @@ def register(request):
         form = UserForm(data=request.POST)
         if form.is_valid():
             user = form.save()
-            send_mail('Registration', 'Here is the message.',
-                      'akbargumbira@gmail.com',
-                      [user.email], fail_silently=False)
+
+            current_site = get_current_site(request)
+            site_name = current_site.name
+            domain = current_site.domain
+            context = {
+                'project_name': PROJECT_NAME,
+                'protocol': 'http',
+                'domain': domain,
+                'site_name': site_name,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'user': user,
+                'key': user.confirmation_key
+            }
+            email = loader.render_to_string(
+                'user_map/account/registration_confirmation_email.html',
+                context)
+
+            subject = '%s User Registration' % PROJECT_NAME
+            sender = '%s - No Reply <%s>' % (PROJECT_NAME, DEFAULT_FROM_MAIL)
+            send_mail(
+                subject,
+                email,
+                sender,
+                [user.email], fail_silently=False)
             return HttpResponseRedirect(reverse('user_map:index'))
     else:
         form = UserForm()
     return render_to_response(
         'user_map/account/add_user.html',
         {'form': form},
+        context_instance=RequestContext(request)
+    )
+
+
+@login_forbidden
+def confirm_registration(request, uid, key):
+    """The view containing form to reset password and process it.
+
+    :param request: A django request object.
+    :type request: request
+
+    :param uid: A unique id for a user.
+    :type uid: str
+
+    :param key: Key to confirm the user.
+    :type key: str
+    """
+    decoded_uid = urlsafe_base64_decode(uid)
+    try:
+        user = User.objects.get(pk=decoded_uid)
+
+        if not user.is_confirmed:
+            user.confirm_email(key)
+            information = (
+                'Congratulations! Your account has been successfully '
+                'confirmed. Please continue to log in.')
+        else:
+            information = ('Your account is already confirmed. Please '
+                           'continue to log in.')
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        information = ('Your link is not valid. Please make sure that you use '
+                       'confirmation link we sent to your email.')
+
+    context = {
+        'page_header_title': 'Registration Confirmation',
+        'information': information
+    }
+    return render_to_response(
+        'user_map/information.html',
+        context,
         context_instance=RequestContext(request)
     )
 
@@ -140,7 +206,7 @@ def login(request):
                 password=request.POST['password']
             )
             if user is not None:
-                if user.is_active and user.is_approved:
+                if user.is_active and user.is_confirmed:
                     django_login(request, user)
 
                     return HttpResponseRedirect(next_page)
@@ -150,7 +216,7 @@ def login(request):
                     errors.append(
                         'The user is not active. Please contact our '
                         'administrator to resolve this.')
-                if not user.is_approved:
+                if not user.is_confirmed:
                     errors = form._errors.setdefault(
                         NON_FIELD_ERRORS, ErrorList())
                     errors.append(

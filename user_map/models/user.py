@@ -3,11 +3,13 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.gis.db import models
 
+from simple_email_confirmation import SimpleEmailConfirmationUserMixin
+
 from user_map.models.user_manager import CustomUserManager
 from user_map.models.role import Role
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, SimpleEmailConfirmationUserMixin):
     """User class for InaSAFE User Map."""
     class Meta:
         """Meta class."""
@@ -37,10 +39,6 @@ class User(AbstractBaseUser):
         help_text='Tick this to receive occasional news email messages.',
         default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-    is_approved = models.BooleanField(
-        help_text='Whether this user has approved their entry by email.',
-        null=False,
-        default=False)
     is_active = models.BooleanField(
         help_text='Whether this user is still active or not (a user could be '
                   'banned or deleted).',
