@@ -1,0 +1,19 @@
+Dear {{ user.name }},
+
+Thank you for adding yourself to the {{ project_name }} User Map at
+{{ site_name }}. To activate your account, please click this link:
+{{ protocol}}://{{ domain }}{% url 'user_map:confirm_registration' uid=uid key=key %}
+
+Please note that the following information in your user record will be freely downloadable
+by anyone visiting the user map page:
+    - Your name
+    - your location (longitude, latitude)
+    - your role (user, developer, trainer)
+
+If you are concerned about your privacy, we recommend you edit your record (you can
+do so using the link provided below) and generalise the position of your point (for example
+to the centre of your nearest town / state or province or country).
+
+Thank you for taking the time to register yourself on our site!
+
+Regards

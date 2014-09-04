@@ -4,6 +4,9 @@
 ..note: By design, you can override these settings from your project's
     settings.py with prefix 'USER_MAP' on the variable e.g
     'USER_MAP_USER_ICONS'.
+
+    For mailing. as the default, it wil use 'DEFAULT_FROM_MAIL' setting from
+    the project.
 """
 from django.conf import settings
 
@@ -23,3 +26,7 @@ default_user_icons = dict(
     shadow='user_map/img/shadow-icon.png'
 )
 USER_ICONS = getattr(settings, 'USER_MAP_USER_ICONS', default_user_icons)
+
+# MAIL SENDER
+default_mail_sender = 'noreply@inasafe.org'
+DEFAULT_FROM_MAIL = getattr(settings, 'DEFAULT_FROM_MAIL', default_mail_sender)

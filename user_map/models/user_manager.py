@@ -3,6 +3,7 @@
 from django.contrib.gis.db.models import GeoManager
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.gis.geos import Point
+from django.utils.crypto import get_random_string
 
 from user_map.models.role import Role
 
@@ -66,7 +67,8 @@ class CustomUserManager(BaseUserManager, GeoManager):
             location=location,
             role=role,
             email_updates=email_updates,
-            website=website
+            website=website,
+            key=get_random_string()
         )
 
         user.set_password(password)
@@ -85,8 +87,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
         :param password: The password of the superuser.
         :type password:  str
         """
-        # Use predefined location, role, email_updates, is_approved, is_active,
-        # is_admin
+        # Use predefined location, role, email_updates, is_active, is_admin
         location = Point(106.8, -6.2)
         role = Role(name='Super User', sort_number=-999)
         role.save()
@@ -98,7 +99,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
             email_updates=True,
             password=password)
         user.email_updates = True
-        user.is_approved = True
+        user.is_confirmed = True
         user.is_active = True
         user.is_admin = True
         user.save(using=self._db)
