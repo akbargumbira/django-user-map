@@ -1,3 +1,7 @@
 # Created by .gitignore support plugin (hsz.mobi)
 .idea
 *.pyc
+dist
+distribute*
+MANIFEST
+insafe_user_map.egg-info/

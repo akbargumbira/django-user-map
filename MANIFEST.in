@@ -1,0 +1,3 @@
+recursive-include *.txt
+include user_map/templates/user_map/*.html
+include user_map/templates/user_map/account/*.html
