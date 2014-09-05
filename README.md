@@ -56,14 +56,14 @@ your project settings.py so it looks like:
 If you are going to use SMTP server using your Gmail account, 
 the configuration looks like this:
 
-```
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_HOST_USER = 'YOUR GMAIL ADDRESS'
-    EMAIL_HOST_PASSWORD = 'YOUR GMAIL PASSWORD'
-    DEFAULT_FROM_MAIL = 'MAIL ADDRESS AS THE DEFAULT SENDER'
-```
+    ```
+        EMAIL_USE_TLS = True
+        EMAIL_HOST = 'smtp.gmail.com'
+        EMAIL_PORT = 587
+        EMAIL_HOST_USER = 'YOUR GMAIL ADDRESS'
+        EMAIL_HOST_PASSWORD = 'YOUR GMAIL PASSWORD'
+        DEFAULT_FROM_MAIL = 'MAIL ADDRESS AS THE DEFAULT SENDER'
+    ```
 
 6. Run ```python manage.py syncdb``` to create the user_map models. This will
    also prompt you to create a superuser. Create one so that you can log in to 
