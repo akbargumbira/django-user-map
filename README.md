@@ -7,19 +7,23 @@ This project replaces the simple flask based user map available here:
 https://github.com/kartoza/flask_user_map
 
 Quick Start
-===========================
+============
 1. Install all the requirements needed by User Map:
 ```
 pip install -r requirements.txt
 ```
 
-2. Add 'user_map', 'leaflet', and 'bootstrapform' to your INSTALLED_APPS in 
-your project settings.py so it looks like:
+2. Make sure you have all of these in INSTALLED_APPS in your project 
+settings.py:
     ```
     INSTALLED_APPS = (
         'django.contrib.admin',
         'django.contrib.auth',
-        '......',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'django.contrib.gis',
         'user_map',
         'leaflet',
         'bootstrapform'
@@ -77,3 +81,54 @@ the configuration looks like this:
 9. Visit your admin page (the default is http://127.0.0.1:8000/admin) to 
 manage user as an admin. 
 
+Apps Configurations
+===============
+
+Tile Layers
+~~~~~~~~~~~~
+
+You can configure the basemap of the form that uses LeafletWidget by adding 
+'LEAFLET_CONFIG' in settings.py:
+
+```
+LEAFLET_CONFIG = {
+    'TILES': [
+        (
+            'OpenStreetMap',
+            'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+            ('© <a href="http://www.openstreetmap.org" '
+             'target="_parent">OpenStreetMap</a> and contributors, under an '
+             '<a href="http://www.openstreetmap.org/copyright" '
+             'target="_parent">open license</a>')
+        )]
+}
+```
+
+Apps Configuration
+~~~~~~~~~~~~~~~~~~~~
+
+You can also configure this following variable by adding these items on your 
+settings.py:
+
+1. USER_MAP_PROJECT_NAME. This variable represents the project name of the 
+   apps. If not specified, the default is 'InaSAFE'.
+     
+2. USER_MAP_BRAND_LOGO. This variable represents the file path to the brand 
+   logo in navigation bar. 
+   
+3. USER_MAP_FAVICON_FILE. This variable represents the file path to 
+   the favicon on the tab.
+   
+4. USER_MAP_USER_ICONS. This variable is a dictionary that contains file 
+   paths to the user icons that are used to represent marker at home page. 
+   Right now it only support 3 different kind of user: user, trainer, 
+   developer. The default is:
+   
+   ```
+   default_user_icons = dict(
+        user='user_map/img/user-icon.png',
+        trainer='user_map/img/trainer-icon.png',
+        developer='user_map/img/developer-icon.png',
+        shadow='user_map/img/shadow-icon.png'
+   )
+   ```
