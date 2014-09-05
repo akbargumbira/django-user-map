@@ -82,10 +82,10 @@ the configuration looks like this:
 manage user as an admin. 
 
 Apps Configurations
-===============
+==================
 
 Tile Layers
-~~~~~~~~~~~~
+------------
 
 You can configure the basemap of the form that uses LeafletWidget by adding 
 'LEAFLET_CONFIG' in settings.py:
@@ -105,7 +105,7 @@ LEAFLET_CONFIG = {
 ```
 
 Apps Configuration
-~~~~~~~~~~~~~~~~~~~~
+------------------
 
 You can also configure this following variable by adding these items on your 
 settings.py:
