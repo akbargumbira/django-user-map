@@ -1,5 +1,6 @@
 {% extends "user_map/base_page.html" %}
 {% load leaflet_tags %}
+{% load bootstrap %}
 
 {% block head_resources %}
   {{ block.super }}
@@ -17,41 +18,14 @@
     <div class="login-form">
       <form class="form-horizontal" action='#' method='POST'>
         {% csrf_token %}
-        {% for field in form %}
-          <div class="form-group">
-            <label for="id_{{ field.name }}" class="col-lg-1 control-label">{{ field.label }}</label>
-            <div class="col-lg-4">
-                {{ field }}
-            </div>
-          </div>
-          {% if field.errors %}
-            <div class="form-group">
-              <div class="col-lg-offset-1 col-lg-4">
-                <div class="alert alert-danger">
-                  {{ field.errors }}
-                </div>
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-
-        {% if form.non_field_errors %}
-          <div class="form-group">
-            <div class="col-lg-offset-1 col-lg-4">
-              <div class="alert alert-danger">
-                {{ form.non_field_errors }}
-              </div>
-            </div>
-          </div>
-        {% endif %}
-
+        {{ form|bootstrap_horizontal:'col-lg-2'}}
         <div class="form-group">
-          <div class="col-lg-offset-1 col-lg-4">
+          <div class="col-lg-offset-2 col-lg-4">
             <input type="submit" value="Sign In" class="btn btn-default">
           </div>
         </div>
         <div class="form-group">
-        <div class="col-lg-offset-1 col-lg-4">
+        <div class="col-lg-offset-2 col-lg-6">
           <a href="{% url 'user_map:password_reset'%}">Forgot your password?</a>
         </div>
       </div>

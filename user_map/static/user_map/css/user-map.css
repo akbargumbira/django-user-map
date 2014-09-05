@@ -40,6 +40,22 @@ body > .container {
   margin-bottom: 20px;
 }
 
+.registration-form {
+  max-width: 700px;
+}
+
+.login-form {
+  max-width: 500px;
+}
+
+.ask-password-reset-form {
+  max-width: 400px;
+}
+
+.profile-content {
+  max-width: 700px;
+}
+
 /* ******************** */
 /*       Controls       */
 /* ******************** */

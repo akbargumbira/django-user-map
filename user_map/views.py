@@ -135,11 +135,16 @@ def register(request):
                 email,
                 sender,
                 [user.email], fail_silently=False)
-            return HttpResponseRedirect(reverse('user_map:index'))
+
+            messages.success(
+                request,
+                ('Thank you for registering in our site! Please check your '
+                 'email to confirm your registration'))
+            return HttpResponseRedirect(reverse('user_map:register'))
     else:
         form = UserForm()
     return render_to_response(
-        'user_map/account/add_user.html',
+        'user_map/account/registration.html',
         {'form': form},
         context_instance=RequestContext(request)
     )
@@ -163,11 +168,16 @@ def confirm_registration(request, uid, key):
         user = User.objects.get(pk=decoded_uid)
 
         if not user.is_confirmed:
-            user.is_confirmed = True
-            user.save(update_fields=['is_confirmed'])
-            information = (
-                'Congratulations! Your account has been successfully '
-                'confirmed. Please continue to log in.')
+            if user.key == key:
+                user.is_confirmed = True
+                user.save(update_fields=['is_confirmed'])
+                information = (
+                    'Congratulations! Your account has been successfully '
+                    'confirmed. Please continue to log in.')
+            else:
+                information = (
+                    'Your link is not valid. Please make sure that you use '
+                    'confirmation link we sent to your email.')
         else:
             information = ('Your account is already confirmed. Please '
                            'continue to log in.')
