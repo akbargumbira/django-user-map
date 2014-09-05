@@ -1,5 +1,6 @@
 {% extends "user_map/base_page.html" %}
 {% load leaflet_tags %}
+{% load bootstrap %}
 
 {% block head_resources %}
   {{ block.super }}
@@ -24,60 +25,11 @@
             <a data-toggle="tab" href="#security">Security</a>
           </li>
         </ul>
-    </div>
-    </div>
-
-    <div class="col-md-9">
-      <div id="profile_content" class="tab-content">
-        <div id="basic-information" class="tab-pane fade">
-          {% if messages %}
-            {% for message in messages %}
-              {% if 'success' in message.tags %}
-                <div class="alert alert-success">
-                  <a class="close" href="#" data-dismiss="alert">x</a>
-                  {{ message }}
-                </div>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-          <form id="form-basic-info" class="form-horizontal" method="POST">
-            {% csrf_token %}
-              {% for field in basic_info_form %}
-                <div class="form-group">
-                  <label for="id_{{ field.name }}" class="col-lg-3 control-label">{{ field.label }}</label>
-                  <div class="col-lg-6">
-                      {{ field }}
-                  </div>
-                </div>
-                {% if field.errors %}
-                  <div class="form-group">
-                    <div class="col-lg-offset-3 col-lg-6">
-                      <div class="alert alert-danger">
-                        {{ field.errors }}
-                      </div>
-                    </div>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            {% if basic_info_form.non_field_errors %}
-              <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-6">
-                  <div class="alert alert-danger">
-                    {{ basic_info_form.non_field_errors }}
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-
-          <div class="form-group">
-            <div class="col-lg-offset-3 col-lg-6">
-              <input type="submit" name="change_basic_info" value="Submit" class="btn btn-default">
-            </div>
-          </div>
-        </form>
       </div>
+    </div>
 
-      <div id="security" class="tab-pane fade">
+    <div class="col-lg-9">
+      <div id="profile_content" class="tab-content profile-content">
         {% if messages %}
           {% for message in messages %}
             {% if 'success' in message.tags %}
@@ -88,47 +40,33 @@
             {% endif %}
           {% endfor %}
         {% endif %}
-        <form id="form-security" class="form-horizontal" method="POST">
-          {% csrf_token %}
-          {% for field in change_password_form %}
-            <div class="form-group">
-              <label for="id_{{ field.name }}" class="col-lg-3 control-label">{{ field.label }}</label>
-              <div class="col-lg-6">
-                  {{ field }}
-              </div>
-            </div>
 
-            {% if field.errors %}
-              <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-6">
-                  <div class="alert alert-danger">
-                    {{ field.errors }}
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-          {% endfor %}
-
-          {% if change_password_form.non_field_errors %}
+        <div id="basic-information" class="tab-pane fade">
+          <form id="form-basic-info" class="form-horizontal" method="POST">
+            {% csrf_token %}
+            {{ basic_info_form|bootstrap_horizontal:'col-lg-3'}}
             <div class="form-group">
               <div class="col-lg-offset-3 col-lg-6">
-                <div class="alert alert-danger">
-                  {{ change_password_form.non_field_errors }}
-                </div>
+                <input type="submit" name="change_basic_info" value="Submit" class="btn btn-default">
               </div>
             </div>
-          {% endif %}
-
-          <div class="form-group">
-            <div class="col-lg-offset-3 col-lg-6">
-              <input type="submit" name="change_password" value="Submit" class="btn btn-default">
-            </div>
-          </div>
           </form>
         </div>
-      </div>
+
+        <div id="security" class="tab-pane fade">
+          <form id="form-security" class="form-horizontal" method="POST">
+            {% csrf_token %}
+            {{ change_password_form|bootstrap_horizontal:'col-lg-3'}}
+            <div class="form-group">
+              <div class="col-lg-offset-3 col-lg-6">
+                <input type="submit" name="change_password" value="Submit" class="btn btn-default">
+              </div>
+            </div>
+          </form>
+        </div>
     </div>
   </div>
+</div>
 {% endblock main_content %}
 
 {% block js_container %}

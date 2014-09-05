@@ -12,5 +12,6 @@ def user_map_settings(request):
     """
     return {
         'PROJECT_NAME': app_settings.PROJECT_NAME,
+        'BRAND_LOGO': app_settings.BRAND_LOGO,
         'FAVICON_PATH': app_settings.FAVICON_FILE,
     }

@@ -14,6 +14,10 @@ from django.conf import settings
 default_project_name = 'InaSAFE'
 PROJECT_NAME = getattr(settings, 'USER_MAP_PROJECT_NAME', default_project_name)
 
+# LOGO/BRAND
+default_brand_logo = 'user_map/img/logo.png'
+BRAND_LOGO = getattr(settings, 'USER_MAP_BRAND_LOGO', default_brand_logo)
+
 # FAVICON_FILE: Favicon for this apps
 default_favicon_file = 'user_map/img/user-icon.png'
 FAVICON_FILE = getattr(settings, 'USER_MAP_FAVICON_FILE', default_favicon_file)

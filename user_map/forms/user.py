@@ -16,36 +16,30 @@ class UserForm(forms.ModelForm):
         required=True,
         label='Your name',
         widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'John Doe',
-            })
+            attrs={'placeholder': 'John Doe'})
     )
     email = forms.EmailField(
         required=True,
         label='Your email',
         widget=forms.EmailInput(
             attrs={
-                'class': 'form-control',
-                'placeholder': 'john@doe.com',
-            })
+                'placeholder': 'john@doe.com'})
     )
     password = forms.CharField(
         required=True,
         label='Your password',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput()
+    )
     password2 = forms.CharField(
         required=True,
         label='Your password (again)',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput()
+    )
     website = forms.URLField(
         required=False,
         label='Your website',
         widget=forms.URLInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'http://john.doe.com'
-            })
+            attrs={'placeholder': 'http://john.doe.com'})
     )
     location = forms.PointField(
         label='Click your location on the map',
@@ -62,7 +56,7 @@ class UserForm(forms.ModelForm):
         """Association between models and this form."""
         model = User
         fields = ['name', 'email', 'password', 'password2', 'website', 'role',
-                  'email_updates', 'location']
+                  'location', 'email_updates']
 
     def clean(self):
         """Verifies that the values entered into the password fields match."""
@@ -93,27 +87,22 @@ class BasicInformationForm(forms.ModelForm):
         label='Your name',
         widget=forms.TextInput(
             attrs={
-                'class': 'form-control',
-                'placeholder': 'John Doe',
-            })
+                'placeholder': 'John Doe'})
     )
     email = forms.EmailField(
         required=True,
         label='Your email',
         widget=forms.EmailInput(
             attrs={
-                'class': 'form-control',
-                'placeholder': 'john@doe.com',
-            })
+                'readonly': 'readonly',
+                'placeholder': 'john@doe.com'})
     )
     website = forms.URLField(
         required=False,
         label='Your website',
         widget=forms.URLInput(
             attrs={
-                'class': 'form-control',
-                'placeholder': 'http://john.doe.com'
-            })
+                'placeholder': 'http://john.doe.com'})
     )
     role = forms.ModelChoiceField(
         label='Your role',
@@ -149,15 +138,15 @@ class PasswordForm(PasswordChangeForm):
     old_password = forms.CharField(
         required=True,
         label='Old password',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput())
     new_password1 = forms.CharField(
         required=True,
         label='New password',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput())
     new_password2 = forms.CharField(
         required=True,
         label='New password (again)',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput())
 
     class Meta:
         """Association between models and this form."""
@@ -169,11 +158,11 @@ class CustomSetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(
         required=True,
         label='New password',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput())
     new_password2 = forms.CharField(
         required=True,
         label='New password (again)',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        widget=forms.PasswordInput())
 
     class Meta:
         """Association between models and this form."""
@@ -187,9 +176,7 @@ class CustomPasswordResetForm(PasswordResetForm):
         label='Email',
         widget=forms.EmailInput(
             attrs={
-                'class': 'form-control',
-                'placeholder': 'john@doe.com',
-            })
+                'placeholder': 'john@doe.com'})
     )
 
     class Meta:
