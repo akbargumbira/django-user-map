@@ -114,7 +114,9 @@
     current_mode = DEFAULT_MODE;
 
     //Initialize Basemap Layer
-    base_map = createBasemap();
+    base_map = createBasemap(
+        '{{ leaflet_tiles.url }}',
+        '{{ leaflet_tiles.attribution }}');
 
     //Create Map with prepared base_map
     map = L.map('map', {

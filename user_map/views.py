@@ -31,7 +31,7 @@ from user_map.forms import (
     CustomSetPasswordForm)
 from user_map.models import User
 from user_map.app_settings import (
-    PROJECT_NAME, USER_ICONS, DEFAULT_FROM_MAIL)
+    PROJECT_NAME, USER_ICONS, DEFAULT_FROM_MAIL, LEAFLET_TILES)
 from user_map.utilities.decorators import login_forbidden
 
 
@@ -60,13 +60,18 @@ def index(request):
     legend_context = Context({'user_icons': USER_ICONS})
     legend = legend_template.render(legend_context)
 
+    leaflet_tiles = dict(
+        url=LEAFLET_TILES[1],
+        attribution=LEAFLET_TILES[2]
+    )
     context = {
         'data_privacy_content': data_privacy_content,
         'information_modal': information_modal,
         'user_menu': user_menu,
         'user_menu_button': user_menu_button,
         'user_icons': USER_ICONS,
-        'legend': legend
+        'legend': legend,
+        'leaflet_tiles': leaflet_tiles
     }
     return render(request, 'user_map/index.html', context)
 
