@@ -9,9 +9,9 @@ https://github.com/kartoza/flask_user_map
 Quick Start
 ============
 1. Install all the requirements needed by User Map:
-```
-pip install -r requirements.txt
-```
+    ```
+    pip install -r requirements.txt
+    ```
 
 2. Make sure you have all of these in INSTALLED_APPS in your project 
 settings.py:
@@ -40,10 +40,10 @@ settings.py:
   settings.py like this:
   
   ```
-    AUTH_USER_MODEL = 'user_map.User'
-    AUTHENTICATION_BACKENDS = [
-        'user_map.auth_backend.UserMapAuthBackend',
-        'django.contrib.auth.backends.ModelBackend']
+  AUTH_USER_MODEL = 'user_map.User'
+  AUTHENTICATION_BACKENDS = [
+    'user_map.auth_backend.UserMapAuthBackend',
+    'django.contrib.auth.backends.ModelBackend']
   ```
 4. Make sure to add template context processors needed by user-map: 
 
@@ -61,12 +61,12 @@ If you are going to use SMTP server using your Gmail account,
 the configuration looks like this:
 
     ```
-        EMAIL_USE_TLS = True
-        EMAIL_HOST = 'smtp.gmail.com'
-        EMAIL_PORT = 587
-        EMAIL_HOST_USER = 'YOUR GMAIL ADDRESS'
-        EMAIL_HOST_PASSWORD = 'YOUR GMAIL PASSWORD'
-        DEFAULT_FROM_MAIL = 'MAIL ADDRESS AS THE DEFAULT SENDER'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = 'YOUR GMAIL ADDRESS'
+    EMAIL_HOST_PASSWORD = 'YOUR GMAIL PASSWORD'
+    DEFAULT_FROM_MAIL = 'MAIL ADDRESS AS THE DEFAULT SENDER'
     ```
 
 6. Run ```python manage.py syncdb``` to create the user_map models. This will
@@ -107,21 +107,22 @@ LEAFLET_CONFIG = {
 Apps Configuration
 ------------------
 
-You can also configure this following variable by adding these items on your 
-settings.py:
+You can also configure some variables by adding these items on your settings.py:
 
 1. USER_MAP_PROJECT_NAME. This variable represents the project name of the 
    apps. If not specified, the default is 'InaSAFE'.
      
 2. USER_MAP_BRAND_LOGO. This variable represents the file path to the brand 
-   logo in navigation bar. 
+   logo in navigation bar. If not specified, 
+   the default is 'user_map/img/logo.png'
    
 3. USER_MAP_FAVICON_FILE. This variable represents the file path to 
-   the favicon on the tab.
+   the favicon on the tab. If not specified, 
+   the default is 'user_map/img/user-icon.png'
    
 4. USER_MAP_USER_ICONS. This variable is a dictionary that contains file 
-   paths to the user icons that are used to represent marker at home page. 
-   Right now it only support 3 different kind of user: user, trainer, 
+   paths to the user icons that are used to represent markers at home page. 
+   Right now it only supports 3 different kind of user: user, trainer, 
    developer. The default is:
    
    ```
