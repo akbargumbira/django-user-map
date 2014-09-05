@@ -8,14 +8,15 @@
 
 /**
  * Create basemap instance to be used.
+ * @param {string} url The URL for the tiles layer
+ * @param {string} attribution The attribution of the layer
  * @property tileLayer
  * @returns {object} base_map
  */
-function createBasemap() {
+function createBasemap(url, attribution) {
   var base_map;
-  base_map = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}' +
-      '.png', {
-    attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+  base_map = L.tileLayer(url, {
+    attribution: attribution,
     maxZoom: 18
   });
   return base_map;

@@ -34,3 +34,15 @@ USER_ICONS = getattr(settings, 'USER_MAP_USER_ICONS', default_user_icons)
 # MAIL SENDER
 default_mail_sender = 'noreply@inasafe.org'
 DEFAULT_FROM_MAIL = getattr(settings, 'DEFAULT_FROM_MAIL', default_mail_sender)
+
+# LEAFLET CONFIG
+default_leaflet_tiles = (
+    'OpenStreetMap',
+    'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+    ('© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap'
+     '</a> and contributors, under an <a '
+     'href="http://www.openstreetmap.org/copyright" target="_parent">open '
+     'license</a>')
+)
+LEAFLET_TILES = getattr(settings, 'LEAFLET_TILES', default_leaflet_tiles)
+
