@@ -15,41 +15,52 @@ class User(AbstractBaseUser):
         app_label = 'user_map'
 
     name = models.CharField(
+        verbose_name='Name',
         help_text='Your name.',
         max_length=100,
         null=False,
         blank=False)
     email = models.EmailField(
+        verbose_name='E-mail',
         help_text='Your email.',
         null=False,
         blank=False,
         unique=True)
     website = models.URLField(
+        verbose_name='Website',
         help_text='Optional link to your personal or organisation web site.',
         null=False,
         blank=True)
     location = models.PointField(
+        verbose_name='Location',
         help_text='Where are you?',
         max_length=255,
         null=False,
         blank=False)
-    role = models.ForeignKey(Role, blank=False)
+    role = models.ForeignKey(Role, verbose_name='Role', blank=False)
     email_updates = models.BooleanField(
+        verbose_name='Receiving Updates',
         help_text='Tick this to receive occasional news email messages.',
         default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
+    date_joined = models.DateTimeField(
+        verbose_name='Join Date',
+        auto_now_add=True)
     is_active = models.BooleanField(
+        verbose_name='Active Status',
         help_text='Whether this user is still active or not (a user could be '
                   'banned or deleted).',
         default=True)
     is_admin = models.BooleanField(
+        verbose_name='Admin Status',
         help_text='Whether this user is admin or not.',
         default=False)
     is_confirmed = models.BooleanField(
+        verbose_name='Confirmation Status',
         help_text='Whether this user has approved their entry by email.',
         null=False,
         default=False)
     key = models.CharField(
+        verbose_name='Confirmation Key',
         help_text='Confirmation key for user to activate their account.',
         max_length=40)
 
