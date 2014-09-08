@@ -1,5 +1,7 @@
 # coding=utf-8
 """Views of the apps."""
+import csv
+
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
@@ -47,15 +49,7 @@ def index(request):
     information_modal = loader.render_to_string(
         'user_map/information_modal.html')
     data_privacy_content = loader.render_to_string('user_map/data_privacy.html')
-    user_menu = dict(
-        add_user=True,
-        download=True,
-        reminder=True
-    )
-    user_menu_button = loader.render_to_string(
-        'user_map/user_menu_button.html',
-        dictionary=user_menu
-    )
+    user_menu_button = loader.render_to_string('user_map/user_menu_button.html')
     legend_template = loader.get_template('user_map/legend.html')
     legend_context = Context({'user_icons': USER_ICONS})
     legend = legend_template.render(legend_context)
@@ -67,7 +61,6 @@ def index(request):
     context = {
         'data_privacy_content': data_privacy_content,
         'information_modal': information_modal,
-        'user_menu': user_menu,
         'user_menu_button': user_menu_button,
         'user_icons': USER_ICONS,
         'legend': legend,
@@ -249,6 +242,16 @@ def login(request):
         context_instance=RequestContext(request))
 
 
+def logout(request):
+    """Log out view.
+
+    :param request: A django request object.
+    :type request: request
+    """
+    django_logout(request)
+    return HttpResponseRedirect(reverse('user_map:index'))
+
+
 @login_required(login_url='user_map:login')
 def update_user(request):
     """Update user view.
@@ -361,12 +364,36 @@ def password_reset_complete(request):
         template_name='user_map/account/password_reset_complete.html')
 
 
-def logout(request):
-    """Log out view.
+def download(request):
+    """The view to download users data as CSV.
 
     :param request: A django request object.
     :type request: request
+
+    :return: A CSV file.
+    :type: HttpResponse
     """
-    django_logout(request)
-    return HttpResponseRedirect(reverse('user_map:index'))
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="users.csv"'
+
+    users = User.objects.filter(role__sort_number__gte=1)
+    writer = csv.writer(response)
+
+    fields = ['name', 'website', 'role', 'location']
+    headers = ['No.']
+    for field in fields:
+        verbose_name_field = users.model._meta.get_field(field).verbose_name
+        headers.append(verbose_name_field)
+    writer.writerow(headers)
+
+    for idx, user in enumerate(users):
+        row = [idx + 1]
+        for field in fields:
+            field_value = getattr(user, field)
+            row.append(field_value)
+        writer.writerow(row)
+
+    return response
+
+
 

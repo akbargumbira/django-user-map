@@ -24,5 +24,7 @@ urlpatterns = patterns(
         'user_map.views.password_reset_confirm', name='password_reset_confirm'),
     url(r'^password-reset/complete/$',
         'user_map.views.password_reset_complete',
-    name='password_reset_complete')
+    name='password_reset_complete'),
+
+    url(r'^download$', 'user_map.views.download', name='download'),
 )

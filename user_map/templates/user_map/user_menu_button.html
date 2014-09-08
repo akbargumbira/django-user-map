@@ -1,51 +1,25 @@
-{% if add_user %}
-  <script id="user-menu-add-button" type="text/template">
-    <button type="button" class="btn btn-default btn-sm user-menu-control"
-            id="add-user-button" onclick="onAddUserButtonClick()"
-            data-toggle="tooltip" data-original-title="Add me to map!">
-      <span class="glyphicon glyphicon-user"></span>
-    </button>
-  </script>
-{% endif %}
+<script id="user-menu-add-button" type="text/template">
+  <button type="button" class="btn btn-default btn-sm user-menu-control"
+          id="add-user-button" onclick="onAddUserButtonClick()"
+          data-toggle="tooltip" data-original-title="Add me to map!">
+    <span class="glyphicon glyphicon-user"></span>
+  </button>
+</script>
 
-{% if edit_user %}
-  <script id="user-menu-edit-button" type="text/template">
-      <button type="button" class="btn btn-default btn-sm user-menu-control"
-            id="edit-user-button" onclick="onEditUserButtonClick()""
-            data-toggle="tooltip" data-original-title='Edit my data!'>
-      <span class='glyphicon glyphicon-pencil'></span>
-      </button>
-  </script>
-{% endif %}
+<script id="user-menu-download-button" type="text/template">
+  <button type="button" class="btn btn-default btn-sm user-menu-control"
+          id="download-button" onclick="onDownloadButtonClick()"
+          data-toggle="tooltip"
+          data-original-title="Download all users as CSV file!">
+    <span class="glyphicon glyphicon-download-alt"></span>
+  </button>
+</script>
 
-{% if delete_user %}
-  <script id="user-menu-delete-button" type="text/template">
-    <button type="button" class="btn btn-default btn-sm user-menu-control"
-            id="delete-user-button" onclick="onDeleteUserButtonClick()"
-            data-toggle="tooltip" data-original-title="Delete me from the map!">
-      <span class="glyphicon glyphicon-trash"></span>
-    </button>
-  </script>
-{% endif %}
-
-{% if download %}
-  <script id="user-menu-download-button" type="text/template">
-    <button type="button" class="btn btn-default btn-sm user-menu-control"
-            id="download-button" onclick="onDownloadButtonClick()"
-            data-toggle="tooltip"
-            data-original-title="Download all users as CSV file!">
-      <span class="glyphicon glyphicon-download-alt"></span>
-    </button>
-  </script>
-{% endif %}
-
-{% if reminder %}
-  <script id="user-menu-reminder-button" type="text/template">
-    <button type="button" class="btn btn-default btn-sm user-menu-control"
-            id="reminder-button" onclick="onReminderButtonClick()"
-            data-toggle="tooltip"
-            data-original-title="Forgot your edit link? Click here for a reminder!">
-      <span class="glyphicon glyphicon-question-sign"></span>
-    </button>
-  </script>
-{% endif %}
+<script id="user-menu-reminder-button" type="text/template">
+  <button type="button" class="btn btn-default btn-sm user-menu-control"
+          id="reminder-button" onclick="onReminderButtonClick()"
+          data-toggle="tooltip"
+          data-original-title="Forgot your password?">
+    <span class="glyphicon glyphicon-question-sign"></span>
+  </button>
+</script>

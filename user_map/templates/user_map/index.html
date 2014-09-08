@@ -50,9 +50,6 @@
   <![endif]-->
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.markercluster-src.js' %}"></script>
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
-  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-component.js' %}"></script>
-  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-state.js' %}"></script>
-  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map-utilities.js' %}"></script>
 {% endblock head_resources %}
 
 {% block main_content %}
@@ -66,39 +63,6 @@
   {{ data_privacy_content | safe }}
   {{ legend | safe }}
   {{ user_form_template | safe }}
-
-  <!-- Modal for reminder form -->
-  <div class="modal fade" id="reminder-menu-modal" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title">Request Edit Link</h3>
-        </div>
-        <div class="modal-body">
-          <p>
-            Please enter your email address that you used for registration
-            before. We will resend the edit link to that email.
-          </p>
-          <form action="" class="form form-horizontal" id="email_reminder_form" enctype="multipart/form-data">
-            <div class="form-group">
-              <div class="input-group input-group-sm  col-lg-8">
-                <span class="input-group-addon">Email</span>
-                <input type="email" class="form-control" placeholder="Required" id="email_reminder" name="email_reminder" required value=""/>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary" onclick="sendReminder();">
-            Send!
-          </button>
-          <button class="btn btn-default" onclick="activateDefaultState()" data-dismiss="modal" aria-hidden="true">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 {% endblock main_content %}
 
 
@@ -109,9 +73,6 @@
         developer_icon, estimated_location_circle, current_mode,
         marker_new_user, overlays_layer, users_layer, trainers_layer,
         developers_layer;
-
-    // Set current_mode to default one
-    current_mode = DEFAULT_MODE;
 
     //Initialize Basemap Layer
     base_map = createBasemap(
@@ -140,14 +101,12 @@
     map.addControl(new data_privacy_control);
 
     // Create User Menu Control and add some tooltips
-    user_menu = {
-      "add-user-menu": '{{ user_menu.add_user }}' === 'True',
-      "edit-user-menu": '{{ user_menu.edit_user }}' === 'True',
-      "delete-user-menu": '{{ user_menu.delete_user }}' === 'True',
-      "download-menu": '{{ user_menu.download }}' === 'True',
-      "reminder-menu": '{{ user_menu.reminder }}' === 'True'
+    user_menu_urls = {
+      'add-user': '{% url "user_map:register" %}',
+      'download': '{% url "user_map:download" %}',
+      'reminder': '{% url "user_map:password_reset" %}'
     };
-    user_menu_control = createUserMenuControl(user_menu);
+    user_menu_control = createUserMenuControl(user_menu_urls);
     map.addControl(new user_menu_control);
     $(".user-menu-control").tooltip({placement: 'right',
       container: 'body'});
@@ -182,9 +141,10 @@
     );
 
     //Add All Users to the right layer
-    addUsers(users_layer, USER_ROLE);
-    addUsers(trainers_layer, TRAINER_ROLE);
-    addUsers(developers_layer, DEVELOPER_ROLE);
+    var get_users_url = '{% url "user_map:get_users" %}';
+    addUsers(get_users_url, users_layer, USER_ROLE);
+    addUsers(get_users_url, trainers_layer, TRAINER_ROLE);
+    addUsers(get_users_url, developers_layer, DEVELOPER_ROLE);
 
     //Add All users layer to map
     users_layer.addTo(map);
@@ -196,7 +156,7 @@
       "Users": users_layer,
       "Developers": developers_layer,
       "Trainers": trainers_layer
-    }
+    };
     L.control.layers(null, overlays_layer).addTo(map);
   </script>
 {% endblock js_container %}
