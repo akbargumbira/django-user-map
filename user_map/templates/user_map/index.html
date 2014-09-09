@@ -77,7 +77,7 @@
     //Initialize Basemap Layer
     base_map = createBasemap(
         '{{ leaflet_tiles.url }}',
-        '{{ leaflet_tiles.attribution }}');
+        '{{ leaflet_tiles.attribution | safe }}');
 
     //Create Map with prepared base_map
     map = L.map('map', {
