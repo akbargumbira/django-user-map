@@ -7,6 +7,8 @@ from django.utils.crypto import get_random_string
 from user_map.models.user_manager import CustomUserManager
 from user_map.models.role import Role
 
+from user_map.utilities.utilities import wrap_number
+
 
 class User(AbstractBaseUser):
     """User class for InaSAFE User Map."""
@@ -34,6 +36,7 @@ class User(AbstractBaseUser):
     location = models.PointField(
         verbose_name='Location',
         help_text='Where are you?',
+        srid=4326,
         max_length=255,
         null=False,
         blank=False)
@@ -131,4 +134,8 @@ class User(AbstractBaseUser):
         if not self.pk:
             # New object here
             self.key = get_random_string()
+        # Wrap location data
+        self.location.x = wrap_number(self.location.x, [-180, 180])
+        self.location.y = wrap_number(self.location.y, [-90, 90])
+
         super(User, self).save()
