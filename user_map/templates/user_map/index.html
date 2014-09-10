@@ -68,11 +68,8 @@
 
 {% block js_container %}
   <script type="text/javascript">
-    var map, base_map, data_privacy_content,
-        data_privacy_control, user_menu_control, user_icon, trainer_icon,
-        developer_icon, estimated_location_circle, current_mode,
-        marker_new_user, overlays_layer, users_layer, trainers_layer,
-        developers_layer;
+    var map, base_map, data_privacy_content, data_privacy_control,
+        user_menu_control;
 
     //Initialize Basemap Layer
     base_map = createBasemap(
@@ -84,17 +81,6 @@
       layers: [base_map]
     });
     map.fitWorld().zoomIn();
-
-    // Initialize all icons for marker
-    var icons = createAllIcons(
-        "{% static user_icons.user %}",
-        '{% static user_icons.trainer %}',
-        '{% static user_icons.developer %}',
-        '{% static user_icons.shadow %}'
-    );
-    user_icon = icons.user_icon;
-    trainer_icon = icons.trainer_icon;
-    developer_icon = icons.developer_icon;
 
     // Create Data Privacy Control
     data_privacy_control = createDataPrivacyControl();
@@ -115,48 +101,40 @@
     legend_control = createLegendControl();
     map.addControl(new legend_control);
 
-    //All Users Layer using MarkerCLusterGroup
-    users_layer = new L.markerClusterGroup({
-      iconCreateFunction: function (cluster) {
-        return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-          className: 'marker-cluster marker-cluster-user',
-          iconSize: L.point(40, 40)});
-      }
-    });
-    trainers_layer = new L.markerClusterGroup({
-      iconCreateFunction: function (cluster) {
-        return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-          className: 'marker-cluster marker-cluster-trainer',
-          iconSize: L.point(40, 40)});
-      }
-    });
-    developers_layer = new L.markerClusterGroup(
-        {
-          iconCreateFunction: function (cluster) {
-            return L.divIcon({ html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-              className: 'marker-cluster marker-cluster-developer',
-              iconSize: L.point(40, 40)});
-          }
-        }
-    );
-
-    //Add All Users to the right layer
+    //Add all user layers based on role
     var get_users_url = '{% url "user_map:get_users" %}';
-    addUsers(get_users_url, users_layer, USER_ROLE);
-    addUsers(get_users_url, trainers_layer, TRAINER_ROLE);
-    addUsers(get_users_url, developers_layer, DEVELOPER_ROLE);
+    var overlays_layer = [];
+    var user_roles = {{ user_roles | safe }};
+    var static_files = '{% static "" %}';
 
-    //Add All users layer to map
-    users_layer.addTo(map);
-    developers_layer.addTo(map);
-    trainers_layer.addTo(map);
+    for (var i = 0; i < user_roles.length; ++i) {
+      var icon_path = static_files + user_roles[i]['icon'];
+      var shadow_icon_path = static_files + user_roles[i]['shadow_icon'];
+      user_roles[i]['icon'] = createIconMarker(icon_path, shadow_icon_path);
 
-    //Specify all layers on overlays_layers control
-    overlays_layer = {
-      "Users": users_layer,
-      "Developers": developers_layer,
-      "Trainers": trainers_layer
-    };
+      var class_name = 'marker-cluster marker-cluster-role' + (i + 1);
+      user_roles[i]['layer'] = new L.markerClusterGroup({
+        iconCreateFunction: (function(class_name) {
+            return function (cluster) {
+              return L.divIcon({
+                html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+                className:class_name,
+                iconSize: L.point(40, 40)});
+            }
+        })(class_name)
+      });
+
+      //Add All Users who's got this role
+      addUsers(get_users_url, user_roles[i]);
+
+      //Add All users layer to map
+      user_roles[i]['layer'].addTo(map);
+
+      //Add layer to overlays layer
+      overlays_layer[user_roles[i]['name']] = user_roles[i]['layer'];
+    }
+
+    //Plug overlays_layers in layer control
     L.control.layers(null, overlays_layer).addTo(map);
   </script>
 {% endblock js_container %}

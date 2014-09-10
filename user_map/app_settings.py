@@ -22,14 +22,21 @@ BRAND_LOGO = getattr(settings, 'USER_MAP_BRAND_LOGO', default_brand_logo)
 default_favicon_file = 'user_map/img/user-icon.png'
 FAVICON_FILE = getattr(settings, 'USER_MAP_FAVICON_FILE', default_favicon_file)
 
-#  USER ICONS: All icon paths that are used.
-default_user_icons = dict(
-    user='user_map/img/user-icon.png',
-    trainer='user_map/img/trainer-icon.png',
-    developer='user_map/img/developer-icon.png',
-    shadow='user_map/img/shadow-icon.png'
-)
-USER_ICONS = getattr(settings, 'USER_MAP_USER_ICONS', default_user_icons)
+#  USER ROLES: All user roles and their icons
+default_user_roles = [
+    dict(
+        name='User',
+        icon='user_map/img/user-icon.png',
+        shadow_icon='user_map/img/shadow-icon.png'),
+    dict(
+        name='Trainer',
+        icon='user_map/img/trainer-icon.png',
+        shadow_icon='user_map/img/shadow-icon.png'),
+    dict(
+        name='Developer',
+        icon='user_map/img/developer-icon.png',
+        shadow_icon='user_map/img/shadow-icon.png')]
+USER_ROLES = getattr(settings, 'USER_MAP_USER_ROLES', default_user_roles)
 
 # MAIL SENDER
 default_mail_sender = 'noreply@inasafe.org'
