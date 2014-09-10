@@ -1,6 +1,7 @@
 # coding=utf-8
 """Views of the apps."""
 import csv
+import json
 
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
@@ -22,6 +23,7 @@ from django.contrib.auth.views import (
 from django.contrib.auth.decorators import login_required
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+from django.utils import simplejson
 from django.contrib.sites.models import get_current_site
 
 from user_map.forms import (
@@ -33,7 +35,7 @@ from user_map.forms import (
     CustomSetPasswordForm)
 from user_map.models import User
 from user_map.app_settings import (
-    PROJECT_NAME, USER_ICONS, DEFAULT_FROM_MAIL, LEAFLET_TILES)
+    PROJECT_NAME, USER_ROLES, DEFAULT_FROM_MAIL, LEAFLET_TILES)
 from user_map.utilities.decorators import login_forbidden
 
 
@@ -51,7 +53,7 @@ def index(request):
     data_privacy_content = loader.render_to_string('user_map/data_privacy.html')
     user_menu_button = loader.render_to_string('user_map/user_menu_button.html')
     legend_template = loader.get_template('user_map/legend.html')
-    legend_context = Context({'user_icons': USER_ICONS})
+    legend_context = Context({'user_roles': USER_ROLES})
     legend = legend_template.render(legend_context)
 
     leaflet_tiles = dict(
@@ -62,7 +64,7 @@ def index(request):
         'data_privacy_content': data_privacy_content,
         'information_modal': information_modal,
         'user_menu_button': user_menu_button,
-        'user_icons': USER_ICONS,
+        'user_roles': json.dumps(USER_ROLES),
         'legend': legend,
         'leaflet_tiles': leaflet_tiles
     }
@@ -78,11 +80,11 @@ def get_users(request):
     :type request: request
     """
     # Get data:
-    user_role = int(request.GET['user_role'])
+    user_role = str(request.GET['user_role'])
 
     # Get user
     users = User.objects.filter(
-        role=user_role,
+        role__name=user_role,
         is_confirmed=True,
         is_active=True)
     json_users_template = loader.get_template('user_map/users.json')

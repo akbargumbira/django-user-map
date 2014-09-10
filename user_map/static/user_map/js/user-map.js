@@ -7,19 +7,9 @@
  */
 
 /**
- * ALL THE CONSTANTS
- * @const {int} USER_ROLE The number representation for user role.
- * @const {int} TRAINER_ROLE The number representation for trainer role.
- * @const {int} DEVELOPER_ROLE The number representation for developer role.
- */
-var USER_ROLE = 2;
-var TRAINER_ROLE = 3;
-var DEVELOPER_ROLE = 4;
-
-/**
- * Add users to the respective layer based on user_role.
- * @param {object} layer The layer that users will be added to.
- * @param {int} user_role The role of users that will be added.
+ * Add users to the respective layer based on role.
+ * @param {string} url The url view to get users.
+ * @param {object} role The role object.
  * @name L The Class from Leaflet.
  * @property geoJson Property of L class.
  * @property users Property of response object.
@@ -28,24 +18,23 @@ var DEVELOPER_ROLE = 4;
  * @property popupContent Property of properties.
  * @function bindPopup Bind popup to marker
  */
-function addUsers(url, layer, user_role) {
+function addUsers(url, role) {
   $.ajax({
     type: 'GET',
     url: url,
     dataType: 'json',
     data: {
-      user_role: user_role
+      user_role: role['name']
     },
     success: function (response) {
-      var role_icon = getUserIcon(user_role);
       L.geoJson(
           response.users,
           {
             onEachFeature: onEachFeature,
             pointToLayer: function (feature, latlng) {
-              return L.marker(latlng, {icon: role_icon });
+              return L.marker(latlng,{icon: role['icon'] });
             }
-          }).addTo(layer);
+          }).addTo(role['layer']);
     }
   });
   function onEachFeature(feature, layer) {
@@ -94,25 +83,15 @@ function createIconMarkerBase(shadow_icon_path) {
 }
 
 /**
- * Create all icons that are used.
- * @param {string} user_icon_path The icon path for user role.
- * @param {string} trainer_icon_path The icon path for trainer role.
- * @param {string} developer_icon_path The icon path for developer role.
- * @param {string} shadow_icon_path The shadow for all icons.
- * @returns {{user_icon: IconMarkerBase, trainer_icon: IconMarkerBase, developer_icon: IconMarkerBase}}
+ * Create leaflet icon marker.
+ *
+ * @param {string} icon_path The icon path.
+ * @param {string} shadow_path The shadow path.
+ * @return {IconMarkerBase} icon_marker
  */
-function createAllIcons(user_icon_path, trainer_icon_path, developer_icon_path, shadow_icon_path) {
-  var IconMarkerBase = createIconMarkerBase(shadow_icon_path);
-  var user_icon = new IconMarkerBase({iconUrl: user_icon_path});
-  var trainer_icon = new IconMarkerBase({iconUrl: trainer_icon_path});
-  var developer_icon = new IconMarkerBase({iconUrl: developer_icon_path});
-  var all_icons;
-  all_icons = {
-    user_icon: user_icon,
-    trainer_icon: trainer_icon,
-    developer_icon: developer_icon
-  };
-  return all_icons;
+function createIconMarker(icon_path, shadow_path) {
+  var IconMarkerBase = createIconMarkerBase(shadow_path);
+  return new IconMarkerBase({iconUrl: icon_path});
 }
 
 /**
@@ -205,10 +184,6 @@ function createUserMenuControl(options) {
 
 /**
  * Create legend control instance on the bottom right of the map.
- * The legend contains the icon and the name of the role:
- * 1. User
- * 2. Trainer
- * 3. Developer
  *
  * @returns {object} control
  */
@@ -219,8 +194,7 @@ function createLegendControl(){
       position: 'bottomright'
     },
     onAdd: function () {
-      var legend_container = L.DomUtil.create('div',
-          'info legend');
+      var legend_container = L.DomUtil.create('div', 'info legend');
       legend_container.innerHTML += $("#legend").html();
 
       //Prevent firing drag and onClickMap event when clicking this control
@@ -234,22 +208,6 @@ function createLegendControl(){
     }
   });
   return control;
-}
-
-/**
- * Return user icon based on user role.
- * @param user_role The role.
- */
-function getUserIcon(user_role) {
-  var role_icon;
-  if (user_role == USER_ROLE) {
-    role_icon = user_icon;
-  } else if (user_role == TRAINER_ROLE) {
-    role_icon = trainer_icon;
-  } else if (user_role == DEVELOPER_ROLE) {
-    role_icon = developer_icon;
-  }
-  return role_icon;
 }
 
 /**
@@ -267,5 +225,3 @@ function showInformationModal(info_title, info_content) {
     backdrop: false
   });
 }
-
-
