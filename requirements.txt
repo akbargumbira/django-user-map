@@ -1,4 +1,4 @@
-Django==1.6.6
+Django==1.7
 django-leaflet==0.14.1
 psycopg2==2.5.3
 factory-boy==2.4.1
