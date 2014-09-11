@@ -5,15 +5,10 @@ A django application for making community user's map. Users can
 add themselves on the map by providing some information:
 
 1. Name
-
 2. E-mail - will be used for authentication
-
 3. Password - will be used for authentication
-
 4. Website
-
 5. Role - The choices can be configured through setting.
-
 6. Location on the map
 
 Live site: http://users.inasafe.org
