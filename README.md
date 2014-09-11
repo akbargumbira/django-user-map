@@ -3,11 +3,17 @@ Django User Map
 
 A django application for making community user's map. Users can 
 add themselves on the map by providing some information:
+
 1. Name
+
 2. E-mail - will be used for authentication
+
 3. Password - will be used for authentication
+
 4. Website
+
 5. Role - The choices can be configured through setting.
+
 6. Location on the map
 
 Live site: http://users.inasafe.org
@@ -93,7 +99,7 @@ Apps Configurations
 Tile Layer
 ------------
 
-You can configure the basemap of the form that uses LeafletWidget and the  
+You can configure the basemap of the form that uses LeafletWidget and the 
 basemap of the homepage by adding 'LEAFLET_CONFIG' in settings.py e.g:
 ```
 LEAFLET_CONFIG = {
@@ -123,7 +129,7 @@ django settings.py:
    'user_map/img/logo.png' will be used.
    
 3. USER_MAP_FAVICON_FILE (string). This variable represents the file path to 
-   the favicon on the browser's tab. If not specified,  
+   the favicon on the browser's tab. If not specified, 
    the default is 'user_map/img/user-icon.png'
    
 4. USER_MAP_USER_ROLES (list of dictionary). Using this variable, 
