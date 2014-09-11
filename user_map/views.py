@@ -23,7 +23,6 @@ from django.contrib.auth.views import (
 from django.contrib.auth.decorators import login_required
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.utils import simplejson
 from django.contrib.sites.models import get_current_site
 
 from user_map.forms import (
