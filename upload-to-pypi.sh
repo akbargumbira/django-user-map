@@ -14,5 +14,3 @@ git tag -s version-$TAG_VERSION -m "Version $VERSION"
 git push --tags origin version-$TAG_VERSION
 
 python setup.py sdist upload
-
-#fab -H linfiniti3 sync_docs_to_server

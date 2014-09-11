@@ -4,4 +4,4 @@
 dist
 distribute*
 MANIFEST
-insafe_user_map.egg-info/
+django_user_map.egg-info/

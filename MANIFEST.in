@@ -1,3 +1,5 @@
-recursive-include *.txt
-include user_map/templates/user_map/*.html
-include user_map/templates/user_map/account/*.html
+include README.md
+include LICENSE.txt
+include requirements.txt
+recursive-include user_map/static *
+recursive-include user_map/templates *
