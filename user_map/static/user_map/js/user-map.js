@@ -132,16 +132,9 @@ function createDataPrivacyControl() {
 
 /**
  * Create User Menu Control on the top left of the map.
- * @param {object} options Visibility of each component.
- * False if hidden, True if visible. If None, then it will be hidden.
+ * @param {Array} options List of menu that should be added.
  *
- * There are 3 menus on this control:
- * 1. add-user-menu
- * 2. download-menu
- * 3. reminder-menu
- *
- * Usage: initializeUserMenuControl({"add-user-menu": true, "download-menu": true})
- * to show add-user-menu and download-menu
+ * Usage: createUserMenuControl(['add', 'download']) to show add-user menu and download menu
  */
 function createUserMenuControl(options) {
   var control;
@@ -154,20 +147,17 @@ function createUserMenuControl(options) {
       var user_menu_container = L.DomUtil.create('div',
           'user_menu_control btn-group-vertical');
 
-      user_menu_container.innerHTML += $("#user-menu-add-button").html();
-      onAddUserButtonClick = function () {
-         window.open(options['add-user'], '_self');
-      };
+      if (options.indexOf('add') != -1)
+        user_menu_container.innerHTML += $("#user-menu-add-button").html();
 
-      user_menu_container.innerHTML += $("#user-menu-download-button").html();
-      onDownloadButtonClick = function () {
-         window.open(options['download'], '_self');
-      };
+      if (options.indexOf('edit') != -1)
+        user_menu_container.innerHTML += $("#user-menu-edit-button").html();
 
-      user_menu_container.innerHTML += $("#user-menu-reminder-button").html();
-      onReminderButtonClick = function () {
-        window.open(options['reminder'], '_self');
-      };
+      if (options.indexOf('download') != -1)
+        user_menu_container.innerHTML += $("#user-menu-download-button").html();
+
+      if (options.indexOf('forgot') != -1)
+        user_menu_container.innerHTML += $("#user-menu-forgot-button").html();
 
       //Prevent firing drag and onClickMap event when clicking this control
       var stop = L.DomEvent.stopPropagation;

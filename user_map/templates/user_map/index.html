@@ -70,6 +70,7 @@
   <script type="text/javascript">
     var map, base_map, data_privacy_content, data_privacy_control,
         user_menu_control;
+    var is_authenticated = '{{ user.is_authenticated }}' == 'True';
 
     //Initialize Basemap Layer
     base_map = createBasemap(
@@ -87,15 +88,10 @@
     map.addControl(new data_privacy_control);
 
     // Create User Menu Control and add some tooltips
-    user_menu_urls = {
-      'add-user': '{% url "user_map:register" %}',
-      'download': '{% url "user_map:download" %}',
-      'reminder': '{% url "user_map:password_reset" %}'
-    };
-    user_menu_control = createUserMenuControl(user_menu_urls);
+    var user_menu = (is_authenticated? ['edit', 'download'] : ['add', 'download', 'forgot']);
+    user_menu_control = createUserMenuControl(user_menu);
     map.addControl(new user_menu_control);
-    $(".user-menu-control").tooltip({placement: 'right',
-      container: 'body'});
+    $(".user-menu-control").tooltip({placement: 'right', container: 'body'});
 
     // Create Legend Control:
     legend_control = createLegendControl();

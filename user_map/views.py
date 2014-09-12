@@ -50,7 +50,10 @@ def index(request):
     information_modal = loader.render_to_string(
         'user_map/information_modal.html')
     data_privacy_content = loader.render_to_string('user_map/data_privacy.html')
-    user_menu_button = loader.render_to_string('user_map/user_menu_button.html')
+
+    user_menu_button = loader.render_to_string(
+        'user_map/user_menu_button.html', {'user': request.user})
+
     legend_template = loader.get_template('user_map/legend.html')
     legend_context = Context({'user_roles': USER_ROLES})
     legend = legend_template.render(legend_context)
