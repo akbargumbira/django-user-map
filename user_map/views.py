@@ -99,7 +99,7 @@ def get_users(request):
         '}' % json_users
     )
     # Return Response
-    return HttpResponse(users_json, mimetype='application/json')
+    return HttpResponse(users_json, content_type='application/json')
 
 
 @login_forbidden
