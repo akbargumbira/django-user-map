@@ -5,7 +5,7 @@ import json
 
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext, loader, Context
+from django.template import RequestContext, loader
 from django.forms.util import ErrorList
 from django.forms.forms import NON_FIELD_ERRORS
 from django.core.urlresolvers import reverse
@@ -20,18 +20,17 @@ from django.contrib.auth.views import (
     password_reset_done as django_password_reset_done,
     password_reset_confirm as django_password_reset_confirm,
     password_reset_complete as django_password_reset_complete)
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.decorators import login_required
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.sites.models import get_current_site
 
 from user_map.forms import (
-    UserForm,
+    RegistrationForm,
     LoginForm,
     BasicInformationForm,
-    PasswordForm,
-    CustomPasswordResetForm,
-    CustomSetPasswordForm)
+    CustomPasswordResetForm)
 from user_map.models import User
 from user_map.app_settings import (
     PROJECT_NAME, USER_ROLES, DEFAULT_FROM_MAIL, LEAFLET_TILES)
@@ -54,9 +53,8 @@ def index(request):
     user_menu_button = loader.render_to_string(
         'user_map/user_menu_button.html', {'user': request.user})
 
-    legend_template = loader.get_template('user_map/legend.html')
-    legend_context = Context({'user_roles': USER_ROLES})
-    legend = legend_template.render(legend_context)
+    legend = loader.render_to_string(
+        'user_map/legend.html', {'user_roles': USER_ROLES})
 
     leaflet_tiles = dict(
         url=LEAFLET_TILES[1],
@@ -89,15 +87,9 @@ def get_users(request):
         role__name=user_role,
         is_confirmed=True,
         is_active=True)
-    json_users_template = loader.get_template('user_map/users.json')
-    context = Context({'users': users})
-    json_users = json_users_template.render(context)
+    users_json = loader.render_to_string(
+        'user_map/users.json', {'users': users})
 
-    users_json = (
-        '{'
-        ' "users": %s'
-        '}' % json_users
-    )
     # Return Response
     return HttpResponse(users_json, content_type='application/json')
 
@@ -110,7 +102,7 @@ def register(request):
     :type request: request
     """
     if request.method == 'POST':
-        form = UserForm(data=request.POST)
+        form = RegistrationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
 
@@ -133,10 +125,7 @@ def register(request):
             subject = '%s User Registration' % PROJECT_NAME
             sender = '%s - No Reply <%s>' % (PROJECT_NAME, DEFAULT_FROM_MAIL)
             send_mail(
-                subject,
-                email,
-                sender,
-                [user.email], fail_silently=False)
+                subject, email, sender, [user.email], fail_silently=False)
 
             messages.success(
                 request,
@@ -144,7 +133,7 @@ def register(request):
                  'email to confirm your registration'))
             return HttpResponseRedirect(reverse('user_map:register'))
     else:
-        form = UserForm()
+        form = RegistrationForm()
     return render_to_response(
         'user_map/account/registration.html',
         {'form': form},
@@ -237,9 +226,9 @@ def login(request):
                 errors.append(
                     'Please enter a correct email and password. '
                     'Note that both fields may be case-sensitive.')
-
     else:
         form = LoginForm()
+
     return render_to_response(
         'user_map/account/login.html',
         {'form': form},
@@ -269,18 +258,18 @@ def update_user(request):
             anchor_id = '#basic-information'
             basic_info_form = BasicInformationForm(
                 data=request.POST, instance=request.user)
-            change_password_form = PasswordForm(user=request.user)
+            change_password_form = PasswordChangeForm(user=request.user)
             if basic_info_form.is_valid():
                 user = basic_info_form.save()
                 messages.success(
-                    request, 'You have succesfully changed your information!')
+                    request, 'You have successfully changed your information!')
                 return HttpResponseRedirect(
                     reverse('user_map:update_user') + anchor_id)
             else:
                 anchor_id = '#basic-information'
         elif 'change_password' in request.POST:
             anchor_id = '#security'
-            change_password_form = PasswordForm(
+            change_password_form = PasswordChangeForm(
                 data=request.POST, user=request.user)
             basic_info_form = BasicInformationForm(instance=request.user)
             if change_password_form.is_valid():
@@ -294,7 +283,7 @@ def update_user(request):
 
     else:
         basic_info_form = BasicInformationForm(instance=request.user)
-        change_password_form = PasswordForm(user=request.user)
+        change_password_form = PasswordChangeForm(user=request.user)
 
     return render_to_response(
         'user_map/account/edit_user.html',
@@ -303,6 +292,30 @@ def update_user(request):
             'change_password_form': change_password_form,
             'anchor_id': anchor_id,
         },
+        context_instance=RequestContext(request)
+    )
+
+
+@login_required(login_url='user_map:index')
+def delete_user(request):
+    """Delete user view.
+
+    :param request: A django request object.
+    :type request: request
+    """
+    user = request.user
+    user.delete()
+    django_logout(request)
+
+    information = ('You have deleted your account. Please register to this '
+                   'site any time you want.')
+    context = {
+        'page_header_title': 'Delete Account',
+        'information': information
+    }
+    return render_to_response(
+        'user_map/information.html',
+        context,
         context_instance=RequestContext(request)
     )
 
@@ -352,7 +365,7 @@ def password_reset_confirm(request, uidb64=None, token=None):
         uidb64=uidb64,
         token=token,
         template_name='user_map/account/password_reset_confirm.html',
-        set_password_form=CustomSetPasswordForm,
+        set_password_form=SetPasswordForm,
         post_reset_redirect=reverse('user_map:password_reset_complete'))
 
 
@@ -398,6 +411,3 @@ def download(request):
         writer.writerow(row)
 
     return response
-
-
-
