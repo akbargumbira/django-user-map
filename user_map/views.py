@@ -27,7 +27,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.sites.models import get_current_site
 
 from user_map.forms import (
-    UserForm,
+    RegistrationForm,
     LoginForm,
     BasicInformationForm,
     CustomPasswordResetForm)
@@ -109,7 +109,7 @@ def register(request):
     :type request: request
     """
     if request.method == 'POST':
-        form = UserForm(data=request.POST)
+        form = RegistrationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
 
@@ -143,7 +143,7 @@ def register(request):
                  'email to confirm your registration'))
             return HttpResponseRedirect(reverse('user_map:register'))
     else:
-        form = UserForm()
+        form = RegistrationForm()
     return render_to_response(
         'user_map/account/registration.html',
         {'form': form},
