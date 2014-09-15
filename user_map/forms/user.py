@@ -133,26 +133,6 @@ class BasicInformationForm(forms.ModelForm):
         return user
 
 
-class PasswordForm(PasswordChangeForm):
-    """Form for password change using old password field."""
-    old_password = forms.CharField(
-        required=True,
-        label='Old password',
-        widget=forms.PasswordInput())
-    new_password1 = forms.CharField(
-        required=True,
-        label='New password',
-        widget=forms.PasswordInput())
-    new_password2 = forms.CharField(
-        required=True,
-        label='New password (again)',
-        widget=forms.PasswordInput())
-
-    class Meta:
-        """Association between models and this form."""
-        model = User
-
-
 class CustomSetPasswordForm(SetPasswordForm):
     """Form for password change without using old password field."""
     new_password1 = forms.CharField(

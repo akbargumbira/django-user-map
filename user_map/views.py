@@ -20,6 +20,7 @@ from django.contrib.auth.views import (
     password_reset_done as django_password_reset_done,
     password_reset_confirm as django_password_reset_confirm,
     password_reset_complete as django_password_reset_complete)
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
@@ -29,7 +30,6 @@ from user_map.forms import (
     UserForm,
     LoginForm,
     BasicInformationForm,
-    PasswordForm,
     CustomPasswordResetForm,
     CustomSetPasswordForm)
 from user_map.models import User
@@ -269,18 +269,18 @@ def update_user(request):
             anchor_id = '#basic-information'
             basic_info_form = BasicInformationForm(
                 data=request.POST, instance=request.user)
-            change_password_form = PasswordForm(user=request.user)
+            change_password_form = PasswordChangeForm(user=request.user)
             if basic_info_form.is_valid():
                 user = basic_info_form.save()
                 messages.success(
-                    request, 'You have succesfully changed your information!')
+                    request, 'You have successfully changed your information!')
                 return HttpResponseRedirect(
                     reverse('user_map:update_user') + anchor_id)
             else:
                 anchor_id = '#basic-information'
         elif 'change_password' in request.POST:
             anchor_id = '#security'
-            change_password_form = PasswordForm(
+            change_password_form = PasswordChangeForm(
                 data=request.POST, user=request.user)
             basic_info_form = BasicInformationForm(instance=request.user)
             if change_password_form.is_valid():
@@ -294,7 +294,7 @@ def update_user(request):
 
     else:
         basic_info_form = BasicInformationForm(instance=request.user)
-        change_password_form = PasswordForm(user=request.user)
+        change_password_form = PasswordChangeForm(user=request.user)
 
     return render_to_response(
         'user_map/account/edit_user.html',
