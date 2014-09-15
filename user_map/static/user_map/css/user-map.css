@@ -52,6 +52,10 @@ body > .container {
   max-width: 400px;
 }
 
+.set-new-password-form {
+  max-width: 500px;
+}
+
 .profile-content {
   max-width: 700px;
 }

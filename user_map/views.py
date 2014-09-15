@@ -20,7 +20,7 @@ from django.contrib.auth.views import (
     password_reset_done as django_password_reset_done,
     password_reset_confirm as django_password_reset_confirm,
     password_reset_complete as django_password_reset_complete)
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.decorators import login_required
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
@@ -30,8 +30,7 @@ from user_map.forms import (
     UserForm,
     LoginForm,
     BasicInformationForm,
-    CustomPasswordResetForm,
-    CustomSetPasswordForm)
+    CustomPasswordResetForm)
 from user_map.models import User
 from user_map.app_settings import (
     PROJECT_NAME, USER_ROLES, DEFAULT_FROM_MAIL, LEAFLET_TILES)
@@ -352,7 +351,7 @@ def password_reset_confirm(request, uidb64=None, token=None):
         uidb64=uidb64,
         token=token,
         template_name='user_map/account/password_reset_confirm.html',
-        set_password_form=CustomSetPasswordForm,
+        set_password_form=SetPasswordForm,
         post_reset_redirect=reverse('user_map:password_reset_complete'))
 
 
