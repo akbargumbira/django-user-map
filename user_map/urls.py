@@ -15,6 +15,7 @@ urlpatterns = patterns(
     url(r'^login$', 'user_map.views.login', name='login'),
     url(r'^logout$', 'user_map.views.logout', name='logout'),
     url(r'^update-profile$', 'user_map.views.update_user', name='update_user'),
+    url(r'^delete-user$', 'user_map.views.delete_user', name='delete_user'),
 
     url(r'^password-reset/$', 'user_map.views.password_reset',
         name='password_reset'),

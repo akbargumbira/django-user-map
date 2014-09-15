@@ -16,6 +16,17 @@
 </script>
 {% endif %}
 
+{% if user.is_authenticated %}
+  <script id="user-menu-delete-button" type="text/template">
+    <button type="button" class="btn btn-default btn-sm user-menu-control"
+            id="delete-user-button"
+            onclick="window.open('{% url "user_map:update_user" %}#account-setting', '_self');""
+            data-toggle="tooltip" data-original-title="Delete me from the map!">
+      <span class="glyphicon glyphicon-trash"></span>
+    </button>
+  </script>
+{% endif %}
+
 <script id="user-menu-download-button" type="text/template">
   <button type="button" class="btn btn-default btn-sm user-menu-control"
           id="download-button" onclick="window.open('{% url "user_map:download" %}', '_self');"

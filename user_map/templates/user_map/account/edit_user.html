@@ -24,6 +24,9 @@
           <li>
             <a data-toggle="tab" href="#security">Security</a>
           </li>
+          <li>
+            <a data-toggle="tab" href="#account-setting">Account Settings</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -42,27 +45,59 @@
         {% endif %}
 
         <div id="basic-information" class="tab-pane fade">
-          <form id="form-basic-info" class="form-horizontal" method="POST">
-            {% csrf_token %}
-            {{ basic_info_form|bootstrap_horizontal:'col-lg-3'}}
-            <div class="form-group">
-              <div class="col-lg-offset-3 col-lg-6">
-                <input type="submit" name="change_basic_info" value="Submit" class="btn btn-default">
-              </div>
-            </div>
-          </form>
+          <div class="panel panel-default">
+             <div class="panel-heading">
+               <h3 class="panel-title">Basic Information</h3>
+             </div>
+             <div class="panel-body">
+               <form id="form-basic-info" class="form-horizontal" method="POST">
+                {% csrf_token %}
+                {{ basic_info_form|bootstrap_horizontal:'col-lg-3'}}
+                <div class="form-group">
+                  <div class="col-lg-offset-3 col-lg-6">
+                    <input type="submit" name="change_basic_info" value="Submit" class="btn btn-default">
+                  </div>
+                </div>
+               </form>
+             </div>
+          </div>
         </div>
 
         <div id="security" class="tab-pane fade">
-          <form id="form-security" class="form-horizontal" method="POST">
-            {% csrf_token %}
-            {{ change_password_form|bootstrap_horizontal:'col-lg-3'}}
-            <div class="form-group">
-              <div class="col-lg-offset-3 col-lg-6">
-                <input type="submit" name="change_password" value="Submit" class="btn btn-default">
-              </div>
+           <div class="panel panel-default">
+             <div class="panel-heading">
+               <h3 class="panel-title">Change Password</h3>
+             </div>
+             <div class="panel-body">
+               <form id="form-security" class="form-horizontal" method="POST">
+                 {% csrf_token %}
+                 {{ change_password_form|bootstrap_horizontal:'col-lg-3'}}
+                 <div class="form-group">
+                   <div class="col-lg-offset-3 col-lg-6">
+                     <input type="submit" name="change_password" value="Submit" class="btn btn-default">
+                   </div>
+                 </div>
+               </form>
+             </div>
+           </div>
+        </div>
+
+        <div id="account-setting" class="tab-pane fade">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Delete Account</h3>
             </div>
-          </form>
+            <div class="panel-body">
+              <p>
+                Once you delete your account, you will be no longer available
+                on the map. However, you can register again any time you
+                want!
+              </p>
+              <form method="get" action="{% url 'user_map:delete_user' %}">
+                <input type="submit" value="Delete my account" class="btn btn-danger">
+              </form>
+            </div>
+          </div>
         </div>
     </div>
   </div>

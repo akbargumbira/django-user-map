@@ -153,6 +153,9 @@ function createUserMenuControl(options) {
       if (options.indexOf('edit') != -1)
         user_menu_container.innerHTML += $("#user-menu-edit-button").html();
 
+      if (options.indexOf('delete') != -1)
+        user_menu_container.innerHTML += $("#user-menu-delete-button").html();
+
       if (options.indexOf('download') != -1)
         user_menu_container.innerHTML += $("#user-menu-download-button").html();
 

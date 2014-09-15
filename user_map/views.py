@@ -5,7 +5,7 @@ import json
 
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext, loader, Context
+from django.template import RequestContext, loader
 from django.forms.util import ErrorList
 from django.forms.forms import NON_FIELD_ERRORS
 from django.core.urlresolvers import reverse
@@ -53,9 +53,8 @@ def index(request):
     user_menu_button = loader.render_to_string(
         'user_map/user_menu_button.html', {'user': request.user})
 
-    legend_template = loader.get_template('user_map/legend.html')
-    legend_context = Context({'user_roles': USER_ROLES})
-    legend = legend_template.render(legend_context)
+    legend = loader.render_to_string(
+        'user_map/legend.html', {'user_roles': USER_ROLES})
 
     leaflet_tiles = dict(
         url=LEAFLET_TILES[1],
@@ -88,15 +87,9 @@ def get_users(request):
         role__name=user_role,
         is_confirmed=True,
         is_active=True)
-    json_users_template = loader.get_template('user_map/users.json')
-    context = Context({'users': users})
-    json_users = json_users_template.render(context)
+    users_json = loader.render_to_string(
+        'user_map/users.json', {'users': users})
 
-    users_json = (
-        '{'
-        ' "users": %s'
-        '}' % json_users
-    )
     # Return Response
     return HttpResponse(users_json, content_type='application/json')
 
@@ -132,10 +125,7 @@ def register(request):
             subject = '%s User Registration' % PROJECT_NAME
             sender = '%s - No Reply <%s>' % (PROJECT_NAME, DEFAULT_FROM_MAIL)
             send_mail(
-                subject,
-                email,
-                sender,
-                [user.email], fail_silently=False)
+                subject, email, sender, [user.email], fail_silently=False)
 
             messages.success(
                 request,
@@ -236,9 +226,9 @@ def login(request):
                 errors.append(
                     'Please enter a correct email and password. '
                     'Note that both fields may be case-sensitive.')
-
     else:
         form = LoginForm()
+
     return render_to_response(
         'user_map/account/login.html',
         {'form': form},
@@ -302,6 +292,30 @@ def update_user(request):
             'change_password_form': change_password_form,
             'anchor_id': anchor_id,
         },
+        context_instance=RequestContext(request)
+    )
+
+
+@login_required(login_url='user_map:index')
+def delete_user(request):
+    """Delete user view.
+
+    :param request: A django request object.
+    :type request: request
+    """
+    user = request.user
+    user.delete()
+    django_logout(request)
+
+    information = ('You have deleted your account. Please register to this '
+                   'site any time you want.')
+    context = {
+        'page_header_title': 'Delete Account',
+        'information': information
+    }
+    return render_to_response(
+        'user_map/information.html',
+        context,
         context_instance=RequestContext(request)
     )
 
@@ -397,6 +411,3 @@ def download(request):
         writer.writerow(row)
 
     return response
-
-
-
