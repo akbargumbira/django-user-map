@@ -18,18 +18,13 @@ class RoleFactory(DjangoModelFactory):
 
 
 class UserFactory(DjangoModelFactory):
-    """Factory class for User MOdel"""
+    """Factory class for User Model"""
     class Meta:
         """"Meta definition."""
         model = User
 
+    # Taking others as default value defined in model but not these:
     name = 'John Doe'
     email = factory.Sequence(lambda n: 'john.doe%s@example.com' % n)
-    website = 'http://me.johndoe.com'
     location = Point(105.567, 123)
     role = factory.SubFactory(RoleFactory)
-    email_updates = False
-    is_approved = False
-    is_active = True
-    is_admin = False
-
