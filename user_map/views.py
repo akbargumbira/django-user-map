@@ -4,7 +4,7 @@ import csv
 import json
 
 from django.shortcuts import render, render_to_response
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.forms.util import ErrorList
 from django.forms.forms import NON_FIELD_ERRORS
@@ -79,19 +79,22 @@ def get_users(request):
     :param request: A django request object.
     :type request: request
     """
-    # Get data:
-    user_role = str(request.GET['user_role'])
+    if request.method == 'GET':
+        # Get data:
+        user_role = str(request.GET['user_role'])
 
-    # Get user
-    users = User.objects.filter(
-        role__name=user_role,
-        is_confirmed=True,
-        is_active=True)
-    users_json = loader.render_to_string(
-        'user_map/users.json', {'users': users})
+        # Get user
+        users = User.objects.filter(
+            role__name=user_role,
+            is_confirmed=True,
+            is_active=True)
+        users_json = loader.render_to_string(
+            'user_map/users.json', {'users': users})
 
-    # Return Response
-    return HttpResponse(users_json, content_type='application/json')
+        # Return Response
+        return HttpResponse(users_json, content_type='application/json')
+    else:
+        raise Http404
 
 
 @login_forbidden

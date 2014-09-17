@@ -26,5 +26,6 @@ class UserFactory(DjangoModelFactory):
     # Taking others as default value defined in model but not these:
     name = 'John Doe'
     email = factory.Sequence(lambda n: 'john.doe%s@example.com' % n)
+    password = factory.PostGenerationMethodCall('set_password')
     location = Point(105.567, 123)
     role = factory.SubFactory(RoleFactory)
