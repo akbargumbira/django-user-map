@@ -3,8 +3,10 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
-from user_map.tests.model_factories import UserFactory, RoleFactory
+from user_map.tests.model_factories import UserFactory
 
 
 class UserMapViewTests(TestCase):
@@ -24,8 +26,8 @@ class UserMapViewTests(TestCase):
         """Test for index view."""
         response = self.client.get(reverse('user_map:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Legend')
-        self.assertContains(response, 'Data Privacy')
+        self.assertTemplateUsed(response, 'user_map/legend.html')
+        self.assertTemplateUsed(response, 'user_map/data_privacy.html')
         self.assertContains(response, 'Sign Up')
         self.assertContains(response, 'Log In')
 
@@ -53,3 +55,116 @@ class UserMapViewTests(TestCase):
             reverse('user_map:get_users'),
             {'user_role': 'Test User'})
         self.assertEqual(response.status_code, 404)
+
+    def test_show_register_page(self):
+        """Test register view using get."""
+        response = self.client.get(reverse('user_map:register'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'user_map/account/registration.html')
+
+    def test_register_success(self):
+        """Test register view using post."""
+        response = self.client.post(
+            reverse('user_map:register'),
+            {
+                'name': 'John Doe',
+                'email': 'john.doe@gmail.com',
+                'password': 'password',
+                'password2': 'password',
+                'website': '',
+                'role': '1',
+                'location': ('{"type":"Point","coordinates":[22.5,'
+                             '-16.63619187839765]}')
+            })
+        self.assertRedirects(
+            response,
+            reverse('user_map:register'),
+            302,
+            200)
+
+    def test_confirm_registration_invalid(self):
+        """Test confirm_registration using invalid link."""
+        response = self.client.get(
+            reverse('user_map:confirm_registration', args=('l1nk', 'inV4lid')))
+        self.assertTemplateUsed(response, 'user_map/information.html')
+        self.assertContains(response, 'Your link is not valid')
+
+    def test_confirm_registration_valid(self):
+        """Test confirm_registration using valid link."""
+        # Create unconfirmed user first
+        user = UserFactory.create(is_confirmed=False)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        response = self.client.get(
+            reverse('user_map:confirm_registration', args=(uid, user.key)))
+        self.assertTemplateUsed(response, 'user_map/information.html')
+        self.assertContains(
+            response,
+            'Congratulations! Your account has been successfully confirmed.')
+
+    def test_show_login_page(self):
+        """Test if showing login page is OK."""
+        response = self.client.get(reverse('user_map:login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'user_map/account/login.html')
+
+    def test_login_invalid(self):
+        """Test login with invalid user."""
+        response = self.client.post(
+            reverse('user_map:login'),
+            {
+                'email': 'invalid@user.com',
+                'password': 'invaliduserpass'
+            }
+        )
+        self.assertTemplateUsed(response, 'user_map/account/login.html')
+        self.assertContains(
+            response, 'Please enter a correct email and password')
+
+    def test_login_valid(self):
+        """Test login with valid user."""
+        # Create a user first with is_confirmed = True
+        UserFactory.create(
+            email='test@mail.com', password='test', is_confirmed=True)
+
+        response = self.client.post(
+            reverse('user_map:login'),
+            {
+                'email': 'test@mail.com',
+                'password': 'test'
+            }
+        )
+        self.assertRedirects(
+            response,
+            reverse('user_map:index'),
+            302,
+            200)
+
+    def test_logout(self):
+        """Test logout view."""
+        response = self.client.post(reverse('user_map:logout'))
+        self.assertRedirects(
+            response,
+            reverse('user_map:index'),
+            302,
+            200)
+
+    def test_delete_user(self):
+        """Test delete_user view."""
+        # Login first
+        self.assertTrue(
+            self.client.login(email=self.email, password=self.password))
+
+        response = self.client.post(reverse('user_map:delete_user'))
+
+        self.assertTemplateUsed(response, 'user_map/information.html')
+        self.assertContains(
+            response, 'You have deleted your account')
+
+    def test_download(self):
+        """Test download view."""
+        response = self.client.post(reverse('user_map:download'))
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(
+            response['Content-Disposition'],
+            'attachment; filename="users.csv"')
+        self.assertContains(response, self.user.name)
