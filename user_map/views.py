@@ -283,7 +283,6 @@ def update_user(request):
                     reverse('user_map:update_user') + anchor_id)
             else:
                 anchor_id = '#security'
-
     else:
         basic_info_form = BasicInformationForm(instance=request.user)
         change_password_form = PasswordChangeForm(user=request.user)
@@ -306,21 +305,24 @@ def delete_user(request):
     :param request: A django request object.
     :type request: request
     """
-    user = request.user
-    user.delete()
-    django_logout(request)
+    if request.method == 'POST':
+        user = request.user
+        user.delete()
+        django_logout(request)
 
-    information = ('You have deleted your account. Please register to this '
-                   'site any time you want.')
-    context = {
-        'page_header_title': 'Delete Account',
-        'information': information
-    }
-    return render_to_response(
-        'user_map/information.html',
-        context,
-        context_instance=RequestContext(request)
-    )
+        information = ('You have deleted your account. Please register to this '
+                       'site any time you want.')
+        context = {
+            'page_header_title': 'Delete Account',
+            'information': information
+        }
+        return render_to_response(
+            'user_map/information.html',
+            context,
+            context_instance=RequestContext(request)
+        )
+    else:
+        raise Http404
 
 
 @login_forbidden
