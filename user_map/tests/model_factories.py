@@ -22,6 +22,7 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         """"Meta definition."""
         model = User
+        django_get_or_create = ('email',)
 
     # Taking others as default value defined in model but not these:
     name = 'John Doe'

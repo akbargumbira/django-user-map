@@ -148,6 +148,78 @@ class UserMapViewTests(TestCase):
             302,
             200)
 
+    def test_show_update_page(self):
+        """Test showing update user page view."""
+        # Login first
+        self.assertTrue(
+            self.client.login(email=self.email, password=self.password))
+
+        response = self.client.get(reverse('user_map:update_user'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'user_map/account/edit_user.html')
+
+    def test_update_basic_information(self):
+        """Test update basic information."""
+        # Login first
+        self.assertTrue(
+            self.client.login(email=self.email, password=self.password))
+
+        form_content = dict(
+            {
+                'name': 'UpdatedName',
+                'email': self.email,
+                'website': 'http://updated-site.com',
+                'role': '1',
+                'location': ('{"type":"Point","coordinates":[22.5, '
+                             '-16.63619187839765]}'),
+                'email_updates': 'on',
+                'change_basic_info': 'Submit'
+            }
+        )
+        response = self.client.post(
+            reverse('user_map:update_user'), form_content)
+        self.assertRedirects(
+            response,
+            reverse('user_map:update_user') + '#basic-information',
+            302,
+            200)
+        user = UserFactory(email=self.email)
+        self.assertEqual(user.name, form_content['name'])
+
+    def test_change_password(self):
+        """Test change password."""
+        # Login first
+        self.assertTrue(
+            self.client.login(email=self.email, password=self.password))
+
+        new_password = 'UpdatedPassword'
+        form_content = dict(
+            {
+                'old_password': self.password,
+                'new_password1': new_password,
+                'new_password2': new_password,
+                'change_password': 'Submit'
+            }
+        )
+        response = self.client.post(
+            reverse('user_map:update_user'), form_content)
+        self.assertRedirects(
+            response,
+            reverse('user_map:update_user') + '#security',
+            302,
+            200)
+
+        # Logout
+        self.client.logout()
+
+        # Login with old password will fail
+        self.assertFalse(
+            self.client.login(email=self.email, password=self.password))
+
+        # Login with new password
+        self.assertTrue(
+            self.client.login(email=self.email, password=new_password))
+
     def test_delete_user(self):
         """Test delete_user view."""
         # Login first
