@@ -12,7 +12,7 @@ def populate_roles(apps, schema_editor):
     :param apps: App registry.
     :type apps: django.apps.apps
 
-    :param schema_editor: Django db abstraction layer for turning model into db.
+    :param schema_editor: Django db abstraction for turning model into db.
     :type schema_editor: django.db.backends.schema
     """
     Role = apps.get_model('user_map', 'Role')

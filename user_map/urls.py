@@ -22,10 +22,11 @@ urlpatterns = patterns(
     url(r'^password-reset/done/$', 'user_map.views.password_reset_done',
         name='password_reset_done'),
     url(r'^password-reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
-        'user_map.views.password_reset_confirm', name='password_reset_confirm'),
+        'user_map.views.password_reset_confirm',
+        name='password_reset_confirm'),
     url(r'^password-reset/complete/$',
         'user_map.views.password_reset_complete',
-    name='password_reset_complete'),
+        name='password_reset_complete'),
 
     url(r'^download$', 'user_map.views.download', name='download'),
 )

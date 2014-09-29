@@ -52,4 +52,3 @@ default_leaflet_tiles = (
      'license</a>')
 )
 LEAFLET_TILES = getattr(settings, 'LEAFLET_TILES', default_leaflet_tiles)
-

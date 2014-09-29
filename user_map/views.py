@@ -48,7 +48,8 @@ def index(request):
     """
     information_modal = loader.render_to_string(
         'user_map/information_modal.html')
-    data_privacy_content = loader.render_to_string('user_map/data_privacy.html')
+    data_privacy_content = loader.render_to_string(
+        'user_map/data_privacy.html')
 
     user_menu_button = loader.render_to_string(
         'user_map/user_menu_button.html', {'user': request.user})
@@ -310,8 +311,8 @@ def delete_user(request):
         user.delete()
         django_logout(request)
 
-        information = ('You have deleted your account. Please register to this '
-                       'site any time you want.')
+        information = ('You have deleted your account. Please register to '
+                       'this site any time you want.')
         context = {
             'page_header_title': 'Delete Account',
             'information': information
@@ -376,7 +377,7 @@ def password_reset_confirm(request, uidb64=None, token=None):
 
 @login_forbidden
 def password_reset_complete(request):
-    """The view telling the user that reset password process has been completed.
+    """The view telling the user that reset password has been completed.
 
     :param request: A django request object.
     :type request: request
