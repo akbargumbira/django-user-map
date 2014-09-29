@@ -15,7 +15,7 @@ before_script:
 
 script:
  - pep8 . --exclude=migrations
- - coverage run setup.py user_map
+ - coverage run setup.py tes
 
 after_success:
  - pip install coveralls
