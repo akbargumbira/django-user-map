@@ -2,6 +2,7 @@ Django User Map
 =================
 
 [![Develop Branch](https://api.travis-ci.org/AIFDR/inasafe-user-map.svg?branch=develop)](https://travis-ci.org/AIFDR/inasafe-user-map)
+[![Coverage Status](https://img.shields.io/coveralls/AIFDR/inasafe-user-map.svg)](https://coveralls.io/r/AIFDR/inasafe-user-map?branch=develop)
 
 A django application for making community user's map. Users can 
 add themselves on the map by providing some information:
