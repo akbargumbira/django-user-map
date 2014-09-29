@@ -29,4 +29,5 @@ setup(
         "factory-boy==2.4.1",
         "django-bootstrap-form==3.1",
     ],
+    test_suite='user_map.run_tests.run',
 )

@@ -19,7 +19,8 @@ class UserAdmin(LeafletGeoAdmin):
                 'name', 'email', 'website', 'role', 'email_updates']}),
         ('Location', {'fields': ['location']}),
         ('Advanced Information', {
-            'fields': ['is_confirmed', 'is_active', 'is_admin', 'last_login']}),
+            'fields': ['is_confirmed', 'is_active', 'is_admin', 'last_login']
+        }),
     ]
 
 
