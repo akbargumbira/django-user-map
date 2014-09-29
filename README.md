@@ -1,8 +1,8 @@
 Django User Map
 =================
 
-.. image:: https://api.travis-ci.org/akbargumbira/inasafe-user-map.svg?branch=develop
-        :target: https://travis-ci.org/akbargumbira/inasafe-user-map.svg?branch=develop
+.. image:: https://api.travis-ci.org/AIFDR/inasafe-user-map.svg?branch=develop
+        :target: https://travis-ci.org/AIFDR/inasafe-user-map.svg?branch=develop
 
 A django application for making community user's map. Users can 
 add themselves on the map by providing some information:
