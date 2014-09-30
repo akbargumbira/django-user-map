@@ -1,0 +1,8 @@
+{% load staticfiles %}
+<script id="legend" type="text/template">
+  <h4>Legend</h4>
+  {% for user_role in user_roles %}
+      <img height='25' width='20' src='{% static user_role.icon %}'> {{user_role.name }}<br>
+  {% endfor %}
+</script>
+

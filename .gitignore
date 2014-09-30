@@ -1,0 +1,7 @@
+# Created by .gitignore support plugin (hsz.mobi)
+.idea
+*.pyc
+dist
+distribute*
+MANIFEST
+django_user_map.egg-info/

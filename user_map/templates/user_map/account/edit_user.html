@@ -1,0 +1,124 @@
+{% extends "user_map/base_page.html" %}
+{% load leaflet_tags %}
+{% load bootstrap %}
+
+{% block head_resources %}
+  {{ block.super }}
+  {% leaflet_js plugins="forms" %}
+  {% leaflet_css plugins="forms" %}
+{% endblock head_resources %}
+
+{% block main_content %}
+  <div class="container">
+    <div class="page-header">
+    <h2>Update Profile
+      <br><small>So I heard you want to update your information </small></h2>
+    </div>
+
+    <div class="update-provile-nav">
+      <div class="col-md-2 well">
+        <ul id="profile_tab" class="nav nav-stacked">
+          <li>
+            <a data-toggle="tab" href="#basic-information">Basic Information</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#security">Security</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#account-setting">Account Settings</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-lg-9">
+      <div id="profile_content" class="tab-content profile-content">
+        {% if messages %}
+          {% for message in messages %}
+            {% if 'success' in message.tags %}
+              <div class="alert alert-success">
+                <a class="close" href="#" data-dismiss="alert">x</a>
+                {{ message }}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        <div id="basic-information" class="tab-pane fade">
+          <div class="panel panel-default">
+             <div class="panel-heading">
+               <h3 class="panel-title">Basic Information</h3>
+             </div>
+             <div class="panel-body">
+               <form id="form-basic-info" class="form-horizontal" method="POST">
+                {% csrf_token %}
+                {{ basic_info_form|bootstrap_horizontal:'col-lg-3'}}
+                <div class="form-group">
+                  <div class="col-lg-offset-3 col-lg-6">
+                    <input type="submit" name="change_basic_info" value="Submit" class="btn btn-default">
+                  </div>
+                </div>
+               </form>
+             </div>
+          </div>
+        </div>
+
+        <div id="security" class="tab-pane fade">
+           <div class="panel panel-default">
+             <div class="panel-heading">
+               <h3 class="panel-title">Change Password</h3>
+             </div>
+             <div class="panel-body">
+               <form id="form-security" class="form-horizontal" method="POST">
+                 {% csrf_token %}
+                 {{ change_password_form|bootstrap_horizontal:'col-lg-3'}}
+                 <div class="form-group">
+                   <div class="col-lg-offset-3 col-lg-6">
+                     <input type="submit" name="change_password" value="Submit" class="btn btn-default">
+                   </div>
+                 </div>
+               </form>
+             </div>
+           </div>
+        </div>
+
+        <div id="account-setting" class="tab-pane fade">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Delete Account</h3>
+            </div>
+            <div class="panel-body">
+              <p>
+                Once you delete your account, you will be no longer available
+                on the map. However, you can register again any time you
+                want!
+              </p>
+              <form method="POST" action="{% url 'user_map:delete_user' %}">
+                {% csrf_token %}
+                <input type="submit" value="Delete my account" class="btn btn-danger">
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
+
+{% block js_container %}
+  <script type="text/javascript">
+    $(document).on('shown.bs.tab', function(event) {
+      var scrollmem = $('body').scrollTop();
+      window.location.hash = $(event.target).attr('href');
+      $('html,body').scrollTop(scrollmem);
+    });
+
+    $(document).ready(function () {
+      var anchor_id = window.location.hash;
+      if (anchor_id == "") {
+        anchor_id = "{{ anchor_id }}"
+      }
+      $('#profile_tab a[href="'+ anchor_id +'"]').tab('show');
+    });
+  </script>
+{% endblock js_container %}
