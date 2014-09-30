@@ -160,3 +160,18 @@ django settings.py:
         background-color: rgba(241, 128, 23, 0.6);
    }
    ```
+
+
+Testing
+--------
+
+You can run the test suite by using django manage.py from your django project:
+```
+python manage.py test user_map
+```
+
+or you can do it from the root of this django apps by running:
+```
+python setup.py test
+```
+
