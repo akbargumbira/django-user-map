@@ -19,7 +19,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
             name,
             email,
             location,
-            role,
+            roles,
             email_updates,
             website='',
             password=None):
@@ -34,8 +34,8 @@ class CustomUserManager(BaseUserManager, GeoManager):
         :param location: The location of the user in (long, lat)
         :type location: Point
 
-        :param role: The role of the user.
-        :type role: Role
+        :param roles: List of roles.
+        :type roles: list
 
         :param email_updates: The status email_updates of the user.
         :type email_updates: bool
@@ -55,7 +55,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
         if not location:
             raise ValueError('User must have location.')
 
-        if not role:
+        if not roles:
             raise ValueError('User must have role.')
 
         if not email_updates:
@@ -65,7 +65,6 @@ class CustomUserManager(BaseUserManager, GeoManager):
             name=name,
             email=self.normalize_email(email),
             location=location,
-            role=role,
             email_updates=email_updates,
             website=website,
             key=get_random_string()
@@ -73,6 +72,11 @@ class CustomUserManager(BaseUserManager, GeoManager):
 
         user.set_password(password)
         user.save(using=self._db)
+
+        # Add roles
+        for role in roles:
+            user.roles.add(role)
+
         return user
 
     def create_superuser(self, name, email, password):
@@ -99,7 +103,7 @@ class CustomUserManager(BaseUserManager, GeoManager):
             name,
             email,
             location=location,
-            role=role,
+            roles=[role],
             email_updates=True,
             password=password)
         user.email_updates = True

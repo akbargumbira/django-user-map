@@ -40,7 +40,7 @@ class User(AbstractBaseUser):
         max_length=255,
         null=False,
         blank=False)
-    role = models.ForeignKey(Role, verbose_name='Role', blank=False)
+    roles = models.ManyToManyField(Role, verbose_name='Roles', blank=False)
     email_updates = models.BooleanField(
         verbose_name='Receiving Updates',
         help_text='Tick this to receive occasional news email messages.',
@@ -76,7 +76,7 @@ class User(AbstractBaseUser):
         return self.name
 
     def get_full_name(self):
-        """ A longer formal identifier of the user.
+        """A longer formal identifier of the user.
 
         :return: The full name of a user.
         :rtype: str
@@ -84,12 +84,16 @@ class User(AbstractBaseUser):
         return self.name
 
     def get_short_name(self):
-        """ A shorter formal identifier of the user.
+        """A shorter formal identifier of the user.
 
         :return: The full name of a user.
         :rtype: str
         """
         return self.name
+
+    def get_roles(self):
+        """The role(s) of the user."""
+        return ', '.join([role.name for role in self.roles.all()])
 
     @property
     def is_staff(self):

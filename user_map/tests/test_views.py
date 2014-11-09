@@ -18,7 +18,6 @@ class UserMapViewTests(TestCase):
         self.user = UserFactory.create(
             email=self.email,
             password=self.password,
-            role__name='Test User',
             is_confirmed=True)
         self.client = Client()
 
@@ -42,9 +41,11 @@ class UserMapViewTests(TestCase):
 
     def test_get_users(self):
         """Test for get_users view."""
+        print self.user.roles
         response = self.client.get(
             reverse('user_map:get_users'),
-            {'user_role': 'Test User'})
+            {'user_role': self.user.roles.name})
+        print response
         self.assertEqual(response['Content-Type'], 'application/json')
         self.assertContains(response, 'FeatureCollection')
         self.assertContains(response, self.user.name)

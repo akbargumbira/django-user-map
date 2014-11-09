@@ -86,7 +86,7 @@ def get_users(request):
 
         # Get user
         users = User.objects.filter(
-            role__name=user_role,
+            roles__name=user_role,
             is_confirmed=True,
             is_active=True)
         users_json = loader.render_to_string(
@@ -109,6 +109,7 @@ def register(request):
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
+            form.save_m2m()
 
             current_site = get_current_site(request)
             site_name = current_site.name
@@ -265,6 +266,7 @@ def update_user(request):
             change_password_form = PasswordChangeForm(user=request.user)
             if basic_info_form.is_valid():
                 user = basic_info_form.save()
+                basic_info_form.save_m2m()
                 messages.success(
                     request, 'You have successfully changed your information!')
                 return HttpResponseRedirect(
@@ -399,14 +401,15 @@ def download(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="users.csv"'
 
-    users = User.objects.filter(role__sort_number__gte=1)
+    users = User.objects.filter(roles__sort_number__gte=1).distinct()
     writer = csv.writer(response)
 
-    fields = ['name', 'website', 'role', 'location']
+    fields = ['name', 'website', 'location']
     headers = ['No.']
     for field in fields:
         verbose_name_field = users.model._meta.get_field(field).verbose_name
         headers.append(verbose_name_field)
+    headers.append('Role(s)')
     writer.writerow(headers)
 
     for idx, user in enumerate(users):
@@ -414,6 +417,7 @@ def download(request):
         for field in fields:
             field_value = getattr(user, field)
             row.append(field_value)
+        row.append(user.get_roles())
         writer.writerow(row)
 
     return response

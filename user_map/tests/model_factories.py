@@ -14,7 +14,7 @@ class RoleFactory(DjangoModelFactory):
         model = Role
 
     name = factory.Sequence(lambda n: 'Role %s' % n)
-    sort_number = 1
+    sort_number = factory.Sequence(lambda n: n)
 
 
 class UserFactory(DjangoModelFactory):
@@ -30,4 +30,12 @@ class UserFactory(DjangoModelFactory):
     password = factory.PostGenerationMethodCall(
         'set_password', 'default_password')
     location = Point(105.567, 123)
-    role = factory.SubFactory(RoleFactory)
+
+    @classmethod
+    def _prepare(cls, create, **kwargs):
+        role_1 = RoleFactory()
+        role_2 = RoleFactory()
+        user = super(UserFactory, cls)._prepare(create, **kwargs)
+        user.roles.add(role_1)
+        user.roles.add(role_2)
+        return user

@@ -41,10 +41,9 @@ class RegistrationForm(forms.ModelForm):
     location = forms.PointField(
         label='Click your location on the map',
         widget=LeafletWidget())
-    role = forms.ModelChoiceField(
-        label='Your role',
-        queryset=Role.objects.filter(sort_number__gte=1),
-        initial=1)
+    roles = forms.ModelMultipleChoiceField(
+        label='Your role(s)',
+        queryset=Role.objects.filter(sort_number__gte=1))
     email_updates = forms.BooleanField(
         required=False,
         label='Receive project news and updates')
@@ -52,7 +51,7 @@ class RegistrationForm(forms.ModelForm):
     class Meta:
         """Association between models and this form."""
         model = User
-        fields = ['name', 'email', 'password', 'password2', 'website', 'role',
+        fields = ['name', 'email', 'password', 'password2', 'website', 'roles',
                   'location', 'email_updates']
 
     def clean(self):
@@ -123,10 +122,9 @@ class BasicInformationForm(forms.ModelForm):
             attrs={
                 'placeholder': 'http://john.doe.com'})
     )
-    role = forms.ModelChoiceField(
-        label='Your role',
-        queryset=Role.objects.filter(sort_number__gte=1),
-        initial=1)
+    roles = forms.ModelMultipleChoiceField(
+        label='Your role(s)',
+        queryset=Role.objects.filter(sort_number__gte=1))
     email_updates = forms.BooleanField(
         required=False,
         label='Receive project news and updates')
@@ -137,7 +135,7 @@ class BasicInformationForm(forms.ModelForm):
     class Meta:
         """Association between models and this form."""
         model = User
-        fields = ['name', 'email', 'website', 'role', 'location',
+        fields = ['name', 'email', 'website', 'roles', 'location',
                   'email_updates']
 
     def save(self, commit=True):
