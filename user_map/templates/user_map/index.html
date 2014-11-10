@@ -43,12 +43,14 @@
   {{ block.super }}
   {% leaflet_js %}
   {% leaflet_css %}
-  <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.css' %}"/>
-  <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.user-map.css' %}"/>
+{#  <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.css' %}"/>#}
+{#  <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.user-map.css' %}"/>#}
+  <link rel="stylesheet" href="{% static 'user_map/css/LeafletStyleSheet.css' %}"/>
   <!--[if lte IE 8]>
   <link rel="stylesheet"  href="{% static 'user_map/css/MarkerCluster.user-map.ie.css' %}" />
   <![endif]-->
-  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.markercluster-src.js' %}"></script>
+{#  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.markercluster-src.js' %}"></script>#}
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/PruneCluster.js' %}"></script>
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
 {% endblock head_resources %}
 
@@ -93,44 +95,76 @@
     map.addControl(new user_menu_control);
     $(".user-menu-control").tooltip({placement: 'right', container: 'body'});
 
+    // Add markers representing users
+    var get_users_url = '{% url "user_map:get_users" %}';
+    var marker_icon = createIconMarker(
+        "{% static 'user_map/img/user-icon.png' %}",
+        "{% static 'user_map/img/shadow-icon.png' %}"
+    );
+
+    $.getJSON(get_users_url, function(data) {
+      var users_layer = new PruneClusterForLeaflet();
+
+      users_layer.PrepareLeafletMarker = function(leaflet_marker, data) {
+        leaflet_marker.setIcon(marker_icon);
+        if (leaflet_marker.getPopup()) {
+            leaflet_marker.setPopupContent(data.popupContent);
+        } else {
+            leaflet_marker.bindPopup(data.popupContent);
+        }
+      };
+
+      for (var i = data['users']['features'].length - 1; i >= 0; i--) {
+        var marker = new PruneCluster.Marker(
+            parseFloat(data['users']['features'][i]['geometry']['coordinates'][1]),
+            parseFloat(data['users']['features'][i]['geometry']['coordinates'][0]),
+            {
+              popupContent: data['users']['features'][i]['properties']['popupContent']
+            }
+        );
+        users_layer.RegisterMarker(marker);
+      }
+      map.addLayer(users_layer);
+    });
+
     // Create Legend Control:
-    legend_control = createLegendControl();
-    map.addControl(new legend_control);
+{#    legend_control = createLegendControl();#}
+{#    map.addControl(new legend_control);#}
 
     //Add all user layers based on role
-    var get_users_url = '{% url "user_map:get_users" %}';
-    var overlays_layer = [];
-    var user_roles = {{ user_roles | safe }};
-    var static_files = '{% static "" %}';
-
-    for (var i = 0; i < user_roles.length; ++i) {
-      var icon_path = static_files + user_roles[i]['icon'];
-      var shadow_icon_path = static_files + user_roles[i]['shadow_icon'];
-      user_roles[i]['icon'] = createIconMarker(icon_path, shadow_icon_path);
-
-      var class_name = 'marker-cluster marker-cluster-role' + (i + 1);
-      user_roles[i]['layer'] = new L.markerClusterGroup({
-        iconCreateFunction: (function(class_name) {
-            return function (cluster) {
-              return L.divIcon({
-                html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-                className:class_name,
-                iconSize: L.point(40, 40)});
-            }
-        })(class_name)
-      });
-
-      //Add All Users who's got this role
-      addUsers(get_users_url, user_roles[i]);
-
-      //Add All users layer to map
-      user_roles[i]['layer'].addTo(map);
-
-      //Add layer to overlays layer
-      overlays_layer[user_roles[i]['name']] = user_roles[i]['layer'];
-    }
-
-    //Plug overlays_layers in layer control
-    L.control.layers(null, overlays_layer).addTo(map);
+{#    var get_users_url = '{% url "user_map:get_users" %}';#}
+{#    var overlays_layer = [];#}
+{#    var user_roles = {{ user_roles | safe }};#}
+{#    var static_files = '{% static "" %}';#}
+{##}
+{#    for (var i = 0; i < user_roles.length; ++i) {#}
+{#      var icon_path = static_files + user_roles[i]['icon'];#}
+{#      var shadow_icon_path = static_files + user_roles[i]['shadow_icon'];#}
+{#      user_roles[i]['icon'] = createIconMarker(icon_path, shadow_icon_path);#}
+{##}
+{#      var class_name = 'marker-cluster marker-cluster-role' + (i + 1);#}
+{#      user_roles[i]['layer'] = new L.markerClusterGroup({#}
+{#        iconCreateFunction: (function(class_name) {#}
+{#            return function (cluster) {#}
+{#              return L.divIcon({#}
+{#                html: '<div><span>' + cluster.getChildCount() + '</span></div>',#}
+{#                className:class_name,#}
+{#                iconSize: L.point(40, 40)});#}
+{#            }#}
+{#        })(class_name)#}
+{#      });#}
+{##}
+{#      //Add All Users who's got this role#}
+{#      addUsers(get_users_url, user_roles[i]);#}
+{##}
+{#      //Add All users layer to map#}
+{#      user_roles[i]['layer'].addTo(map);#}
+{##}
+{#      //Add layer to overlays layer#}
+{#      overlays_layer[user_roles[i]['name']] = user_roles[i]['layer'];#}
+{#    }#}
+{##}
+{#    //Plug overlays_layers in layer control#}
+{#    L.control.layers(null, overlays_layer).addTo(map);#}
   </script>
 {% endblock js_container %}

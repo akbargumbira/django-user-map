@@ -1,6 +1,7 @@
 {% spaceless %}
   <span class='glyphicon glyphicon-user'></span> {{ user.name }}<br>
   {% if user.website != "" %}
-    <span class='glyphicon glyphicon-home'></span><a href='{{ user.website }}' target='_blank'> Website</a>
+    <span class='glyphicon glyphicon-home'></span><a href='{{ user.website }}' target='_blank'> Website</a><br>
   {% endif %}
+  <span class='glyphicon glyphicon-info-sign'></span> {{ user.get_roles }}
 {% endspaceless %}

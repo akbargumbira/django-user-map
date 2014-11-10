@@ -73,7 +73,7 @@ def index(request):
 
 
 def get_users(request):
-    """Return a json document of users with given role.
+    """Return a json document of all users.
 
     This will only fetch users who have approved by email and still active.
 
@@ -81,12 +81,8 @@ def get_users(request):
     :type request: request
     """
     if request.method == 'GET':
-        # Get data:
-        user_role = str(request.GET['user_role'])
-
         # Get user
         users = User.objects.filter(
-            roles__name=user_role,
             is_confirmed=True,
             is_active=True)
         users_json = loader.render_to_string(
