@@ -7,45 +7,6 @@
  */
 
 /**
- * Add users to the respective layer based on role.
- * @param {string} url The url view to get users.
- * @param {object} role The role object.
- * @name L The Class from Leaflet.
- * @property geoJson Property of L class.
- * @property users Property of response object.
- * @function addTo add child element to the map.
- * @property properties Property of a feature.
- * @property popupContent Property of properties.
- * @function bindPopup Bind popup to marker
- */
-function addUsers(url, role) {
-  $.ajax({
-    type: 'GET',
-    url: url,
-    dataType: 'json',
-    data: {
-      user_role: role['name']
-    },
-    success: function (response) {
-      L.geoJson(
-          response.users,
-          {
-            onEachFeature: onEachFeature,
-            pointToLayer: function (feature, latlng) {
-              return L.marker(latlng,{icon: role['icon'] });
-            }
-          }).addTo(role['layer']);
-    }
-  });
-  function onEachFeature(feature, layer) {
-    // Set the popup content if it does have the content
-    if (feature.properties && feature.properties.popupContent) {
-      layer.bindPopup(feature.properties.popupContent);
-    }
-  }
-}
-
-/**
  * Create basemap instance to be used.
  * @param {string} url The URL for the tiles layer
  * @param {string} attribution The attribution of the layer
@@ -170,34 +131,6 @@ function createUserMenuControl(options) {
           .on(user_menu_container, 'dblclick', stop)
           .on(user_menu_container, 'click', L.DomEvent.preventDefault);
       return user_menu_container
-    }
-  });
-  return control;
-}
-
-/**
- * Create legend control instance on the bottom right of the map.
- *
- * @returns {object} control
- */
-function createLegendControl(){
-  var control;
-  control = L.Control.extend({
-    options: {
-      position: 'bottomright'
-    },
-    onAdd: function () {
-      var legend_container = L.DomUtil.create('div', 'info legend');
-      legend_container.innerHTML += $("#legend").html();
-
-      //Prevent firing drag and onClickMap event when clicking this control
-      var stop = L.DomEvent.stopPropagation;
-      L.DomEvent
-          .on(legend_container, 'click', stop)
-          .on(legend_container, 'mousedown', stop)
-          .on(legend_container, 'dblclick', stop)
-          .on(legend_container, 'click', L.DomEvent.preventDefault);
-      return legend_container;
     }
   });
   return control;

@@ -33,7 +33,7 @@ from user_map.forms import (
     CustomPasswordResetForm)
 from user_map.models import User
 from user_map.app_settings import (
-    PROJECT_NAME, USER_ROLES, DEFAULT_FROM_MAIL, LEAFLET_TILES)
+    PROJECT_NAME, DEFAULT_FROM_MAIL, LEAFLET_TILES)
 from user_map.utilities.decorators import login_forbidden
 
 
@@ -54,9 +54,6 @@ def index(request):
     user_menu_button = loader.render_to_string(
         'user_map/user_menu_button.html', {'user': request.user})
 
-    legend = loader.render_to_string(
-        'user_map/legend.html', {'user_roles': USER_ROLES})
-
     leaflet_tiles = dict(
         url=LEAFLET_TILES[1],
         attribution=LEAFLET_TILES[2]
@@ -65,8 +62,6 @@ def index(request):
         'data_privacy_content': data_privacy_content,
         'information_modal': information_modal,
         'user_menu_button': user_menu_button,
-        'user_roles': json.dumps(USER_ROLES),
-        'legend': legend,
         'leaflet_tiles': leaflet_tiles
     }
     return render(request, 'user_map/index.html', context)
