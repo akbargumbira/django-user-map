@@ -44,9 +44,7 @@
   {% leaflet_js %}
   {% leaflet_css %}
   <link rel="stylesheet" href="{% static 'user_map/css/LeafletStyleSheet.css' %}"/>
-  <!--[if lte IE 8]>
-  <link rel="stylesheet"  href="{% static 'user_map/css/MarkerCluster.user-map.ie.css' %}" />
-  <![endif]-->
+
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/PruneCluster.js' %}"></script>
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
 {% endblock head_resources %}
