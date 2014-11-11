@@ -42,9 +42,9 @@ Installation
     )
    ```
 
-3. Include user-map URLconf in your project urls.py e.g:
+3. Include user-map URLconf in your project urls.py with namespace user_map (required) e.g:
    ```
-    url(r'^user-map/', include('user_map.urls')),
+    url(r'^user-map/', include('user_map.urls', namespace='user_map')),
    ```
 
 3. Add authentication user model and authentication backend in your django 
