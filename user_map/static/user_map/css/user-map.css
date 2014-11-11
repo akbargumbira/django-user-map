@@ -61,30 +61,6 @@ body > .container {
 }
 
 /* ******************** */
-/*       Controls       */
-/* ******************** */
-.leaflet-control-stats {
-    background: none repeat scroll 0 0 #F8F8F9;
-    border-radius: 8px 8px 8px 8px;
-    box-shadow: 0 1px 7px #999999;
-}
-.leaflet-control-stats a {
-    background-image: url("../img/update_stats.png");
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    display: inline-block;
-    width: 46px;
-}
-.leaflet-control-stats div, .leaflet-control-stats a {
-    height: 46px;
-    display: inline-block;
-    line-height: 46px;
-}
-.leaflet-control-stats div {
-    padding: 0 5px;
-}
-
-/* ******************** */
 /*       Misc           */
 /* ******************** */
 
