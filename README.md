@@ -1,8 +1,10 @@
 Django User Map
 =================
 
+[![Stories in Ready](https://badge.waffle.io/aifdr/inasafe-user-map.png?label=ready&title=Ready)](http://waffle.io/aifdr/inasafe-user-map)
 [![Develop Branch](https://api.travis-ci.org/AIFDR/inasafe-user-map.svg?branch=develop)](https://travis-ci.org/AIFDR/inasafe-user-map)
 [![Coverage Status](https://coveralls.io/repos/AIFDR/inasafe-user-map/badge.png?branch=develop)](https://coveralls.io/r/AIFDR/inasafe-user-map?branch=develop)
+
 
 A django application for making community user's map. Users can 
 add themselves on the map by providing some information:
@@ -40,9 +42,9 @@ Installation
     )
    ```
 
-3. Include user-map URLconf in your project urls.py e.g:
+3. Include user-map URLconf in your project urls.py with namespace user_map (required) e.g:
    ```
-    url(r'^user-map/', include('user_map.urls')),
+    url(r'^user-map/', include('user_map.urls', namespace='user_map')),
    ```
 
 3. Add authentication user model and authentication backend in your django 
