@@ -1,6 +1,8 @@
 Django User Map
 =================
 
+[![Join the chat at https://gitter.im/akbargumbira/django-user-map](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/akbargumbira/django-user-map?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Stories in Ready](https://badge.waffle.io/aifdr/inasafe-user-map.png?label=ready&title=Ready)](http://waffle.io/aifdr/inasafe-user-map)
 [![Develop Branch](https://api.travis-ci.org/AIFDR/inasafe-user-map.svg?branch=develop)](https://travis-ci.org/AIFDR/inasafe-user-map)
 [![Coverage Status](https://coveralls.io/repos/AIFDR/inasafe-user-map/badge.png?branch=develop)](https://coveralls.io/r/AIFDR/inasafe-user-map?branch=develop)
