@@ -10,45 +10,78 @@
 """
 from django.conf import settings
 
+
+# USER_MODEL: The auth user model set in project's settings
+USER_MODEL = settings.AUTH_USER_MODEL
+
+# Leaflet Settings
+LEAFLET_CONFIG = {
+    'TILES': [
+        (
+            'OpenStreetMap', # The title
+            'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', # The tile URL
+            ('© <a href="http://www.openstreetmap.org" '
+             'target="_parent">OpenStreetMap</a> and contributors, under an '
+             '<a href="http://www.openstreetmap.org/copyright" '
+             'target="_parent">open license</a>') # The attribution
+        )]
+}
+LEAFLET_TILES = LEAFLET_CONFIG['TILES'][0]
+
+# USER MAP Settings
+default_setting = {
+    'project_name': 'InaSAFE',
+    'brand_logo': '',
+    'favicon_file': 'user_map/img/user-icon.png',
+    'login_url': 'login',
+    'marker': {
+        'icon': 'user_map/img/user-icon.png',
+        'shadow': 'user_map/img/shadow-icon.png'  # or 'shadow': None
+    },
+    'roles': [
+        {
+            'name': 'User',
+            'badge': 'user_map/img/inasafe-badge-user'
+        },
+        {
+            'name': 'Trainer',
+            'badge': 'user_map/img/inasafe-badge-trainer'
+        },
+        {
+            'name': 'Developer',
+            'badge': 'user_map/img/inasafe-badge-developer'
+        }
+    ],
+    'api_user_fields': [
+        'username', 'first_name', 'last_name'
+    ],
+}
+
+user_map_settings = getattr(settings, 'USER_MAP', default_setting)
+
 # PROJECT_NAME: The project name for this apps e.g InaSAFE
-default_project_name = 'InaSAFE'
-PROJECT_NAME = getattr(settings, 'USER_MAP_PROJECT_NAME', default_project_name)
+PROJECT_NAME = user_map_settings.get(
+    'project_name', default_setting['project_name'])
 
 # LOGO/BRAND
-default_brand_logo = 'user_map/img/logo.png'
-BRAND_LOGO = getattr(settings, 'USER_MAP_BRAND_LOGO', default_brand_logo)
+BRAND_LOGO = user_map_settings.get('brand_logo', default_setting['brand_logo'])
 
 # FAVICON_FILE: Favicon for this apps
-default_favicon_file = 'user_map/img/user-icon.png'
-FAVICON_FILE = getattr(settings, 'USER_MAP_FAVICON_FILE', default_favicon_file)
+FAVICON_FILE = user_map_settings.get(
+    'favicon_file', default_setting['favicon_file'])
 
-#  USER ROLES: All user roles and their icons
-default_user_roles = [
-    dict(
-        name='User',
-        icon='user_map/img/user-icon.png',
-        shadow_icon='user_map/img/shadow-icon.png'),
-    dict(
-        name='Trainer',
-        icon='user_map/img/trainer-icon.png',
-        shadow_icon='user_map/img/shadow-icon.png'),
-    dict(
-        name='Developer',
-        icon='user_map/img/developer-icon.png',
-        shadow_icon='user_map/img/shadow-icon.png')]
-USER_ROLES = getattr(settings, 'USER_MAP_USER_ROLES', default_user_roles)
 
-# MAIL SENDER
-default_mail_sender = 'noreply@inasafe.org'
-DEFAULT_FROM_MAIL = getattr(settings, 'DEFAULT_FROM_MAIL', default_mail_sender)
+# LOGIN_VIEW: The view to the login page
+LOGIN_VIEW = user_map_settings.get(
+    'login_url', default_setting['login_url'])
 
-# LEAFLET CONFIG
-default_leaflet_tiles = (
-    'OpenStreetMap',
-    'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    ('© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap'
-     '</a> and contributors, under an <a '
-     'href="http://www.openstreetmap.org/copyright" target="_parent">open '
-     'license</a>')
-)
-LEAFLET_TILES = getattr(settings, 'LEAFLET_TILES', default_leaflet_tiles)
+# MARKER
+MARKER = user_map_settings.get(
+    'marker', default_setting['marker'])
+
+#  ROLES: All user roles and their badges
+ROLES = user_map_settings.get('roles', default_setting['roles'])
+
+#  API_USER_FIELDS
+API_USER_FIELDS = user_map_settings.get(
+    'api_user_fields', default_setting['api_user_fields'])

@@ -2,7 +2,7 @@
 """Module related to test for all the models."""
 from django.test import TestCase
 
-from user_map.tests.model_factories import RoleFactory, UserFactory
+from user.tests.model_factories import RoleFactory, UserFactory
 
 
 class TestRole(TestCase):

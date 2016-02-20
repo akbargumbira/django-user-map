@@ -18,31 +18,38 @@
  * @property popupContent Property of properties.
  * @function bindPopup Bind popup to marker
  */
-function addUsers(url, role) {
+function addUsers(url, users_layer, icon) {
   $.ajax({
     type: 'GET',
     url: url,
     dataType: 'json',
-    data: {
-      user_role: role['name']
-    },
     success: function (response) {
-      L.geoJson(
-          response.users,
-          {
-            onEachFeature: onEachFeature,
-            pointToLayer: function (feature, latlng) {
-              return L.marker(latlng,{icon: role['icon'] });
-            }
-          }).addTo(role['layer']);
+      //L.geoJson(
+      //    response,
+      //    {
+      //      onEachFeature: onEachFeature,
+      //      pointToLayer: function (feature, latlng) {
+      //        //return L.marker(latlng,{icon: role['icon'] });
+      //        return L.marker(latlng);
+      //      }
+      //    }).addTo(users_layer);
+       L.geoJson(response, {
+         onEachFeature: function (feature, layer) {
+           layer.bindPopup(feature.properties.popup_content);
+         },
+         pointToLayer: function(feature, latlng) {
+           return L.marker(latlng, {icon: icon})
+         }
+       }).addTo(users_layer)
     }
   });
-  function onEachFeature(feature, layer) {
-    // Set the popup content if it does have the content
-    if (feature.properties && feature.properties.popupContent) {
-      layer.bindPopup(feature.properties.popupContent);
-    }
-  }
+  //function onEachFeature(feature, layer) {
+  //  // Set the popup content if it does have the content
+  //  if (feature.properties && feature.properties.popupContent) {
+  //    //layer.bindPopup(feature.properties.popupContent);
+  //    layer.bindPopup(feature.properties.username);
+  //  }
+  //}
 }
 
 /**

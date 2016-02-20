@@ -1,6 +1,6 @@
 # coding=utf-8
 """Authentication backend class for InaSAFE User Map."""
-from user_map.models.user import User
+from user.models.user import User
 
 
 class UserMapAuthBackend(object):

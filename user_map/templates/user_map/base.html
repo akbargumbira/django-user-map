@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load leaflet_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,9 @@
   <title>{% block title %} {{ PROJECT_NAME }} User Map{% endblock %}</title>
 
   {% block head_resources %}
+
+    {% leaflet_js %}
+    {% leaflet_css %}
     <!--Base Stylesheet -->
     <link rel="stylesheet" href="{% static 'user_map/css/bootstrap.css' %}" type="text/css"/>
     <link rel="stylesheet" href="{% static 'user_map/css/user-map.css' %}" type="text/css"/>
@@ -16,22 +20,24 @@
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jquery.js' %}"></script>
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/bootstrap.min.js' %}"></script>
     <script language="javascript" type="text/javascript" src="{% static 'user_map/js/validate.js' %}"></script>
+
   {% endblock head_resources %}
 </head>
 
-<body>
-  <div class="user_map_navbar ">
-    {% block navbar %}
-    {% endblock navbar %}
-   </div>
+  <body>
+    <div class="user_map_navbar ">
+      {% block navbar %}
+      {% endblock navbar %}
+     </div>
 
-  {% block main_content %}
-  {% endblock main_content %}
+    {% block main_content %}
+    {% endblock main_content %}
 
-  {% block footer %}
-  {% endblock footer %}
+    {% block footer %}
+    {% endblock footer %}
 
-  {% block js_container %}
-  {% endblock js_container %}
+    {% block js_container %}
+    {% endblock js_container %}
+
   </body>
 </html>

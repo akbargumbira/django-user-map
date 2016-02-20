@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
-from user_map.app_settings import USER_ROLES
+from user_map.app_settings import ROLES
 
 
 def populate_roles(apps, schema_editor):
@@ -16,8 +16,8 @@ def populate_roles(apps, schema_editor):
     :type schema_editor: django.db.backends.schema
     """
     Role = apps.get_model('user_map', 'Role')
-    for idx, user_role in enumerate(USER_ROLES):
-        Role.objects.create(name=user_role['name'], sort_number=(idx + 1))
+    for idx, user_role in enumerate(ROLES):
+        Role.objects.create(name=user_role['name'], badge=user_role['badge'])
 
 
 class Migration(migrations.Migration):

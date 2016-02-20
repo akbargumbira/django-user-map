@@ -4,7 +4,7 @@ from django.contrib.gis.geos import Point
 import factory
 from factory import DjangoModelFactory
 
-from user_map.models import Role, User
+from user.models import Role, User
 
 
 class RoleFactory(DjangoModelFactory):

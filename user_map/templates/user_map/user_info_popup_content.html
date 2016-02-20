@@ -1,6 +1,20 @@
 {% spaceless %}
-  <span class='glyphicon glyphicon-user'></span> {{ user.name }}<br>
-  {% if user.website != "" %}
-    <span class='glyphicon glyphicon-home'></span><a href='{{ user.website }}' target='_blank'> Website</a>
-  {% endif %}
+  {% load staticfiles %}
+  <div align='center'>
+    {% if user.image != "" %}
+      <img class='img-responsive' width='200px' src='{{ user.image.url }}'>
+    {% endif %}
+
+    {% for detail in user_detail %}
+        <p class='centered'><b>{{ detail }}</b></p>
+    {% endfor %}
+
+    {% for inasafe_role in user.inasafe_roles.all %}
+      {% if inasafe_role.name == "Trainer" and user.is_certified_inasafe_trainer %}
+          <img class='img-rounded' style='margin: 0px 4px 0px 4px' height='20px' width='20px' src='{% static inasafe_cert_trainer_badge %}' data-toggle='tooltip' title='InaSAFE Certified Trainer'>
+      {% else %}
+        <img class='img-rounded' style='margin: 0px 4px 0px 4px' height='20px' width='20px' src='{% static inasafe_role.badge %}' data-toggle='tooltip' title='InaSAFE {{ inasafe_role.name }}'>
+      {% endif %}
+    {% endfor %}
+  </div>
 {% endspaceless %}
