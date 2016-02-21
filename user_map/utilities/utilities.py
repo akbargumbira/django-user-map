@@ -1,5 +1,6 @@
 # coding=utf-8
 """Utilities module."""
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def wrap_number(number, range):

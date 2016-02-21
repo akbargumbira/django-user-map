@@ -6,11 +6,11 @@
     {% endif %}
 
     {% for detail in user_detail %}
-        <p class='centered'><b>{{ detail }}</b></p>
+        <p><b>{{ detail }}</b></p>
     {% endfor %}
 
     {% for role in user.roles.all %}
-      <img class='img-rounded' style='margin: 0px 4px 0px 4px' height='20px' width='20px' src='{% static role.badge %}' data-toggle='tooltip' title='InaSAFE {{ role.name }}'>
+      <img class='img-rounded' style='margin: 0px 4px 0px 4px' height='20px' width='20px' src='{% static role.badge %}' data-toggle='tooltip' title='{{ role.name }}'>
     {% endfor %}
   </div>
 {% endspaceless %}

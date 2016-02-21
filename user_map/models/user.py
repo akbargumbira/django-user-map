@@ -75,12 +75,13 @@ class UserMap(models.Model):
 
     def save(self, *args, **kwargs):
         # """Override save method."""
-        # if self.pk:
-        #     # Saving a not new object
-        #     user = UserMap.objects.get(pk=self.pk)
-        #     # Remove the old image if it's new image
-        #     if user.image != self.image:
-        #         user.image.delete(save=False)
+        is_new = not bool(UserMap.objects.filter(pk=self.pk).count())
+        if not is_new:
+            # Saving a not new object
+            usermap = UserMap.objects.get(pk=self.pk)
+            # Remove the old image if it's new image
+            if usermap.image != self.image:
+                usermap.image.delete(save=False)
 
         # Wrap location data
         self.location.x = wrap_number(self.location.x, [-180, 180])

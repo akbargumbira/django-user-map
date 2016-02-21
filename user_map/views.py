@@ -3,14 +3,12 @@
 import csv
 from exceptions import AttributeError
 
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext, loader
+from django.template import loader
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.views.generic.edit import CreateView
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.decorators import login_required
+from django.views.generic.edit import CreateView, UpdateView
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import View
 
@@ -72,8 +70,7 @@ class UserAddView(CreateView):
     """View to add user to the map."""
     model = UserMap
     form_class = UserMapForm
-    template_name = 'user_map/add_user.html'
-    # success_url = reverse('user_map:index')
+    template_name = 'user_map/user_add_update.html'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -97,56 +94,53 @@ class UserAddView(CreateView):
             return HttpResponseRedirect(reverse('user_map:index'))
         return super(UserAddView, self).dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(UserAddView, self).get_context_data(**kwargs)
+        context['title'] = 'Add me to the map!'
+        context['description'] = ('Hey %s, please provide your information '
+                                  'on the form below.') % self.request.user
+        return context
 
-@login_required(login_url='user_map:login')
-def update_user(request):
-    """Update user view.
 
-    :param request: A django request object.
-    :type request: request
-    """
-    anchor_id = '#basic-information'
-    if request.method == 'POST':
-        if 'change_basic_info' in request.POST:
-            anchor_id = '#basic-information'
-            basic_info_form = BasicInformationForm(
-                data=request.POST, instance=request.user)
-            change_password_form = PasswordChangeForm(user=request.user)
-            if basic_info_form.is_valid():
-                user = basic_info_form.save()
-                messages.success(
-                    request, 'You have successfully changed your information!')
-                return HttpResponseRedirect(
-                    reverse('user_map:update_user') + anchor_id)
-            else:
-                anchor_id = '#basic-information'
-        elif 'change_password' in request.POST:
-            anchor_id = '#security'
-            change_password_form = PasswordChangeForm(
-                data=request.POST, user=request.user)
-            basic_info_form = BasicInformationForm(instance=request.user)
-            if change_password_form.is_valid():
-                user = change_password_form.save()
-                messages.success(
-                    request, 'You have successfully changed your password!')
-                return HttpResponseRedirect(
-                    reverse('user_map:update_user') + anchor_id)
-            else:
-                anchor_id = '#security'
-    else:
-        basic_info_form = BasicInformationForm(instance=request.user)
-        change_password_form = PasswordChangeForm(user=request.user)
+class UserUpdateView(UpdateView):
+    """View to update a user."""
+    model = UserMap
+    form_class = UserMapForm
+    template_name = 'user_map/user_add_update.html'
 
-    return render_to_response(
-        'user_map/account/edit_user.html',
-        {
-            'basic_info_form': basic_info_form,
-            'change_password_form': change_password_form,
-            'anchor_id': anchor_id,
-        },
-        context_instance=RequestContext(request)
-    )
+    def get(self, request, **kwargs):
+        try:
+            self.object = self.request.user.usermap
+        except ObjectDoesNotExist:
+            return HttpResponseRedirect(reverse('user_map:index'))
 
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        context = self.get_context_data(object=self.object, form=form)
+        return self.render_to_response(context)
+
+    def get_object(self, queryset=None):
+        return self.request.user.usermap
+
+    def get_success_url(self):
+        return reverse('user_map:index')
+
+    def form_valid(self, form):
+        # form.instance.user = self.request.user
+        messages.add_message(
+            self.request,
+            messages.INFO,
+            'You are successfully updated!'
+        )
+        return super(UserUpdateView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(UserUpdateView, self).get_context_data(**kwargs)
+        context['title'] = 'Update Profile'
+        context['description'] = ('Hey %s, please change the information you '
+                                  'want to update below!') % self.request.user
+        return context
+    
 
 def download(request):
     """The view to download users data as CSV.

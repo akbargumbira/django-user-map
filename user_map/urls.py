@@ -15,7 +15,11 @@ urlpatterns = [
             user_map.views.UserAddView.as_view(),
             login_url=settings.USER_MAP['login_view']),
         name='add'),
-    url(r'^update-profile$', user_map.views.update_user, name='update_user'),
+    url(r'^update$',
+        login_required(
+            user_map.views.UserUpdateView.as_view(),
+            login_url=settings.USER_MAP['login_view']),
+        name='update'),
     url(r'^download$', user_map.views.download, name='download'),
 ]
 
