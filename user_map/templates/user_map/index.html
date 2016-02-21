@@ -27,8 +27,14 @@
   {{ user_menu_button | safe }}
   {{ information_modal | safe }}
   {{ data_privacy_content | safe }}
-  {{ legend | safe }}
-  {{ user_form_template | safe }}
+
+  {% if messages %}
+    <div class="messages" style="display: none;">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endblock main_content %}
 
 
@@ -69,5 +75,11 @@
     users_layer = L.markerClusterGroup();
     addUsers(usermap_list_url, users_layer, marker_icon);
     users_layer.addTo(map);
+
+    var messages = $('div.messages').html();
+    if (messages)
+        showInformationModal('Information', messages);
+
+
   </script>
 {% endblock js_container %}

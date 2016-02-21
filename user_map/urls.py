@@ -19,7 +19,7 @@ urlpatterns = [
     url(r'^download$', user_map.views.download, name='download'),
 ]
 
-# expose static files and uploded media if DEBUG is active
+# expose static files and uploaded media if DEBUG is active
 if settings.DEBUG:
     urlpatterns += patterns(
         '',

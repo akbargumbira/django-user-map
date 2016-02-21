@@ -8,7 +8,7 @@ class Role(models.Model):
     class Meta:
         """Meta class."""
         app_label = 'user_map'
-
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(
         help_text='How would you define your participation?',
         max_length=100,

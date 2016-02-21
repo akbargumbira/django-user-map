@@ -14,22 +14,13 @@
     <h2>Add me to map! <br><small>Hey {{ request.user }}, please provide your information on the form below.</small></h2>
     </div>
     <div class="registration-form">
-      {% if messages %}
-        {% for message in messages %}
-          {% if 'success' in message.tags %}
-            <div class="alert alert-success">
-              <a class="close" href="#" data-dismiss="alert">x</a>
-              {{ message }}
-            </div>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
       <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|bootstrap_horizontal:'col-lg-3'}}
         <div class="form-group">
           <div class="col-lg-offset-3 col-lg-4">
-            <input type="submit" value="Submit" class="btn btn-default">
+            <input type="submit" value="Submit" class="btn btn-primary">
+            <a href="{% url "user_map:index" %}" class="btn btn-default" role="button">Cancel</a>
           </div>
         </div>
       </form>

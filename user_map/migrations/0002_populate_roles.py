@@ -17,7 +17,11 @@ def populate_roles(apps, schema_editor):
     """
     Role = apps.get_model('user_map', 'Role')
     for idx, user_role in enumerate(ROLES):
-        Role.objects.create(name=user_role['name'], badge=user_role['badge'])
+        Role.objects.create(
+            id=user_role['id'],
+            name=user_role['name'],
+            badge=user_role['badge']
+        )
 
 
 class Migration(migrations.Migration):

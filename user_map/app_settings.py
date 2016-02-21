@@ -14,42 +14,42 @@ from django.conf import settings
 # USER_MODEL: The auth user model set in project's settings
 USER_MODEL = settings.AUTH_USER_MODEL
 
-# Leaflet Settings
-LEAFLET_CONFIG = {
-    'TILES': [
-        (
-            'OpenStreetMap', # The title
-            'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', # The tile URL
-            ('© <a href="http://www.openstreetmap.org" '
-             'target="_parent">OpenStreetMap</a> and contributors, under an '
-             '<a href="http://www.openstreetmap.org/copyright" '
-             'target="_parent">open license</a>') # The attribution
-        )]
-}
-LEAFLET_TILES = LEAFLET_CONFIG['TILES'][0]
-
 # USER MAP Settings
 default_setting = {
     'project_name': 'InaSAFE',
-    'brand_logo': '',
     'favicon_file': 'user_map/img/user-icon.png',
     'login_url': 'login',
     'marker': {
         'icon': 'user_map/img/user-icon.png',
         'shadow': 'user_map/img/shadow-icon.png'  # or 'shadow': None
     },
+    'leaflet_config': {
+        'TILES': [
+            (
+                'OpenStreetMap',  # The title
+                'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+                # The tile URL
+                ('© <a href="http://www.openstreetmap.org" '
+                 'target="_parent">OpenStreetMap</a> and contributors, under an '
+                 '<a href="http://www.openstreetmap.org/copyright" '
+                 'target="_parent">open license</a>')  # The attribution
+            )]
+        },
     'roles': [
         {
+            'id': 1,
             'name': 'User',
-            'badge': 'user_map/img/inasafe-badge-user'
+            'badge': 'user_map/img/inasafe-badge-user.png'
         },
         {
+            'id': 2,
             'name': 'Trainer',
-            'badge': 'user_map/img/inasafe-badge-trainer'
+            'badge': 'user_map/img/inasafe-badge-trainer.png'
         },
         {
+            'id': 3,
             'name': 'Developer',
-            'badge': 'user_map/img/inasafe-badge-developer'
+            'badge': 'user_map/img/inasafe-badge-developer.png'
         }
     ],
     'api_user_fields': [
@@ -63,9 +63,6 @@ user_map_settings = getattr(settings, 'USER_MAP', default_setting)
 PROJECT_NAME = user_map_settings.get(
     'project_name', default_setting['project_name'])
 
-# LOGO/BRAND
-BRAND_LOGO = user_map_settings.get('brand_logo', default_setting['brand_logo'])
-
 # FAVICON_FILE: Favicon for this apps
 FAVICON_FILE = user_map_settings.get(
     'favicon_file', default_setting['favicon_file'])
@@ -78,6 +75,10 @@ LOGIN_VIEW = user_map_settings.get(
 # MARKER
 MARKER = user_map_settings.get(
     'marker', default_setting['marker'])
+
+LEAFLET_CONFIG = user_map_settings.get(
+    'leaflet_config', default_setting['leaflet_config'])
+LEAFLET_TILES = LEAFLET_CONFIG['TILES']
 
 #  ROLES: All user roles and their badges
 ROLES = user_map_settings.get('roles', default_setting['roles'])

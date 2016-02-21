@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Role',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('name', models.CharField(help_text=b'How would you define your participation?', unique=True, max_length=100)),
                 ('badge', models.CharField(help_text=b'The path to the badge', max_length=100)),
             ],
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('location', django.contrib.gis.db.models.fields.PointField(help_text=b'Where are you?', srid=4326, max_length=255, verbose_name=b'Location')),
                 ('image', models.ImageField(validators=[user_map.models.user.validate_image], upload_to=user_map.models.user.image_path, blank=True, help_text=b'Your photo', verbose_name=b'Image')),
                 ('is_hidden', models.BooleanField(default=False, help_text=b'Do you wish to hide yourself on the map?', verbose_name=b'Hidden Status')),
-                ('roles', models.ManyToManyField(to='user_map.Role', verbose_name=b'OSM Roles')),
+                ('roles', models.ManyToManyField(to='user_map.Role', verbose_name=b'Roles')),
             ],
         ),
     ]

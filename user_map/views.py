@@ -4,7 +4,7 @@ import csv
 from exceptions import AttributeError
 
 from django.shortcuts import render, render_to_response
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -42,8 +42,8 @@ class IndexView(View):
         )
 
         leaflet_tiles = dict(
-            url=LEAFLET_TILES[1],
-            attribution=LEAFLET_TILES[2]
+            url=LEAFLET_TILES[0][1],
+            attribution=LEAFLET_TILES[0][2]
         )
 
         context = {
@@ -73,13 +73,19 @@ class UserAddView(CreateView):
     model = UserMap
     form_class = UserMapForm
     template_name = 'user_map/add_user.html'
+    # success_url = reverse('user_map:index')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        messages.add_message(
+            self.request,
+            messages.INFO,
+            'You have been added successfully to the map!'
+        )
         return super(UserAddView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('user_map:add')
+        return reverse('user_map:index')
 
     def dispatch(self, request, *args, **kwargs):
         try:
