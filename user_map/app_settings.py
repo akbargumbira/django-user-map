@@ -4,14 +4,11 @@
 ..note: By design, you can override these settings from your project's
     settings.py with prefix 'USER_MAP' on the variable e.g
     'USER_MAP_USER_ICONS'.
-
-    For mailing. as the default, it wil use 'DEFAULT_FROM_MAIL' setting from
-    the project.
 """
 from django.conf import settings
 
 
-# USER_MODEL: The auth user model set in project's settings
+# USER_MODEL: The auth user model is set in project's settings
 USER_MODEL = settings.AUTH_USER_MODEL
 
 # USER MAP Settings
@@ -30,7 +27,8 @@ default_setting = {
                 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
                 # The tile URL
                 ('© <a href="http://www.openstreetmap.org" '
-                 'target="_parent">OpenStreetMap</a> and contributors, under an '
+                 'target="_parent">OpenStreetMap</a> and contributors, '
+                 'under an '
                  '<a href="http://www.openstreetmap.org/copyright" '
                  'target="_parent">open license</a>')  # The attribution
             )]
