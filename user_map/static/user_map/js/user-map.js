@@ -163,8 +163,8 @@ function createUserMenuControl(options) {
       if (options.indexOf('delete') != -1)
         user_menu_container.innerHTML += $("#user-menu-delete-button").html();
 
-      if (options.indexOf('download') != -1)
-        user_menu_container.innerHTML += $("#user-menu-download-button").html();
+      if (options.indexOf('api') != -1)
+        user_menu_container.innerHTML += $("#user-menu-api-button").html();
 
       if (options.indexOf('forgot') != -1)
         user_menu_container.innerHTML += $("#user-menu-forgot-button").html();

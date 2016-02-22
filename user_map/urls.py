@@ -8,8 +8,6 @@ import user_map.views
 
 urlpatterns = [
     url(r'^$', user_map.views.IndexView.as_view(), name='index'),
-    url(r'^users/$', user_map.views.UserMapList.as_view(),
-        name='usermap-list'),
     url(r'^add',
         login_required(
             user_map.views.UserAddView.as_view(),
@@ -20,7 +18,8 @@ urlpatterns = [
             user_map.views.UserUpdateView.as_view(),
             login_url=settings.USER_MAP['login_view']),
         name='update'),
-    url(r'^download$', user_map.views.download, name='download'),
+    url(r'^usermaps/$', user_map.views.UserMapList.as_view(),
+        name='usermap-list'),
 ]
 
 # expose static files and uploaded media if DEBUG is active

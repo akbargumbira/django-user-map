@@ -140,35 +140,3 @@ class UserUpdateView(UpdateView):
         context['description'] = ('Hey %s, please change the information you '
                                   'want to update below!') % self.request.user
         return context
-    
-
-def download(request):
-    """The view to download users data as CSV.
-
-    :param request: A django request object.
-    :type request: request
-
-    :return: A CSV file.
-    :type: HttpResponse
-    """
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="users.csv"'
-
-    users = User.objects.filter(role__sort_number__gte=1)
-    writer = csv.writer(response)
-
-    fields = ['name', 'website', 'role', 'location']
-    headers = ['No.']
-    for field in fields:
-        verbose_name_field = users.model._meta.get_field(field).verbose_name
-        headers.append(verbose_name_field)
-    writer.writerow(headers)
-
-    for idx, user in enumerate(users):
-        row = [idx + 1]
-        for field in fields:
-            field_value = getattr(user, field)
-            row.append(field_value)
-        writer.writerow(row)
-
-    return response

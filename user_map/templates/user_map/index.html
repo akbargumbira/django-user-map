@@ -61,7 +61,7 @@
     map.addControl(new data_privacy_control);
 
     // Create User Menu Control and add some tooltips
-    var user_menu = (is_mapped? ['edit', 'download'] : ['add', 'download']);
+    var user_menu = (is_mapped? ['edit', 'api'] : ['add', 'api']);
     user_menu_control = createUserMenuControl(user_menu);
     map.addControl(new user_menu_control);
     $(".user-menu-control").tooltip({placement: 'right', container: 'body'});

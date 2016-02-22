@@ -16,11 +16,11 @@
   </script>
 {% endif %}
 
-<script id="user-menu-download-button" type="text/template">
+<script id="user-menu-api-button" type="text/template">
   <button type="button" class="btn btn-default btn-sm user-menu-control"
-          id="download-button" onclick="window.open('{% url "user_map:download" %}', '_self');"
+          id="download-button" onclick="window.open('{% url "user_map:usermap-list" %}', '_self');"
           data-toggle="tooltip"
-          data-original-title="Download all users as CSV file!">
-    <span class="glyphicon glyphicon-download-alt"></span>
+          data-original-title="REST API">
+    <span class="glyphicon glyphicon-transfer"></span>
   </button>
 </script>
