@@ -1,10 +1,18 @@
 # coding=utf-8
 """Model factories definition for models."""
+from django.conf import settings
 from django.contrib.gis.geos import Point
 import factory
 from factory import DjangoModelFactory
 
-from user.models import Role, User
+from user_map.models import Role, UserMap
+
+
+class UserFactory(DjangoModelFactory):
+    class Meta:
+        model = settings.AUTH_USER_MODEL
+
+    username = factory.Sequence(lambda n: 'user{0}'.format(n))
 
 
 class RoleFactory(DjangoModelFactory):
@@ -13,16 +21,16 @@ class RoleFactory(DjangoModelFactory):
         """Meta definition."""
         model = Role
 
+    id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: 'Role %s' % n)
-    sort_number = 1
+    badge = factory.Sequence(lambda n: '/path/to/badge/role%s' % n)
 
 
-class UserFactory(DjangoModelFactory):
-    """Factory class for User Model"""
+class UserMapFactory(DjangoModelFactory):
+    """Factory class for UserMap Model"""
     class Meta:
         """"Meta definition."""
-        model = User
-        django_get_or_create = ('email',)
+        model = UserMap
 
     # Taking others as default value defined in model but not these:
     name = 'John Doe'

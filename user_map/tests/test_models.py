@@ -1,12 +1,15 @@
 # coding=utf-8
 """Module related to test for all the models."""
-from django.test import TestCase
+from django.test import TransactionTestCase
 
-from user.tests.model_factories import RoleFactory, UserFactory
+from user_map.tests.model_factories import RoleFactory, UserMapFactory
+from user_map.models.role import Role
 
 
-class TestRole(TestCase):
+class TestRole(TransactionTestCase):
     """Class to test Role model."""
+    reset_sequences = True
+
     def setUp(self):
         pass
 
@@ -18,11 +21,20 @@ class TestRole(TestCase):
 
     def test_read_role(self):
         """Method to test reading role."""
-        role_name = 'Testing Role'
-        role = RoleFactory.create(name=role_name)
-        message = 'The role name should be %s, but it gives %s' % (
-            role_name, role.name)
-        self.assertEqual(role_name, role.name, message)
+        for i in range(3):
+            RoleFactory(__sequence=i)
+
+        for i in range(3):
+            role_name = 'Role %s' % i
+            role_badge = '/path/to/badge/role%s' % i
+
+            role = Role.objects.get(pk=i)
+            message = 'The role name should be %s, but it gives %s' % (
+                role_name, role.name)
+            self.assertEqual(role_name, role.name, message)
+            message = 'The role badge should be %s, but it gives %s' % (
+                role_badge, role.badge)
+            self.assertEqual(role_badge, role.badge, message)
 
     def test_update_role(self):
         """Method to test updating role."""
@@ -43,7 +55,7 @@ class TestRole(TestCase):
         self.assertIsNone(role.id, message)
 
 
-class TestUser(TestCase):
+class TestUser(TransactionTestCase):
     """Class to test User model."""
     def setUp(self):
         pass

@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 
-from user.tests.model_factories import UserFactory
+from user_map.tests.model_factories import UserFactory
 
 
 class UserMapViewTests(TestCase):
