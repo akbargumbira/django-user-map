@@ -1,8 +1,11 @@
 # coding=utf-8
 """Module related to test for all the models."""
+from django.conf import settings
 from django.test import TransactionTestCase
+from django.contrib.gis.geos import Point
 
-from user_map.tests.model_factories import RoleFactory, UserMapFactory
+from user_map.tests.model_factories import (
+    RoleFactory, UserFactory, UserMapFactory)
 from user_map.models.role import Role
 
 
@@ -26,7 +29,7 @@ class TestRole(TransactionTestCase):
 
         for i in range(3):
             role_name = 'Role %s' % i
-            role_badge = '/path/to/badge/role%s' % i
+            role_badge = settings.BASE_DIR + '/path/to/badge/role%s' % i
 
             role = Role.objects.get(pk=i)
             message = 'The role name should be %s, but it gives %s' % (
@@ -55,55 +58,60 @@ class TestRole(TransactionTestCase):
         self.assertIsNone(role.id, message)
 
 
-class TestUser(TransactionTestCase):
+class TestUserMap(TransactionTestCase):
     """Class to test User model."""
     def setUp(self):
         pass
 
-    def test_create_user(self):
-        """Method to test user creation."""
-        user = UserFactory.create()
-        message = 'The user is not instantiated successfully.'
-        self.assertIsNotNone(user.id, message)
+    def test_create_usermap(self):
+        """Method to test user map creation."""
+        user_map = UserMapFactory.create()
+        message = 'The user map is not instantiated successfully.'
+        self.assertIsNotNone(user_map.user, message)
 
-        # email_updates, is_admin, is_confirmed =  False
-        message = 'email_updates must be False'
-        self.assertFalse(user.email_updates, message)
-        message = 'is_admin must be False'
-        self.assertFalse(user.is_admin, message)
-        message = 'is_confirmed must be False'
-        self.assertFalse(user.is_confirmed, message)
+    def test_read_usermap(self):
+        """Method to test reading user map."""
+        user = UserFactory(username='John Doe')
+        location = Point(5, 5)
+        image = '/john/doe/image.png'
 
-        # is_active = True
-        message = 'is_active must be True'
-        self.assertTrue(user.is_active, message)
+        usermap = UserMapFactory.create(
+            user=user, location=location, image=image)
 
-    def test_read_user(self):
-        """Method to test reading user."""
-        user_name = 'John Doe'
-        user_website = 'www.johndoe.com'
-        user = UserFactory.create(name=user_name, website=user_website)
-        message = 'The user name should be %s, but it gives %s' % (
-            user_name, user.name)
-        self.assertEqual(user_name, user.name, message)
-        message = 'The user website should be %s, but it gives %s' % (
-            user_website, user.website)
-        self.assertEqual(user_website, user.website, message)
+        message = 'The username should be %s, but it gives %s' % (
+            user.username, usermap.user.username)
+        self.assertEqual(user.username, usermap.user.username, message)
 
-    def test_update_user(self):
-        """Method to test update user."""
-        user = UserFactory.create()
-        user_name = 'Updated John Doe'
-        user.name = user_name
-        user.save()
-        message = 'The user name should be %s, but it gives %s' % (
-            user_name, user.name)
-        self.assertEqual(user_name, user.name, message)
+        message = 'The user location should be %s, but it gives %s' % (
+            location, usermap.location)
+        self.assertEqual(location, usermap.location, message)
+
+        message = 'The user image should be %s, but it gives %s' % (
+            image, usermap.image)
+        self.assertEqual(image, usermap.image, message)
+
+    def test_update_usermap(self):
+        """Method to test updating usermap."""
+        user_map = UserMapFactory()
+
+        new_location = Point(10, 10)
+        user_map.location = new_location
+        user_map.save()
+        message = 'The user map location should be %s, but it gives %s' % (
+            new_location, user_map.location)
+        self.assertEqual(new_location, user_map.location, message)
+
+        new_image = '/new/image.png'
+        user_map.image = new_image
+        user_map.save()
+        message = 'The user map image should be %s, but it gives %s' % (
+            new_image, user_map.image)
+        self.assertEqual(new_image, user_map.image, message)
 
     def test_delete_user(self):
-        """Method to test delete user."""
-        user = UserFactory.create()
-        self.assertIsNotNone(user.id)
-        user.delete()
-        message = 'The user is not deleted.'
-        self.assertIsNone(user.id, message)
+        """Method to test deleting user map."""
+        user_map = UserMapFactory.create()
+        self.assertIsNotNone(user_map.pk)
+        user_map.delete()
+        message = 'The user map is not deleted.'
+        self.assertIsNone(user_map.pk, message)
