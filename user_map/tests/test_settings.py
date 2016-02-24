@@ -14,41 +14,56 @@ DATABASES = {
     }
 }
 
-INSTALLED_APPS = [
-    'django.contrib.contenttypes',
-    'django.contrib.sites',
-    'django.contrib.sessions',
-    'django.contrib.staticfiles',
-    'django.contrib.auth',
+INSTALLED_APPS = (
     'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
     'django.contrib.gis',
+    'django.contrib.sites',
+    'user_map',
     'leaflet',
     'bootstrapform',
-    'user_map',
-]
+    'rest_framework',
+    'rest_framework_gis',
+)
 
 ROOT_URLCONF = 'user_map.tests.urls'
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'user_map.context_processors.user_map_settings',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+
+                # User map
+                'user_map.context_processors.user_map_settings',
+            ],
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+    'django.middleware.security.SecurityMiddleware',
 
-AUTH_USER_MODEL = 'user_map.User'
-AUTHENTICATION_BACKENDS = [
-    'user_map.auth_backend.UserMapAuthBackend',
-    'django.contrib.auth.backends.ModelBackend']
+    'django.contrib.auth.middleware.AuthenticationMiddleware'
+)
 
 STATIC_ROOT = local_path('static/')
 STATIC_URL = '/static/'
