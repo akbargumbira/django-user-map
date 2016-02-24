@@ -28,7 +28,7 @@ setup(
         "psycopg2",
         "django-bootstrap-form",
         "djangorestframework",
-        "djangorestframework-gis"
+        "djangorestframework-gis",
         "Pillow"
     ],
     tests_require=[
