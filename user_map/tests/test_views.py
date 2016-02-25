@@ -65,7 +65,7 @@ class UserMapViewTests(TestCase):
         response = self.client.get(reverse('user_map:add'))
         self.assertRedirects(
             response,
-            reverse(LOGIN_VIEW) + '?next=/add',
+            reverse(LOGIN_VIEW) + '?next=' + reverse('user_map:add'),
             302,
             200)
 
