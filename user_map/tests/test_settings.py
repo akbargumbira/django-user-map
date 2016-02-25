@@ -1,3 +1,4 @@
+# coding=utf-8
 import os
 local_path = lambda path: os.path.join(os.path.dirname(__file__), path)
 
@@ -69,3 +70,47 @@ STATIC_ROOT = local_path('static/')
 STATIC_URL = '/static/'
 
 SECRET_KEY = 'django-user-map'
+
+
+USER_MAP = {
+    'project_name': 'Test Project',
+    'favicon_file': '',
+    'login_view': 'django.contrib.auth.views.login',
+    'marker': {
+        'icon': 'user_map/img/user-icon.png',
+        'shadow': 'user_map/img/shadow-icon.png', # or 'shadow': None
+    },
+    'leaflet_config': {
+        'TILES': [
+            (
+                'OpenStreetMap',  # The title
+                'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+                # The tile URL
+                ('© <a href="http://www.openstreetmap.org" '
+                 'target="_parent">OpenStreetMap</a> and contributors, under an '
+                 '<a href="http://www.openstreetmap.org/copyright" '
+                 'target="_parent">open license</a>')  # The attribution
+            )]
+    },
+    'roles': [
+        {
+            'id': 1,
+            'name': 'User',
+            'badge': 'user_map/img/inasafe-badge-user.png'
+        },
+        {
+            'id': 2,
+            'name': 'Trainer',
+            'badge': 'user_map/img/inasafe-badge-trainer.png'
+        },
+        {
+            'id': 3,
+            'name': 'Developer',
+            'badge': 'user_map/img/inasafe-badge-developer.png'
+        }
+    ],
+    'api_user_fields': [
+        'username'
+    ],
+
+}

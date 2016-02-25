@@ -1,6 +1,5 @@
 # coding=utf-8
 """Module related to test for all the models."""
-from django.conf import settings
 from django.test import TransactionTestCase
 from django.contrib.gis.geos import Point
 
@@ -29,7 +28,7 @@ class TestRole(TransactionTestCase):
 
         for i in range(3):
             role_name = 'Role %s' % i
-            role_badge = settings.BASE_DIR + '/path/to/badge/role%s' % i
+            role_badge = 'path/to/badge/role%s' % i
 
             role = Role.objects.get(pk=i)
             message = 'The role name should be %s, but it gives %s' % (

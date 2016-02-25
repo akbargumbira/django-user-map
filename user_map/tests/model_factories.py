@@ -14,6 +14,8 @@ class UserFactory(DjangoModelFactory):
         model = settings.AUTH_USER_MODEL
 
     username = factory.Sequence(lambda n: 'user{0}'.format(n))
+    password = factory.PostGenerationMethodCall(
+        'set_password', 'default_password')
 
 
 class RoleFactory(DjangoModelFactory):
@@ -25,7 +27,7 @@ class RoleFactory(DjangoModelFactory):
     id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: 'Role %s' % n)
     badge = factory.Sequence(
-        lambda n: settings.BASE_DIR + '/path/to/badge/role%s' % n)
+        lambda n: 'path/to/badge/role%s' % n)
 
 
 class UserMapFactory(DjangoModelFactory):
@@ -37,8 +39,8 @@ class UserMapFactory(DjangoModelFactory):
     # Taking others as default value defined in model but not these:
     user = factory.SubFactory(UserFactory)
     location = Point(105.567, 123)
-    image = factory.Sequence(
-        lambda n: settings.MEDIA_ROOT + '/path/to/image/user%s' % n)
+    # image = factory.Sequence(
+    #     lambda n: 'path/to/image/user%s' % n)
 
     @factory.post_generation
     def roles(self, create, extracted, **kwargs):

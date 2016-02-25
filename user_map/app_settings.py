@@ -15,7 +15,7 @@ USER_MODEL = settings.AUTH_USER_MODEL
 default_setting = {
     'project_name': 'InaSAFE',
     'favicon_file': 'user_map/img/user-icon.png',
-    'login_url': 'login',
+    'login_view': 'django.contrib.auth.views.login',
     'marker': {
         'icon': 'user_map/img/user-icon.png',
         'shadow': 'user_map/img/shadow-icon.png'  # or 'shadow': None
@@ -68,7 +68,7 @@ FAVICON_FILE = user_map_settings.get(
 
 # LOGIN_VIEW: The view to the login page
 LOGIN_VIEW = user_map_settings.get(
-    'login_url', default_setting['login_url'])
+    'login_view', default_setting['login_view'])
 
 # MARKER
 MARKER = user_map_settings.get(
