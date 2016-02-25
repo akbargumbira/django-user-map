@@ -1,4 +1,6 @@
+# coding=utf-8
 from django.conf.urls import patterns, include, url
+from django.contrib import admin
 
 urlpatterns = patterns(
     '',
@@ -6,6 +8,6 @@ urlpatterns = patterns(
     url(r'^login/$',
         'django.contrib.auth.views.login',
         {'template_name': 'admin/login.html'},
-        name='my_login',
-    ),
+        name='my_login'),
+    url(r'^admin/', include(admin.site.urls)),
 )
