@@ -52,5 +52,4 @@ class Command(BaseCommand):
                     )
                 )
 
-
         self.stdout.write('> The operation update_role is run successfully.')

@@ -21,4 +21,3 @@ def login_forbidden(function=None, redirect_to='user_map:index'):
     if function:
         return actual_decorator(function)
     return actual_decorator
-
