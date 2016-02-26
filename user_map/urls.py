@@ -1,32 +1,35 @@
 # coding=utf-8
 """URI Routing configuration for this apps."""
-from django.conf.urls import patterns, url
+from django.conf.urls import url, patterns, include
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
-urlpatterns = patterns(
-    '',
-    url(r'^$', 'user_map.views.index', name='index'),
-    url(r'^users.json', 'user_map.views.get_users', name='get_users'),
+import user_map.views
 
-    url(r'^register$', 'user_map.views.register', name='register'),
-    url(r'^account-confirmation/(?P<uid>[0-9A-Za-z_\-]+)/(?P<key>.+)/$',
-        'user_map.views.confirm_registration',
-        name='confirm_registration'),
+urlpatterns = [
+    url(r'^$', user_map.views.IndexView.as_view(), name='index'),
+    url(r'^add',
+        login_required(
+            user_map.views.UserAddView.as_view(),
+            login_url=settings.USER_MAP['login_view']),
+        name='add'),
+    url(r'^update$',
+        login_required(
+            user_map.views.UserUpdateView.as_view(),
+            login_url=settings.USER_MAP['login_view']),
+        name='update'),
+    url(r'^usermaps/$', user_map.views.UserMapList.as_view(),
+        name='usermap-list'),
+]
 
-    url(r'^login$', 'user_map.views.login', name='login'),
-    url(r'^logout$', 'user_map.views.logout', name='logout'),
-    url(r'^update-profile$', 'user_map.views.update_user', name='update_user'),
-    url(r'^delete-user$', 'user_map.views.delete_user', name='delete_user'),
-
-    url(r'^password-reset/$', 'user_map.views.password_reset',
-        name='password_reset'),
-    url(r'^password-reset/done/$', 'user_map.views.password_reset_done',
-        name='password_reset_done'),
-    url(r'^password-reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
-        'user_map.views.password_reset_confirm',
-        name='password_reset_confirm'),
-    url(r'^password-reset/complete/$',
-        'user_map.views.password_reset_complete',
-        name='password_reset_complete'),
-
-    url(r'^download$', 'user_map.views.download', name='download'),
-)
+# expose static files and uploaded media if DEBUG is active
+if settings.DEBUG:
+    urlpatterns += patterns(
+        '',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
+            {
+                'document_root': settings.MEDIA_ROOT,
+                'show_indexes': True
+            }),
+        url(r'', include('django.contrib.staticfiles.urls'))
+    )

@@ -8,17 +8,18 @@ class Role(models.Model):
     class Meta:
         """Meta class."""
         app_label = 'user_map'
-
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(
         help_text='How would you define your participation?',
         max_length=100,
         null=False,
         blank=False,
         unique=True)
-    sort_number = models.IntegerField(
-        help_text='Sorting order for role in role list.',
-        null=True,
-        blank=True)
+    badge = models.CharField(
+        help_text='The path to the badge',
+        max_length=100,
+        null=False,
+        blank=False)
 
     def __unicode__(self):
         return self.name

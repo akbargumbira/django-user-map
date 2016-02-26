@@ -9,10 +9,6 @@ html, body, #map {
     height: 100%;
 }
 
-body > .container {
-  margin-top: 70px;
-}
-
 #map .leaflet-top {
   padding-top: 50px;
 }
@@ -88,4 +84,8 @@ body > .container {
   text-align: left;
   line-height: 18px;
   color: #555;
+}
+
+.leaflet-popup-content p {
+    margin: 5px 0px !important;
 }

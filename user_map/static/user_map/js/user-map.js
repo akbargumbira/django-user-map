@@ -9,40 +9,32 @@
 /**
  * Add users to the respective layer based on role.
  * @param {string} url The url view to get users.
- * @param {object} role The role object.
+ * @param {object} users_layer Passed users' layer
+ * @param {object} icon The icon object for marker
  * @name L The Class from Leaflet.
  * @property geoJson Property of L class.
  * @property users Property of response object.
  * @function addTo add child element to the map.
  * @property properties Property of a feature.
- * @property popupContent Property of properties.
+ * @property popup_content property of properties.
  * @function bindPopup Bind popup to marker
  */
-function addUsers(url, role) {
+function addUsers(url, users_layer, icon) {
   $.ajax({
     type: 'GET',
     url: url,
     dataType: 'json',
-    data: {
-      user_role: role['name']
-    },
     success: function (response) {
-      L.geoJson(
-          response.users,
-          {
-            onEachFeature: onEachFeature,
-            pointToLayer: function (feature, latlng) {
-              return L.marker(latlng,{icon: role['icon'] });
-            }
-          }).addTo(role['layer']);
+       L.geoJson(response, {
+         onEachFeature: function (feature, layer) {
+           layer.bindPopup(feature.properties.popup_content);
+         },
+         pointToLayer: function(feature, latlng) {
+           return L.marker(latlng, {icon: icon})
+         }
+       }).addTo(users_layer)
     }
   });
-  function onEachFeature(feature, layer) {
-    // Set the popup content if it does have the content
-    if (feature.properties && feature.properties.popupContent) {
-      layer.bindPopup(feature.properties.popupContent);
-    }
-  }
 }
 
 /**
@@ -153,14 +145,8 @@ function createUserMenuControl(options) {
       if (options.indexOf('edit') != -1)
         user_menu_container.innerHTML += $("#user-menu-edit-button").html();
 
-      if (options.indexOf('delete') != -1)
-        user_menu_container.innerHTML += $("#user-menu-delete-button").html();
-
-      if (options.indexOf('download') != -1)
-        user_menu_container.innerHTML += $("#user-menu-download-button").html();
-
-      if (options.indexOf('forgot') != -1)
-        user_menu_container.innerHTML += $("#user-menu-forgot-button").html();
+      if (options.indexOf('api') != -1)
+        user_menu_container.innerHTML += $("#user-menu-api-button").html();
 
       //Prevent firing drag and onClickMap event when clicking this control
       var stop = L.DomEvent.stopPropagation;

@@ -1,6 +1,16 @@
 {% spaceless %}
-  <span class='glyphicon glyphicon-user'></span> {{ user.name }}<br>
-  {% if user.website != "" %}
-    <span class='glyphicon glyphicon-home'></span><a href='{{ user.website }}' target='_blank'> Website</a>
-  {% endif %}
+  {% load staticfiles %}
+  <div align='center'>
+    {% if user.image != "" %}
+      <img class='img-responsive' width='200px' src='{{ user.image.url }}'>
+    {% endif %}
+
+    {% for detail in user_detail %}
+        <p><b>{{ detail }}</b></p>
+    {% endfor %}
+
+    {% for role in user.roles.all %}
+      <img class='img-rounded' style='margin: 0px 4px 0px 4px' height='20px' width='20px' src='{% static role.badge %}' data-toggle='tooltip' title='{{ role.name }}'>
+    {% endfor %}
+  </div>
 {% endspaceless %}
