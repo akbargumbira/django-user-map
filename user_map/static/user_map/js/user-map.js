@@ -32,7 +32,32 @@ function addUsers(url, users_layer, icon) {
          pointToLayer: function(feature, latlng) {
            return L.marker(latlng, {icon: icon})
          }
-       }).addTo(users_layer)
+       }).addTo(users_layer);
+
+      filterUsers();
+    }
+  });
+}
+
+/**
+ * Filter users based on the filter control
+ */
+function filterUsers() {
+  // Clear previous displayed_users
+  displayed_users.clearLayers();
+
+  // Get all selected roles
+  var checked_roles = [];
+  $("input:checkbox[class=role-filter]:checked").each(function () {
+        checked_roles.push($(this).val());
+  });
+
+  users_layer.eachLayer(function(layer) {
+    for (var i = 0; i < checked_roles.length; i++) {
+      if (layer.feature.properties.roles.indexOf(parseInt(checked_roles[i])) !== -1) {
+        displayed_users.addLayer(layer);
+        break;
+      }
     }
   });
 }
@@ -188,6 +213,33 @@ function createLegendControl(){
   });
   return control;
 }
+
+/**
+ * Create filter control instance on the top right of the map.
+ *
+ * @returns {object} control
+ */
+function createFilterControl() {
+  var control;
+  control = L.Control.extend({
+    options: {
+      position: 'topright'
+    },
+    onAdd: function () {
+      var filter_container = L.DomUtil.create('div', 'filter-menu filter');
+      filter_container.innerHTML += $("#role-filter").html();
+
+      //Prevent firing drag and onClickMap event when clicking this control
+      var stop = L.DomEvent.stopPropagation;
+      L.DomEvent
+          .on(filter_container, 'mousedown', stop)
+          .on(filter_container, 'dblclick', stop);
+      return filter_container;
+    }
+  });
+  return control;
+}
+
 
 /**
  * Open an information modal. There is only one modal to use for showing information.

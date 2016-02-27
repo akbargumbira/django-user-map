@@ -1,0 +1,8 @@
+<script id="role-filter" type="text/template">
+  {% for role in roles %}
+    <label>
+      <input type="checkbox" class="role-filter" value="{{ role.id }}"
+             onclick="filterUsers()" checked> {{ role.name }}
+     </label><br>
+  {% endfor %}
+</script>

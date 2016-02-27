@@ -16,7 +16,7 @@ from rest_framework import generics
 
 from user_map.forms import (
     UserMapForm)
-from user_map.models import UserMap
+from user_map.models import UserMap, Role
 from user_map.app_settings import LEAFLET_TILES, MARKER
 from user_map.serializers import UserMapSerializer
 
@@ -39,6 +39,12 @@ class IndexView(View):
             {'user': request.user, 'is_mapped': is_mapped}
         )
 
+        roles = Role.objects.all()
+        filter_menu = loader.render_to_string(
+            'user_map/filter_menu.html',
+            {'roles': roles}
+        )
+
         leaflet_tiles = dict(
             url=LEAFLET_TILES[0][1],
             attribution=LEAFLET_TILES[0][2]
@@ -48,6 +54,7 @@ class IndexView(View):
             'data_privacy_content': data_privacy_content,
             'information_modal': information_modal,
             'user_menu_button': user_menu_button,
+            'filter_menu': filter_menu,
             'leaflet_tiles': leaflet_tiles,
             'is_mapped': is_mapped,
             'marker': MARKER
@@ -57,11 +64,7 @@ class IndexView(View):
 
 
 class UserMapList(generics.ListAPIView):
-    """List of User Map with Rest Framework.
-
-    ### Operations
-    * GET : List all the User Map
-    """
+    """List of User Map with REST."""
     queryset = UserMap.objects.filter(is_hidden=False)
     serializer_class = UserMapSerializer
 
