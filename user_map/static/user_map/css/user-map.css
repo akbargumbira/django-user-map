@@ -10,7 +10,7 @@ html, body, #map {
 }
 
 #map .leaflet-top {
-  padding-top: 50px;
+  padding-top: 10px;
 }
 
 .transparent {
@@ -65,6 +65,14 @@ html, body, #map {
 .info {
   padding: 10px 20px 10px 10px ;
   font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.filter-menu {
+  padding: 10px 20px 10px 10px ;
   background: white;
   background: rgba(255,255,255,0.8);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);

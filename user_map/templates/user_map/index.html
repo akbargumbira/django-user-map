@@ -27,6 +27,7 @@
   {{ user_menu_button | safe }}
   {{ information_modal | safe }}
   {{ data_privacy_content | safe }}
+  {{ filter_menu | safe }}
 
   {% if messages %}
     <div class="messages" style="display: none;">
@@ -56,6 +57,13 @@
     });
     map.fitWorld().zoomIn();
 
+    // Center the popup when opened
+    map.on('popupopen', function(e) {
+      var px = map.project(e.popup._latlng);
+      px.y -= e.popup._container.clientHeight/2;
+      map.panTo(map.unproject(px),{animate: true});
+    });
+
     // Create Data Privacy Control
     data_privacy_control = createDataPrivacyControl();
     map.addControl(new data_privacy_control);
@@ -66,20 +74,23 @@
     map.addControl(new user_menu_control);
     $(".user-menu-control").tooltip({placement: 'right', container: 'body'});
 
+    // Create Filter Control
+    filter_control = createFilterControl();
+    map.addControl(new filter_control);
+
     // Create icon marker
     var shadow_path = ('{{ marker.shadow }}' == 'None'? null : '{% static marker.shadow %}');
     var marker_icon = createIconMarker('{% static marker.icon %}', shadow_path);
 
-    // Add all user layers based on role
+    // Get displayed_users on the map
     var usermap_list_url = '{% url "user_map:usermap-list" %}';
-    users_layer = L.markerClusterGroup();
+    var users_layer = L.markerClusterGroup();
+    var displayed_users = L.markerClusterGroup().addTo(map);
     addUsers(usermap_list_url, users_layer, marker_icon);
-    users_layer.addTo(map);
 
+    // Show messages if any
     var messages = $('div.messages').html();
     if (messages)
         showInformationModal('Information', messages);
-
-
   </script>
 {% endblock js_container %}
