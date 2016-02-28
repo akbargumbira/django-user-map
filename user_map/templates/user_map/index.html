@@ -14,6 +14,7 @@
   <!--[if lte IE 8]>
   <link rel="stylesheet"  href="{% static 'user_map/css/MarkerCluster.user-map.ie.css' %}" />
   <![endif]-->
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jsrender.min.js' %}"></script>
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.markercluster-src.js' %}"></script>
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
 {% endblock head_resources %}
@@ -28,6 +29,7 @@
   {{ information_modal | safe }}
   {{ data_privacy_content | safe }}
   {{ filter_menu | safe }}
+  {{ user_info_popup_template | safe }}
 
   {% if messages %}
     <div class="messages" style="display: none;">
@@ -82,6 +84,16 @@
     var shadow_path = ('{{ marker.shadow }}' == 'None'? null : '{% static marker.shadow %}');
     var marker_icon = createIconMarker('{% static marker.icon %}', shadow_path);
 
+    // Structure roles object
+    var roles = {{ roles|safe }};
+    var roles_dict = {};
+    for (i = 0; i < roles.length; ++i) {
+      var content = {};
+      content["name"] = roles[i]["name"];
+      content["badge"] =  {% static ''%} + roles[i]["badge"];
+      roles_dict[roles[i]["id"]] = content;
+    }
+
     // Get displayed_users on the map
     var usermap_list_url = '{% url "user_map:usermap-list" %}';
     var users_layer = L.markerClusterGroup();
@@ -92,5 +104,9 @@
     var messages = $('div.messages').html();
     if (messages)
         showInformationModal('Information', messages);
+
+    // Use jsRender to render popup content
+    $.views.settings.delimiters("<%","%>");
+    popup_template = $.templates("#popup-content");
   </script>
 {% endblock js_container %}

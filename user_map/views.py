@@ -1,10 +1,10 @@
 # coding=utf-8
 """Views of the apps."""
-import csv
 from exceptions import AttributeError
+import json
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.template import loader
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -50,6 +50,9 @@ class IndexView(View):
             attribution=LEAFLET_TILES[0][2]
         )
 
+        user_info_popup_template = loader.render_to_string(
+            'user_map/user_info_popup_content.html')
+
         context = {
             'data_privacy_content': data_privacy_content,
             'information_modal': information_modal,
@@ -57,7 +60,9 @@ class IndexView(View):
             'filter_menu': filter_menu,
             'leaflet_tiles': leaflet_tiles,
             'is_mapped': is_mapped,
-            'marker': MARKER
+            'marker': MARKER,
+            'user_info_popup_template': user_info_popup_template,
+            'roles': json.dumps(list(Role.objects.all().values()))
         }
 
         return render(request, 'user_map/index.html', context)

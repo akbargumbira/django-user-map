@@ -27,7 +27,16 @@ function addUsers(url, users_layer, icon) {
     success: function (response) {
        L.geoJson(response, {
          onEachFeature: function (feature, layer) {
-           layer.bindPopup(feature.properties.popup_content);
+           var feature_roles = [];
+           for (i = 0; i < feature.properties.roles.length; ++i){
+             feature_roles.push(roles_dict[feature.properties.roles[i]]);
+           }
+           var data = {
+             properties: feature.properties,
+             roles: feature_roles
+           };
+           var popup_content = popup_template.render(data);
+           layer.bindPopup(popup_content);
          },
          pointToLayer: function(feature, latlng) {
            return L.marker(latlng, {icon: icon})
