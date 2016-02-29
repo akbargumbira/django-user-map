@@ -13,7 +13,7 @@ USER_MODEL = settings.AUTH_USER_MODEL
 
 # USER MAP Settings
 default_setting = {
-    'project_name': 'InaSAFE',
+    'project_name': 'Django User Map',
     'favicon_file': 'user_map/img/user-icon.png',
     'login_view': 'django.contrib.auth.views.login',
     'marker': {
@@ -21,32 +21,42 @@ default_setting = {
         'shadow': 'user_map/img/shadow-icon.png'  # or 'shadow': None
     },
     'leaflet_config': {
-        'TILES': [
-            (
-                'OpenStreetMap',  # The title
-                'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-                # The tile URL
-                ('© <a href="http://www.openstreetmap.org" '
-                 'target="_parent">OpenStreetMap</a> and contributors, '
-                 'under an '
-                 '<a href="http://www.openstreetmap.org/copyright" '
-                 'target="_parent">open license</a>')  # The attribution
-            )]
-        },
+        'TILES': [(
+            # The title
+            'MapQuest',
+            # Tile's URL
+            'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
+            # More valid leaflet option is passed here
+            {
+                'attribution':
+                    '© <a href="http://www.openstreetmap.org" '
+                    'target="_parent">OpenStreetMap'
+                    '</a> and contributors, under an <a '
+                    'href="http://www.openstreetmap.org/copyright" '
+                    'target="_parent">open license</a>. Tiles Courtesy of '
+                    '<a '
+                    'href="http://www.mapquest.com/">MapQuest</a> <img '
+                    'src="http://developer.mapquest.com/content/osm/mq_logo'
+                    '.png"',
+                'subdomains': '1234'
+
+            }
+        )]
+    },
     'roles': [
         {
             'id': 1,
-            'name': 'User',
+            'name': 'Django User',
             'badge': 'user_map/img/inasafe-badge-user.png'
         },
         {
             'id': 2,
-            'name': 'Trainer',
+            'name': 'Django Trainer',
             'badge': 'user_map/img/inasafe-badge-trainer.png'
         },
         {
             'id': 3,
-            'name': 'Developer',
+            'name': 'Django Developer',
             'badge': 'user_map/img/inasafe-badge-developer.png'
         }
     ],

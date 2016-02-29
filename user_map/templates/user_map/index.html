@@ -47,11 +47,10 @@
         user_menu_control, users_layer;
     var is_authenticated = '{{ user.is_authenticated }}' == 'True';
     var is_mapped = '{{ is_mapped }}' == 'True';
+    var leaflet_tiles = {{ leaflet_tiles | safe}};
 
     //Initialize Basemap Layer
-    base_map = createBasemap(
-        '{{ leaflet_tiles.url }}',
-        '{{ leaflet_tiles.attribution | safe }}');
+    base_map = L.tileLayer(leaflet_tiles['url'], leaflet_tiles['option']);
 
     //Create Map with prepared base_map
     map = L.map('map', {

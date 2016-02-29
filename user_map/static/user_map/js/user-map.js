@@ -71,21 +71,6 @@ function filterUsers() {
   });
 }
 
-/**
- * Create basemap instance to be used.
- * @param {string} url The URL for the tiles layer
- * @param {string} attribution The attribution of the layer
- * @property tileLayer
- * @returns {object} base_map
- */
-function createBasemap(url, attribution) {
-  var base_map;
-  base_map = L.tileLayer(url, {
-    attribution: attribution,
-    maxZoom: 18
-  });
-  return base_map;
-}
 
 /**
  * Create IconMarkerBase that will be used for icon marker.

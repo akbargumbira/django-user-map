@@ -47,7 +47,7 @@ class IndexView(View):
 
         leaflet_tiles = dict(
             url=LEAFLET_TILES[0][1],
-            attribution=LEAFLET_TILES[0][2]
+            option=LEAFLET_TILES[0][2]
         )
 
         user_info_popup_template = loader.render_to_string(
@@ -58,7 +58,7 @@ class IndexView(View):
             'information_modal': information_modal,
             'user_menu_button': user_menu_button,
             'filter_menu': filter_menu,
-            'leaflet_tiles': leaflet_tiles,
+            'leaflet_tiles': json.dumps(leaflet_tiles),
             'is_mapped': is_mapped,
             'marker': MARKER,
             'user_info_popup_template': user_info_popup_template,

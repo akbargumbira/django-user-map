@@ -88,3 +88,6 @@ class UserMap(models.Model):
         self.location.y = wrap_number(self.location.y, [-90, 90])
 
         super(UserMap, self).save()
+
+    def __str__(self):
+        return unicode(self.user).encode('utf-8')
