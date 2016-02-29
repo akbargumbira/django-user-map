@@ -26,7 +26,8 @@ default_setting = {
             'MapQuest',
             # Tile's URL
             'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
-            # More valid leaflet option is passed here
+            # More valid leaflet option are passed here
+            # See here: http://leafletjs.com/reference.html#tilelayer
             {
                 'attribution':
                     '© <a href="http://www.openstreetmap.org" '
