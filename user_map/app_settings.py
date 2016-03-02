@@ -14,7 +14,7 @@ USER_MODEL = settings.AUTH_USER_MODEL
 # USER MAP Settings
 default_setting = {
     'project_name': 'Django User Map',
-    'favicon_file': 'user_map/img/user-icon.png',
+    'favicon_file': '',
     'login_view': 'django.contrib.auth.views.login',
     'marker': {
         'icon': 'user_map/img/user-icon.png',

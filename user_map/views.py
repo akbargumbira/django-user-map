@@ -3,69 +3,106 @@
 from exceptions import AttributeError
 import json
 
-from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.template import loader
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic import View
+from django.views.generic import TemplateView
 
 from rest_framework import generics
 
 from user_map.forms import (
     UserMapForm)
 from user_map.models import UserMap, Role
-from user_map.app_settings import LEAFLET_TILES, MARKER
+from user_map.app_settings import (
+    LEAFLET_TILES, MARKER, FAVICON_FILE, PROJECT_NAME)
 from user_map.serializers import UserMapSerializer
 
 
-class IndexView(View):
-    """Index page of user map."""
-    def get(self, request):
-        information_modal = loader.render_to_string(
-            'user_map/information_modal.html')
-        data_privacy_content = loader.render_to_string(
-            'user_map/data_privacy.html')
+class BaseTemplateMixin(object):
+    """Mixin for Base Template."""
 
+    @property
+    def is_mapped(self):
+        """Get status is_mapped of the self.request.user."""
         try:
-            is_mapped = bool(request.user.usermap)
+            # noinspection PyUnresolvedReferences
+            is_mapped = bool(self.request.user.usermap)
         except (ObjectDoesNotExist, AttributeError):
             is_mapped = False
+        return is_mapped
 
-        user_menu_button = loader.render_to_string(
-            'user_map/user_menu_button.html',
-            {'user': request.user, 'is_mapped': is_mapped}
-        )
+    def get_context_data(self, **kwargs):
+        # noinspection PyUnresolvedReferences
+        context = super(BaseTemplateMixin, self).get_context_data(**kwargs)
+        context['FAVICON_PATH'] = FAVICON_FILE
+        context['PROJECT_NAME'] = PROJECT_NAME
+        return context
 
-        roles = Role.objects.all()
-        filter_menu = loader.render_to_string(
-            'user_map/filter_menu.html',
-            {'roles': roles}
-        )
 
-        leaflet_tiles = dict(
+class IndexView(BaseTemplateMixin, TemplateView):
+    """Index page of user map."""
+    template_name = 'user_map/index.html'
+
+    @property
+    def information_modal(self):
+        """Get information modal."""
+        return loader.render_to_string(
+            'user_map/information_modal.html')
+
+    @property
+    def data_privacy(self):
+        """Get data privacy content."""
+        return loader.render_to_string(
+            'user_map/data_privacy.html')
+
+    @property
+    def leaflet_tiles(self):
+        """Get leaflet tiles for the template."""
+        return dict(
             url=LEAFLET_TILES[0][1],
             option=LEAFLET_TILES[0][2]
         )
 
-        user_info_popup_template = loader.render_to_string(
+    @property
+    def user_popup(self):
+        """Get user popup template."""
+        return loader.render_to_string(
             'user_map/user_info_popup_content.html')
 
-        context = {
-            'data_privacy_content': data_privacy_content,
-            'information_modal': information_modal,
-            'user_menu_button': user_menu_button,
-            'filter_menu': filter_menu,
-            'leaflet_tiles': json.dumps(leaflet_tiles),
-            'is_mapped': is_mapped,
-            'marker': MARKER,
-            'user_info_popup_template': user_info_popup_template,
-            'roles': json.dumps(list(Role.objects.all().values()))
-        }
+    def get_user_menu(self):
+        """Get user menu at the left side."""
+        return loader.render_to_string(
+            'user_map/user_menu_button.html',
+            {'user': self.request.user, 'is_mapped': self.is_mapped}
+        )
 
-        return render(request, 'user_map/index.html', context)
+    def get_filter_menu(self):
+        """Get filter menu at the right side."""
+        roles = Role.objects.all()
+        return loader.render_to_string(
+            'user_map/filter_menu.html',
+            {'roles': roles}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context.update(
+            {
+                'data_privacy_content': self.data_privacy,
+                'information_modal': self.information_modal,
+                'user_menu_button': self.get_user_menu(),
+                'filter_menu': self.get_filter_menu(),
+                'leaflet_tiles': json.dumps(self.leaflet_tiles),
+                'is_mapped': self.is_mapped,
+                'marker': MARKER,
+                'user_info_popup_template': self.user_popup,
+                'roles': json.dumps(list(Role.objects.all().values()))
+            }
+        )
+        return context
 
 
 class UserMapList(generics.ListAPIView):
@@ -74,7 +111,7 @@ class UserMapList(generics.ListAPIView):
     serializer_class = UserMapSerializer
 
 
-class UserAddView(CreateView):
+class UserAddView(BaseTemplateMixin, CreateView):
     """View to add user to the map."""
     model = UserMap
     form_class = UserMapForm
@@ -93,12 +130,7 @@ class UserAddView(CreateView):
         return reverse('user_map:index')
 
     def dispatch(self, request, *args, **kwargs):
-        try:
-            is_mapped = bool(request.user.usermap)
-        except (ObjectDoesNotExist, AttributeError):
-            is_mapped = False
-
-        if is_mapped:
+        if self.is_mapped:
             return HttpResponseRedirect(reverse('user_map:index'))
         return super(UserAddView, self).dispatch(request, *args, **kwargs)
 
@@ -110,7 +142,7 @@ class UserAddView(CreateView):
         return context
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(BaseTemplateMixin, UpdateView):
     """View to update a user."""
     model = UserMap
     form_class = UserMapForm
