@@ -10,12 +10,15 @@ from user_map.app_settings import LEAFLET_TILES
 
 class UserMapForm(forms.ModelForm):
     """Form for user model."""
+
     class Meta:
         """Association between models and this form."""
         model = UserMap
         exclude = ['user']
-        widgets = {'location': LeafletWidget(attrs={
-            'settings_overrides': {
-                'TILES': LEAFLET_TILES
-            }
-        })}
+        widgets = {
+            'location': LeafletWidget(attrs={
+                'settings_overrides': {
+                    'TILES': LEAFLET_TILES
+            }}),
+            'roles': forms.CheckboxSelectMultiple()
+        }
