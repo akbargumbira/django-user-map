@@ -48,21 +48,21 @@ default_setting = {
         {
             'id': 1,
             'name': 'Django User',
-            'badge': 'user_map/img/inasafe-badge-user.png'
+            'badge': 'user_map/img/badge-user.png'
         },
         {
             'id': 2,
             'name': 'Django Trainer',
-            'badge': 'user_map/img/inasafe-badge-trainer.png'
+            'badge': 'user_map/img/badge-trainer.png'
         },
         {
             'id': 3,
             'name': 'Django Developer',
-            'badge': 'user_map/img/inasafe-badge-developer.png'
+            'badge': 'user_map/img/badge-developer.png'
         }
     ],
     'api_user_fields': [
-        'username', 'first_name', 'last_name'
+        # e.g 'username', 'first_name', 'last_name'
     ],
 }
 

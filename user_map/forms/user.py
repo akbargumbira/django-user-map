@@ -8,6 +8,7 @@ from user_map.models import UserMap
 from user_map.app_settings import LEAFLET_TILES
 from user_map.forms.custom_widget import CustomClearableFileInput
 
+
 class UserMapForm(forms.ModelForm):
     """Form for user model."""
 
