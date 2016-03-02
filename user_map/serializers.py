@@ -24,4 +24,4 @@ class UserMapSerializer(GeoFeatureModelSerializer):
         model = UserMap
         id_field = False
         geo_field = 'location'
-        fields = ('user', 'roles', 'image')
+        fields = ('user', 'roles', 'image', 'website')

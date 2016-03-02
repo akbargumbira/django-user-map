@@ -68,6 +68,11 @@ class UserMap(models.Model):
         null=False,
         blank=True,
         validators=[validate_image])
+    website = models.URLField(
+        verbose_name='Website',
+        help_text='Optional link to your personal or organisation web site',
+        null=False,
+        blank=True)
     is_hidden = models.BooleanField(
         verbose_name='Hidden Status',
         help_text='Do you wish to hide yourself on the map?',

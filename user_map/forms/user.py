@@ -22,5 +22,7 @@ class UserMapForm(forms.ModelForm):
                     'TILES': LEAFLET_TILES
             }}),
             'roles': forms.CheckboxSelectMultiple(),
-            'image': CustomClearableFileInput()
+            'image': CustomClearableFileInput(),
+            'website': forms.URLInput(
+                attrs={'placeholder': 'http://john.doe.com'})
         }
