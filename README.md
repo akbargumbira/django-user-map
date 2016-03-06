@@ -129,8 +129,7 @@ the browser's tab. You can point it to any files in your static dirs from any
 ### Login View
 Django User Map relies on the auth user model in your project. For users to be
  able to add (or update) themselves, they need to log in first. You can point
-  it to the view function e.g ```'login_view': 'django.contrib.auth.views
-  .login'``` or even to the view name e.g ```'login_view': 'fe_login'```
+  it to the view function e.g ```'login_view': 'django.contrib.auth.views.login'``` or even to the view name e.g ```'login_view': 'fe_login'```
 
 ### Marker
 This variable represents the marker icon on the map. You can use any valid 
