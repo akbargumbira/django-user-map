@@ -44,15 +44,16 @@ url(r'^user-map/', include('user_map.urls', namespace='user_map')),
  override some templates. See [Configurations](#configurations) section for further 
  information.
 
-* Run ```python manage.py migrate``` to migrate the user_map models. 
+* Run ```python manage.py migrate user_map``` to migrate the ```user_map``` 
+models. 
 
 * Visit the URL that you set before to see the apps.
 
 
 ## Configurations
 You can configure Django User Map with one single USER_MAP variable in 
-project's settings.py. Below setting is the default. Add this default to your
- project's setting and configure necessary bits that you want to change:
+project's settings.py. The setting below is the default. Add this default to 
+your project's setting and configure the necessary bits that you want to change:
 
 ```python   
 USER_MAP = {
@@ -220,6 +221,23 @@ username field from the user model, you must add this setting:`
 ```python
 'api_user_fields': ['username'],
 ```
+
+## Updating Roles
+If in any case you need to update or change roles in ```settings.py``` after 
+the ```user_map``` models are migrated, you must run django management command:
+ 
+```python
+python manage.py update_roles
+```
+
+Bear in mind that you should not change the id's and just change
+the name or the badge path. 
+
+This command also will only update the role table, not the usermap table that 
+uses the role table. So, adding roles is fine (as long as the new id's are 
+unique). Removing roles has no effect (it will not remove the row in the 
+table). Well, it could give you problems as it means that some of the users 
+might not have valid roles defined in the role table.
 
 
 ## Changing Template
