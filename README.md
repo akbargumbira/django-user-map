@@ -1,10 +1,7 @@
 Django User Map
 =================
 
-Django User Map is a reusable django application for making community user's 
-map. This app relies on the active auth user model and extend that 
-model with OneToOne relationship. Users can add themselves on the map by 
-providing some additional information:
+Django User Map is a reusable django application for making community user's map. This app relies on the active auth user model and extend that model with OneToOne relationship. Users can add themselves on the map by providing some additional information:
 
 1. Location on the map
 2. Roles (the choices can be configured through setting)
@@ -19,8 +16,7 @@ providing some additional information:
 pip install django-user-map
 ```
 
-* Make sure you have these modules in INSTALLED_APPS of your django 
-   project settings.py:
+* Make sure you have these modules in INSTALLED_APPS of your django project settings.py:
 
 ```python
 INSTALLED_APPS = (
@@ -33,16 +29,13 @@ INSTALLED_APPS = (
 )
 ```
 
-* Include user-map URLconf in your project urls.py with namespace user_map 
-(required) e.g:
+* Include user-map URLconf in your project urls.py with namespace user_map (required) e.g:
 
 ```python
 url(r'^user-map/', include('user_map.urls', namespace='user_map')),
 ```
 
-* Configure user map with USER_MAP variable in your project's settings.py or
- override some templates. See [Configurations](#configurations) section for further 
- information.
+* Configure user map with USER_MAP variable in your project's settings.py or override some templates. See [Configurations](#configurations) section for further information.
 
 * Run ```python manage.py migrate user_map``` to migrate the ```user_map``` 
 models. 
@@ -51,9 +44,7 @@ models.
 
 
 ## Configurations
-You can configure Django User Map with one single USER_MAP variable in 
-project's settings.py. The setting below is the default. Add this default to 
-your project's setting and configure the necessary bits that you want to change:
+You can configure Django User Map with one single USER_MAP variable in project's settings.py. The setting below is the default. Add this default to your project's setting and configure the necessary bits that you want to change:
 
 ```python   
 USER_MAP = {
@@ -118,22 +109,16 @@ USER_MAP = {
 ```
 
 ### Project Name
-This variable (```project_name```) represents the project name of the apps. If 
-this is not specified, 'Django' will be used.
+This variable (```project_name```) represents the project name of the apps. If this is not specified, 'Django' will be used.
 
 ### Favicon
-This variable (```favicon_file```) represents the file path to the favicon on 
-the browser's tab. You can point it to any files in your static dirs from any
- apps.
+This variable (```favicon_file```) represents the file path to the favicon on the browser's tab. You can point it to any files in your static dirs from any apps.
    
 ### Login View
-Django User Map relies on the auth user model in your project. For users to be
- able to add (or update) themselves, they need to log in first. You can point
-  it to the view function e.g ```'login_view': 'django.contrib.auth.views.login'``` or even to the view name e.g ```'login_view': 'fe_login'```
+Django User Map relies on the auth user model in your project. For users to be able to add (or update) themselves, they need to log in first. You can point it to the view function e.g ```'login_view': 'django.contrib.auth.views.login'``` or even to the view name e.g ```'login_view': 'fe_login'```
 
 ### Marker
-This variable represents the marker icon on the map. You can use any valid 
-Leaflet ```L.icon``` options. Read here for the valid options http://leafletjs.com /reference.html#icon-iconurl 
+This variable represents the marker icon on the map. You can use any valid Leaflet ```L.icon``` options. Read here for the valid options http://leafletjs.com/reference.html#icon-iconurl 
 
 An example for this variable:
 
@@ -149,9 +134,7 @@ An example for this variable:
 ```
 
 ### Map Configuration
-You can configure the basemap of the form that uses LeafletWidget and the 
-basemap of the homepage through  ```leaflet_config``` variable in settings.py
-. You can also pass leaflet tile layer options (read here: http://leafletjs.com/reference.html#tilelayer):
+You can configure the basemap of the form that uses LeafletWidget and the basemap of the homepage through  ```leaflet_config``` variable in settings.py. You can also pass leaflet tile layer options (read here: http://leafletjs.com/reference.html#tilelayer):
 
 ```python
 'leaflet_config': {
