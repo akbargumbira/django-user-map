@@ -97,7 +97,7 @@ class IndexView(BaseTemplateMixin, TemplateView):
                 'filter_menu': self.get_filter_menu(),
                 'leaflet_tiles': json.dumps(self.leaflet_tiles),
                 'is_mapped': self.is_mapped,
-                'marker': MARKER,
+                'marker': json.dumps(MARKER),
                 'user_info_popup_template': self.user_popup,
                 'roles': json.dumps(list(Role.objects.all().values()))
             }

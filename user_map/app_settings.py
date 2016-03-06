@@ -17,8 +17,14 @@ default_setting = {
     'favicon_file': '',
     'login_view': 'django.contrib.auth.views.login',
     'marker': {
-        'icon': 'user_map/img/user-icon.png',
-        'shadow': 'user_map/img/shadow-icon.png'  # or 'shadow': None
+        # See leaflet icon valid options here:
+        # http://leafletjs.com /reference.html#icon-iconurl
+        'iconUrl': 'static/user_map/img/user-icon.png',
+        'shadowUrl': 'static/user_map/img/shadow-icon.png',
+        'iconSize': [19, 32],
+        'shadowSize': [42, 35],
+        'iconAnchor': [10, 0],
+        'shadowAnchor': [12, 0],
     },
     'leaflet_config': {
         'TILES': [(

@@ -71,40 +71,6 @@ function filterUsers() {
   });
 }
 
-
-/**
- * Create IconMarkerBase that will be used for icon marker.
- * @param {string} shadow_icon_path The path to shadow icon.
- * @returns {object} IconMarkerBase
- * @property Icon
- */
-function createIconMarkerBase(shadow_icon_path) {
-  var IconMarkerBase;
-  IconMarkerBase = L.Icon.extend({
-    options: {
-      shadowUrl: shadow_icon_path,
-      iconSize: [19, 32],
-      shadowSize: [42, 35],
-      iconAnchor: [12, 32],
-      shadowAnchor: [12, 32],
-      popupAnchor: [-2, -32]
-    }
-  });
-  return IconMarkerBase;
-}
-
-/**
- * Create leaflet icon marker.
- *
- * @param {string} icon_path The icon path.
- * @param {string} shadow_path The shadow path.
- * @return {IconMarkerBase} icon_marker
- */
-function createIconMarker(icon_path, shadow_path) {
-  var IconMarkerBase = createIconMarkerBase(shadow_path);
-  return new IconMarkerBase({iconUrl: icon_path});
-}
-
 /**
  * Create Data Privacy Control instance on the bottom left of the map.
  * @property Control

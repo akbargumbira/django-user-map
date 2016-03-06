@@ -46,6 +46,7 @@
     var is_authenticated = '{{ user.is_authenticated }}' == 'True';
     var is_mapped = '{{ is_mapped }}' == 'True';
     var leaflet_tiles = {{ leaflet_tiles | safe}};
+    var marker_icon = L.icon({{ marker | safe}});
 
     //Initialize Basemap Layer
     base_map = L.tileLayer(leaflet_tiles['url'], leaflet_tiles['option']);
@@ -76,10 +77,6 @@
     // Create Filter Control
     filter_control = createFilterControl();
     map.addControl(new filter_control);
-
-    // Create icon marker
-    var shadow_path = ('{{ marker.shadow }}' == 'None'? null : '{% static marker.shadow %}');
-    var marker_icon = createIconMarker('{% static marker.icon %}', shadow_path);
 
     // Structure roles object
     var roles = {{ roles|safe }};
