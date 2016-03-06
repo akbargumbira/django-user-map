@@ -12,7 +12,7 @@ Django User Map is a reusable django application for making community user's map
 ## Installation
 * Install django-user-map with pip:
 
-```shell
+```python
 pip install django-user-map
 ```
 
