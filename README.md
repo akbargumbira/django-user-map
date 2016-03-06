@@ -8,6 +8,7 @@ Django User Map is a reusable django application for making community user's map
 3. Image, and
 4. Website
 
+Read here for the documentation: www.akbargumbira.com/django-user-map
 
 ## Installation
 * Install django-user-map with pip:
@@ -164,10 +165,7 @@ You can configure the basemap of the form that uses LeafletWidget and the basema
 
 ### Roles
 
-Using ```roles```, you can specify the user's role, its name, and its badge 
-path. User can select multiple roles. In the map, visitors of the apps can 
-also filter the marker (users) based on their role(s).If not 
-specified, this variable will take this as the default:
+Using ```roles```, you can specify the user's role, its name, and its badge path. User can select multiple roles. On the map, visitors of the apps can also filter the marker (users) based on their role(s).If not specified, this variable will take this as the default:
    
 ```python
 'roles': [
@@ -187,50 +185,33 @@ specified, this variable will take this as the default:
             'badge': 'user_map/img/badge-developer.png'
         }
     ],
-    'api_user_fields': [
-        # e.g 'username', 'first_name', 'last_name'
-    ],
 }
 ```
    
 ### User Fields
-User fields are list of field from user model (AUTH_USER_MODEL) that will be 
-shown on the popup content and will be added to the REST API. To specify 
-which fields that should be visible from user model, you can configure it 
-through ```api_user_fields``` as a list of fields. For example if you want to show 
-username field from the user model, you must add this setting:`
+User fields are list of field from user model (AUTH_USER_MODEL) that will be shown on the popup content and will be added to the REST API. To specify which fields that should be visible from user model, you can configure it through ```api_user_fields``` as a list of fields. For example if you want to show username field from the user model, you must add this setting:`
 
 ```python
 'api_user_fields': ['username'],
 ```
 
 ## Updating Roles
-If in any case you need to update or change roles in ```settings.py``` after 
-the ```user_map``` models are migrated, you must run django management command:
+If in any case you need to update or change roles in ```settings.py``` after the ```user_map``` models are migrated, you must run django management command:
  
 ```python
 python manage.py update_roles
 ```
 
-Bear in mind that you should not change the id's and just change
-the name or the badge path. 
+Bear in mind that you should not change the id's and just change the name or the badge path. 
 
-This command also will only update the role table, not the usermap table that 
-uses the role table. So, adding roles is fine (as long as the new id's are 
-unique). Removing roles has no effect (it will not remove the row in the 
-table). Well, it could give you problems as it means that some of the users 
-might not have valid roles defined in the role table.
+This command also will only update the role table, not the usermap table that uses the role table. So, adding roles is fine (as long as the new id's are unique). Removing roles has no effect (it will not remove the row in the table). Well, it could give you problems as it means that some of the users might not have valid roles defined in the role table.
 
 
 ## Changing Template
-You can change the content of the data privacy (the modal when user clicks 
-'Data Privacy' link in the bottom left of the map) or add navigation menu. By
- default, there is no navigation menu - the map will use the whole screen.
+You can change the content of the data privacy (the modal popped up when user clicks 'Data Privacy' link at the bottom left of the map) or add navigation  menu. By  default, there is no navigation menu - the map will use the whole screen.
  
 ### Data Privacy
-To modify the data privacy, create a directory ```user_map``` under 
-```templates``` dir of your Django project and create html file named 
-```data_privacy.html```. The default content of this template looks like this:
+To modify data privacy content, create a directory ```user_map``` under ```templates``` dir of your Django project and create html file named ```data_privacy.html```. The default content of this template looks like this:
 
 ```html
 <script id="data-privacy-content-section" type="text/template">
@@ -242,14 +223,11 @@ To modify the data privacy, create a directory ```user_map``` under
 </script>
 ```
 
-In the new ```data_privacy.html``` file, copy that and edit the wording 
-yourself. Note that the ```<script>``` tag is needed completely with the same
- ```id``` and ```type```.
+In the new ```data_privacy.html``` file, copy that and edit the wording yourself. Note that the ```<script>``` tag is needed completely with the same ```id``` and ```type```.
 
 
 ### Navigation
-By default, the map showing all users does not have navigation menu. This is 
-how it looks like without the navigation menu:
+By default, the map showing all users does not have navigation menu. This is how it looks like without the navigation menu:
 
 ![User Map without Navigation](docs/img/without_nav.png)
 
@@ -257,12 +235,9 @@ But you can add a navigation menu so it looks like this as an example:
 
 ![User Map with Navigation](docs/img/with_nav.png)
 
-To add navigation menu, add html file named ```navigation.html``` in 
-```user_map/templates/``` dir under your project's directory (along with your
- custom data privacy content). Django User Map is using Bootstrap 3, so you 
- can use style classes and other stuffs from Bootstrap 3. 
+To add navigation menu, add html file named ```navigation.html``` in ```user_map/templates/``` dir under your project's directory (along with your custom data privacy content). Django User Map uses Bootstrap 3, so you can use style classes and other stuffs from Bootstrap 3. 
  
- As an example the content could be something like this:
+ As an example the content could be something like this tresulting the above screenshot:
  
 ```html
 <nav class="navbar navbar-default" style="margin-bottom: 0px;">
