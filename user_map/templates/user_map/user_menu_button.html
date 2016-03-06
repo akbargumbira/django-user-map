@@ -1,48 +1,26 @@
-{% if not user.is_authenticated %}
-<script id="user-menu-add-button" type="text/template">
-  <button type="button" class="btn btn-default btn-sm user-menu-control"
-          id="add-user-button" onclick="window.open('{% url "user_map:register" %}', '_self');"
-          data-toggle="tooltip" data-original-title="Add me to map!">
-    <span class="glyphicon glyphicon-user"></span>
-  </button>
-</script>
-{% else %}
-<script id="user-menu-edit-button" type="text/template">
-  <button type="button" class="btn btn-default btn-sm user-menu-control"
-          id="edit-user-button" onclick="window.open('{% url "user_map:update_user" %}', '_self');""
-          data-toggle="tooltip" data-original-title='Edit my profile!'>
-    <span class='glyphicon glyphicon-pencil'></span>
-  </button>
-</script>
-{% endif %}
-
-{% if user.is_authenticated %}
-  <script id="user-menu-delete-button" type="text/template">
+{% if not user.is_authenticated or not is_mapped %}
+  <script id="user-menu-add-button" type="text/template">
     <button type="button" class="btn btn-default btn-sm user-menu-control"
-            id="delete-user-button"
-            onclick="window.open('{% url "user_map:update_user" %}#account-setting', '_self');""
-            data-toggle="tooltip" data-original-title="Delete me from the map!">
-      <span class="glyphicon glyphicon-trash"></span>
+            id="add-user-button" onclick="window.open('{% url "user_map:add" %}', '_self');""
+            data-toggle="tooltip" data-original-title="Add me to map!">
+      <span class="glyphicon glyphicon-user"></span>
+    </button>
+  </script>
+{% else %}
+  <script id="user-menu-edit-button" type="text/template">
+    <button type="button" class="btn btn-default btn-sm user-menu-control"
+            id="edit-user-button" onclick="window.open('{% url "user_map:update" %}', '_self');""
+            data-toggle="tooltip" data-original-title='Edit my profile!'>
+      <span class='glyphicon glyphicon-pencil'></span>
     </button>
   </script>
 {% endif %}
 
-<script id="user-menu-download-button" type="text/template">
+<script id="user-menu-api-button" type="text/template">
   <button type="button" class="btn btn-default btn-sm user-menu-control"
-          id="download-button" onclick="window.open('{% url "user_map:download" %}', '_self');"
+          id="download-button" onclick="window.open('{% url "user_map:usermap-list" %}');"
           data-toggle="tooltip"
-          data-original-title="Download all users as CSV file!">
-    <span class="glyphicon glyphicon-download-alt"></span>
+          data-original-title="REST API">
+    <span class="glyphicon glyphicon-transfer"></span>
   </button>
 </script>
-
-{% if not user.is_authenticated %}
-<script id="user-menu-forgot-button" type="text/template">
-  <button type="button" class="btn btn-default btn-sm user-menu-control"
-          id="forgot-button" onclick="window.open('{% url "user_map:password_reset" %}', '_self');"
-          data-toggle="tooltip"
-          data-original-title="Forgot your password?">
-    <span class="glyphicon glyphicon-question-sign"></span>
-  </button>
-</script>
-{% endif %}

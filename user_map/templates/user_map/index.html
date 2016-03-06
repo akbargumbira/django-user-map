@@ -3,51 +3,16 @@
 {% load leaflet_tags %}
 
 {% block navbar %}
-  <nav class="navbar navbar-fixed-top" role="navigation">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-      <ul class="nav navbar-nav navbar-right">
-        {% if not user.is_authenticated %}
-          <a href="{% url 'user_map:login' %}">
-            <button type="button"
-                    class="btn btn-default navbar-btn navbar-left">Log In</button>
-          </a>
-          <a href="{% url 'user_map:register' %}">
-            <button type="button"
-                    class="btn btn-default navbar-btn navbar-left">Sign Up</button>
-          </a>
-        {% endif %}
-        {% if user.is_authenticated %}
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Hi, {{ user.name }}</b> <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li><a href="{% url 'user_map:update_user' %}">Edit Profile</a></li>
-              <li><a href="{% url 'user_map:logout' %}">Log Out</a></li>
-            </ul>
-          </li>
-        {% endif %}
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </nav>
 {% endblock navbar%}
 
 {% block head_resources %}
   {{ block.super }}
-  {% leaflet_js %}
-  {% leaflet_css %}
   <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.css' %}"/>
   <link rel="stylesheet" href="{% static 'user_map/css/MarkerCluster.user-map.css' %}"/>
   <!--[if lte IE 8]>
   <link rel="stylesheet"  href="{% static 'user_map/css/MarkerCluster.user-map.ie.css' %}" />
   <![endif]-->
+  <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jsrender.min.js' %}"></script>
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/leaflet.markercluster-src.js' %}"></script>
   <script language="javascript" type="text/javascript" src="{% static 'user_map/js/user-map.js' %}"></script>
 {% endblock head_resources %}
@@ -61,21 +26,30 @@
   {{ user_menu_button | safe }}
   {{ information_modal | safe }}
   {{ data_privacy_content | safe }}
-  {{ legend | safe }}
-  {{ user_form_template | safe }}
+  {{ filter_menu | safe }}
+  {{ user_info_popup_template | safe }}
+
+  {% if messages %}
+    <div class="messages" style="display: none;">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endblock main_content %}
 
 
 {% block js_container %}
   <script type="text/javascript">
     var map, base_map, data_privacy_content, data_privacy_control,
-        user_menu_control;
+        user_menu_control, users_layer;
     var is_authenticated = '{{ user.is_authenticated }}' == 'True';
+    var is_mapped = '{{ is_mapped }}' == 'True';
+    var leaflet_tiles = {{ leaflet_tiles | safe}};
+    var marker_icon = L.icon({{ marker | safe}});
 
     //Initialize Basemap Layer
-    base_map = createBasemap(
-        '{{ leaflet_tiles.url }}',
-        '{{ leaflet_tiles.attribution | safe }}');
+    base_map = L.tileLayer(leaflet_tiles['url'], leaflet_tiles['option']);
 
     //Create Map with prepared base_map
     map = L.map('map', {
@@ -83,54 +57,50 @@
     });
     map.fitWorld().zoomIn();
 
+    // Center the popup when opened
+    map.on('popupopen', function(e) {
+      var px = map.project(e.popup._latlng);
+      px.y -= e.popup._container.clientHeight/2;
+      map.panTo(map.unproject(px),{animate: true});
+    });
+
     // Create Data Privacy Control
     data_privacy_control = createDataPrivacyControl();
     map.addControl(new data_privacy_control);
 
     // Create User Menu Control and add some tooltips
-    var user_menu = (is_authenticated? ['edit', 'delete', 'download'] : ['add', 'download', 'forgot']);
+    var user_menu = (is_mapped? ['edit', 'api'] : ['add', 'api']);
     user_menu_control = createUserMenuControl(user_menu);
     map.addControl(new user_menu_control);
     $(".user-menu-control").tooltip({placement: 'right', container: 'body'});
 
-    // Create Legend Control:
-    legend_control = createLegendControl();
-    map.addControl(new legend_control);
+    // Create Filter Control
+    filter_control = createFilterControl();
+    map.addControl(new filter_control);
 
-    //Add all user layers based on role
-    var get_users_url = '{% url "user_map:get_users" %}';
-    var overlays_layer = [];
-    var user_roles = {{ user_roles | safe }};
-    var static_files = '{% static "" %}';
-
-    for (var i = 0; i < user_roles.length; ++i) {
-      var icon_path = static_files + user_roles[i]['icon'];
-      var shadow_icon_path = static_files + user_roles[i]['shadow_icon'];
-      user_roles[i]['icon'] = createIconMarker(icon_path, shadow_icon_path);
-
-      var class_name = 'marker-cluster marker-cluster-role' + (i + 1);
-      user_roles[i]['layer'] = new L.markerClusterGroup({
-        iconCreateFunction: (function(class_name) {
-            return function (cluster) {
-              return L.divIcon({
-                html: '<div><span>' + cluster.getChildCount() + '</span></div>',
-                className:class_name,
-                iconSize: L.point(40, 40)});
-            }
-        })(class_name)
-      });
-
-      //Add All Users who's got this role
-      addUsers(get_users_url, user_roles[i]);
-
-      //Add All users layer to map
-      user_roles[i]['layer'].addTo(map);
-
-      //Add layer to overlays layer
-      overlays_layer[user_roles[i]['name']] = user_roles[i]['layer'];
+    // Structure roles object
+    var roles = {{ roles|safe }};
+    var roles_dict = {};
+    for (i = 0; i < roles.length; ++i) {
+      var content = {};
+      content["name"] = roles[i]["name"];
+      content["badge"] =  {% static ''%} + roles[i]["badge"];
+      roles_dict[roles[i]["id"]] = content;
     }
 
-    //Plug overlays_layers in layer control
-    L.control.layers(null, overlays_layer).addTo(map);
+    // Get displayed_users on the map
+    var usermap_list_url = '{% url "user_map:usermap-list" %}';
+    var users_layer = L.markerClusterGroup();
+    var displayed_users = L.markerClusterGroup().addTo(map);
+    addUsers(usermap_list_url, users_layer, marker_icon);
+
+    // Show messages if any
+    var messages = $('div.messages').html();
+    if (messages)
+        showInformationModal('Information', messages);
+
+    // Use jsRender to render popup content
+    $.views.settings.delimiters("<%","%>");
+    popup_template = $.templates("#popup-content");
   </script>
 {% endblock js_container %}

@@ -9,89 +9,66 @@
 /**
  * Add users to the respective layer based on role.
  * @param {string} url The url view to get users.
- * @param {object} role The role object.
+ * @param {object} users_layer Passed users' layer
+ * @param {object} icon The icon object for marker
  * @name L The Class from Leaflet.
  * @property geoJson Property of L class.
  * @property users Property of response object.
  * @function addTo add child element to the map.
  * @property properties Property of a feature.
- * @property popupContent Property of properties.
+ * @property popup_content property of properties.
  * @function bindPopup Bind popup to marker
  */
-function addUsers(url, role) {
+function addUsers(url, users_layer, icon) {
   $.ajax({
     type: 'GET',
     url: url,
     dataType: 'json',
-    data: {
-      user_role: role['name']
-    },
     success: function (response) {
-      L.geoJson(
-          response.users,
-          {
-            onEachFeature: onEachFeature,
-            pointToLayer: function (feature, latlng) {
-              return L.marker(latlng,{icon: role['icon'] });
-            }
-          }).addTo(role['layer']);
+       L.geoJson(response, {
+         onEachFeature: function (feature, layer) {
+           var feature_roles = [];
+           for (i = 0; i < feature.properties.roles.length; ++i){
+             feature_roles.push(roles_dict[feature.properties.roles[i]]);
+           }
+           var data = {
+             properties: feature.properties,
+             roles: feature_roles
+           };
+           var popup_content = popup_template.render(data);
+           layer.bindPopup(popup_content);
+         },
+         pointToLayer: function(feature, latlng) {
+           return L.marker(latlng, {icon: icon})
+         }
+       }).addTo(users_layer);
+
+      filterUsers();
     }
   });
-  function onEachFeature(feature, layer) {
-    // Set the popup content if it does have the content
-    if (feature.properties && feature.properties.popupContent) {
-      layer.bindPopup(feature.properties.popupContent);
-    }
-  }
 }
 
 /**
- * Create basemap instance to be used.
- * @param {string} url The URL for the tiles layer
- * @param {string} attribution The attribution of the layer
- * @property tileLayer
- * @returns {object} base_map
+ * Filter users based on the filter control
  */
-function createBasemap(url, attribution) {
-  var base_map;
-  base_map = L.tileLayer(url, {
-    attribution: attribution,
-    maxZoom: 18
-  });
-  return base_map;
-}
+function filterUsers() {
+  // Clear previous displayed_users
+  displayed_users.clearLayers();
 
-/**
- * Create IconMarkerBase that will be used for icon marker.
- * @param {string} shadow_icon_path The path to shadow icon.
- * @returns {object} IconMarkerBase
- * @property Icon
- */
-function createIconMarkerBase(shadow_icon_path) {
-  var IconMarkerBase;
-  IconMarkerBase = L.Icon.extend({
-    options: {
-      shadowUrl: shadow_icon_path,
-      iconSize: [19, 32],
-      shadowSize: [42, 35],
-      iconAnchor: [12, 32],
-      shadowAnchor: [12, 32],
-      popupAnchor: [-2, -32]
+  // Get all selected roles
+  var checked_roles = [];
+  $("input:checkbox[class=role-filter]:checked").each(function () {
+        checked_roles.push($(this).val());
+  });
+
+  users_layer.eachLayer(function(layer) {
+    for (var i = 0; i < checked_roles.length; i++) {
+      if (layer.feature.properties.roles.indexOf(parseInt(checked_roles[i])) !== -1) {
+        displayed_users.addLayer(layer);
+        break;
+      }
     }
   });
-  return IconMarkerBase;
-}
-
-/**
- * Create leaflet icon marker.
- *
- * @param {string} icon_path The icon path.
- * @param {string} shadow_path The shadow path.
- * @return {IconMarkerBase} icon_marker
- */
-function createIconMarker(icon_path, shadow_path) {
-  var IconMarkerBase = createIconMarkerBase(shadow_path);
-  return new IconMarkerBase({iconUrl: icon_path});
 }
 
 /**
@@ -153,14 +130,8 @@ function createUserMenuControl(options) {
       if (options.indexOf('edit') != -1)
         user_menu_container.innerHTML += $("#user-menu-edit-button").html();
 
-      if (options.indexOf('delete') != -1)
-        user_menu_container.innerHTML += $("#user-menu-delete-button").html();
-
-      if (options.indexOf('download') != -1)
-        user_menu_container.innerHTML += $("#user-menu-download-button").html();
-
-      if (options.indexOf('forgot') != -1)
-        user_menu_container.innerHTML += $("#user-menu-forgot-button").html();
+      if (options.indexOf('api') != -1)
+        user_menu_container.innerHTML += $("#user-menu-api-button").html();
 
       //Prevent firing drag and onClickMap event when clicking this control
       var stop = L.DomEvent.stopPropagation;
@@ -202,6 +173,33 @@ function createLegendControl(){
   });
   return control;
 }
+
+/**
+ * Create filter control instance on the top right of the map.
+ *
+ * @returns {object} control
+ */
+function createFilterControl() {
+  var control;
+  control = L.Control.extend({
+    options: {
+      position: 'topright'
+    },
+    onAdd: function () {
+      var filter_container = L.DomUtil.create('div', 'filter-menu filter');
+      filter_container.innerHTML += $("#role-filter").html();
+
+      //Prevent firing drag and onClickMap event when clicking this control
+      var stop = L.DomEvent.stopPropagation;
+      L.DomEvent
+          .on(filter_container, 'mousedown', stop)
+          .on(filter_container, 'dblclick', stop);
+      return filter_container;
+    }
+  });
+  return control;
+}
+
 
 /**
  * Open an information modal. There is only one modal to use for showing information.

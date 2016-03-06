@@ -1,37 +1,40 @@
 {% load staticfiles %}
+{% load leaflet_tags %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <link rel="shortcut icon" href="{% static FAVICON_PATH %}">
-  <title>{% block title %} {{ PROJECT_NAME }} User Map{% endblock %}</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="shortcut icon" href="{% static FAVICON_PATH %}">
+    <title>{% block title %} {{ PROJECT_NAME }} User Map{% endblock %}</title>
 
-  {% block head_resources %}
-    <!--Base Stylesheet -->
-    <link rel="stylesheet" href="{% static 'user_map/css/bootstrap.css' %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static 'user_map/css/user-map.css' %}" type="text/css"/>
+    {% block head_resources %}
+      {% leaflet_js %}
+      {% leaflet_css %}
+      <!--Base Stylesheet -->
+      <link rel="stylesheet" href="{% static 'user_map/css/bootstrap.css' %}" type="text/css"/>
+      <link rel="stylesheet" href="{% static 'user_map/css/user-map.css' %}" type="text/css"/>
 
-    <!-- Base Javascript -->
-    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jquery.js' %}"></script>
-    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/bootstrap.min.js' %}"></script>
-    <script language="javascript" type="text/javascript" src="{% static 'user_map/js/validate.js' %}"></script>
-  {% endblock head_resources %}
-</head>
+      <!-- Base Javascript -->
+      <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jquery.js' %}"></script>
+      <script language="javascript" type="text/javascript" src="{% static 'user_map/js/bootstrap.min.js' %}"></script>
+      <script language="javascript" type="text/javascript" src="{% static 'user_map/js/validate.js' %}"></script>
 
-<body>
-  <div class="user_map_navbar ">
-    {% block navbar %}
-    {% endblock navbar %}
-   </div>
+    {% endblock head_resources %}
+  </head>
 
-  {% block main_content %}
-  {% endblock main_content %}
+  <body>
+    <div id="navigation">
+      {% include 'user_map/navigation.html' %}
+    </div>
 
-  {% block footer %}
-  {% endblock footer %}
+    {% block main_content %}
+    {% endblock main_content %}
 
-  {% block js_container %}
-  {% endblock js_container %}
+    {% block footer %}
+    {% endblock footer %}
+
+    {% block js_container %}
+    {% endblock js_container %}
   </body>
 </html>

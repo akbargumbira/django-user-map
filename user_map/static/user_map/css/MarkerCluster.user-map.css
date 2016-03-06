@@ -1,21 +1,21 @@
-.marker-cluster-role1 {
+.marker-cluster-small {
 	background-color: rgba(253, 156, 115, 0.6);
 	}
-.marker-cluster-role1 div {
+.marker-cluster-small div {
 	background-color: rgba(241, 128, 23, 0.6);
 	}
 
-.marker-cluster-role2 {
+.marker-cluster-medium {
 	background-color: rgba(181, 226, 140, 0.6);
 	}
-.marker-cluster-role2 div {
+.marker-cluster-medium div {
 	background-color: rgba(110, 204, 57, 0.6);
 	}
 
-.marker-cluster-role3 {
+.marker-cluster-large {
 	background-color: rgba(0, 180, 255, 0.6);
 	}
-.marker-cluster-role3 div {
+.marker-cluster-large div {
 	background-color: rgba(0, 210, 255, 0.6);
 	}
 

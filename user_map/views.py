@@ -1,419 +1,182 @@
 # coding=utf-8
 """Views of the apps."""
-import csv
+from exceptions import AttributeError
 import json
 
-from django.shortcuts import render, render_to_response
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.template import RequestContext, loader
-from django.forms.util import ErrorList
-from django.forms.forms import NON_FIELD_ERRORS
+from django.http import HttpResponseRedirect
+from django.template import loader
 from django.core.urlresolvers import reverse
-from django.core.mail import send_mail
 from django.contrib import messages
-from django.contrib.auth import (
-    login as django_login,
-    authenticate,
-    logout as django_logout)
-from django.contrib.auth.views import (
-    password_reset as django_password_reset,
-    password_reset_done as django_password_reset_done,
-    password_reset_confirm as django_password_reset_confirm,
-    password_reset_complete as django_password_reset_complete)
-from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
-from django.contrib.auth.decorators import login_required
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes
-from django.contrib.sites.models import get_current_site
+from django.views.generic.edit import CreateView, UpdateView
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic import TemplateView
+
+from rest_framework import generics
 
 from user_map.forms import (
-    RegistrationForm,
-    LoginForm,
-    BasicInformationForm,
-    CustomPasswordResetForm)
-from user_map.models import User
+    UserMapForm)
+from user_map.models import UserMap, Role
 from user_map.app_settings import (
-    PROJECT_NAME, USER_ROLES, DEFAULT_FROM_MAIL, LEAFLET_TILES)
-from user_map.utilities.decorators import login_forbidden
+    LEAFLET_TILES, MARKER, FAVICON_FILE, PROJECT_NAME)
+from user_map.serializers import UserMapSerializer
 
 
-def index(request):
-    """Index page of user map.
+class BaseTemplateMixin(object):
+    """Mixin for Base Template."""
 
-    :param request: A django request object.
-    :type request: request
+    @property
+    def is_mapped(self):
+        """Get status is_mapped of the self.request.user."""
+        try:
+            # noinspection PyUnresolvedReferences
+            is_mapped = bool(self.request.user.usermap)
+        except (ObjectDoesNotExist, AttributeError):
+            is_mapped = False
+        return is_mapped
 
-    :returns: Response will be a nice looking map page.
-    :rtype: HttpResponse
-    """
-    information_modal = loader.render_to_string(
-        'user_map/information_modal.html')
-    data_privacy_content = loader.render_to_string(
-        'user_map/data_privacy.html')
-
-    user_menu_button = loader.render_to_string(
-        'user_map/user_menu_button.html', {'user': request.user})
-
-    legend = loader.render_to_string(
-        'user_map/legend.html', {'user_roles': USER_ROLES})
-
-    leaflet_tiles = dict(
-        url=LEAFLET_TILES[1],
-        attribution=LEAFLET_TILES[2]
-    )
-    context = {
-        'data_privacy_content': data_privacy_content,
-        'information_modal': information_modal,
-        'user_menu_button': user_menu_button,
-        'user_roles': json.dumps(USER_ROLES),
-        'legend': legend,
-        'leaflet_tiles': leaflet_tiles
-    }
-    return render(request, 'user_map/index.html', context)
+    def get_context_data(self, **kwargs):
+        # noinspection PyUnresolvedReferences
+        context = super(BaseTemplateMixin, self).get_context_data(**kwargs)
+        context['FAVICON_PATH'] = FAVICON_FILE
+        context['PROJECT_NAME'] = PROJECT_NAME
+        return context
 
 
-def get_users(request):
-    """Return a json document of users with given role.
+class IndexView(BaseTemplateMixin, TemplateView):
+    """Index page of user map."""
+    template_name = 'user_map/index.html'
 
-    This will only fetch users who have approved by email and still active.
+    @property
+    def information_modal(self):
+        """Get information modal."""
+        return loader.render_to_string(
+            'user_map/information_modal.html')
 
-    :param request: A django request object.
-    :type request: request
-    """
-    if request.method == 'GET':
-        # Get data:
-        user_role = str(request.GET['user_role'])
+    @property
+    def data_privacy(self):
+        """Get data privacy content."""
+        return loader.render_to_string(
+            'user_map/data_privacy.html')
 
-        # Get user
-        users = User.objects.filter(
-            role__name=user_role,
-            is_confirmed=True,
-            is_active=True)
-        users_json = loader.render_to_string(
-            'user_map/users.json', {'users': users})
-
-        # Return Response
-        return HttpResponse(users_json, content_type='application/json')
-    else:
-        raise Http404
-
-
-@login_forbidden
-def register(request):
-    """User registration view.
-
-    :param request: A django request object.
-    :type request: request
-    """
-    if request.method == 'POST':
-        form = RegistrationForm(data=request.POST)
-        if form.is_valid():
-            user = form.save()
-
-            current_site = get_current_site(request)
-            site_name = current_site.name
-            domain = current_site.domain
-            context = {
-                'project_name': PROJECT_NAME,
-                'protocol': 'http',
-                'domain': domain,
-                'site_name': site_name,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'user': user,
-                'key': user.key
-            }
-            email = loader.render_to_string(
-                'user_map/account/registration_confirmation_email.html',
-                context)
-
-            subject = '%s User Registration' % PROJECT_NAME
-            sender = '%s - No Reply <%s>' % (PROJECT_NAME, DEFAULT_FROM_MAIL)
-            send_mail(
-                subject, email, sender, [user.email], fail_silently=False)
-
-            messages.success(
-                request,
-                ('Thank you for registering in our site! Please check your '
-                 'email to confirm your registration'))
-            return HttpResponseRedirect(reverse('user_map:register'))
-    else:
-        form = RegistrationForm()
-    return render_to_response(
-        'user_map/account/registration.html',
-        {'form': form},
-        context_instance=RequestContext(request)
-    )
-
-
-@login_forbidden
-def confirm_registration(request, uid, key):
-    """The view containing form to reset password and process it.
-
-    :param request: A django request object.
-    :type request: request
-
-    :param uid: A unique id for a user.
-    :type uid: str
-
-    :param key: Key to confirm the user.
-    :type key: str
-    """
-    decoded_uid = urlsafe_base64_decode(uid)
-    try:
-        user = User.objects.get(pk=decoded_uid)
-
-        if not user.is_confirmed:
-            if user.key == key:
-                user.is_confirmed = True
-                user.save(update_fields=['is_confirmed'])
-                information = (
-                    'Congratulations! Your account has been successfully '
-                    'confirmed. Please continue to log in.')
-            else:
-                information = (
-                    'Your link is not valid. Please make sure that you use '
-                    'confirmation link we sent to your email.')
-        else:
-            information = ('Your account is already confirmed. Please '
-                           'continue to log in.')
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        information = ('Your link is not valid. Please make sure that you use '
-                       'confirmation link we sent to your email.')
-
-    context = {
-        'page_header_title': 'Registration Confirmation',
-        'information': information
-    }
-    return render_to_response(
-        'user_map/information.html',
-        context,
-        context_instance=RequestContext(request)
-    )
-
-
-@login_forbidden
-def login(request):
-    """Login view.
-
-    :param request: A django request object.
-    :type request: request
-    """
-    if request.method == 'POST':
-        next_page = request.GET.get('next', '')
-        if next_page == '':
-            next_page = reverse('user_map:index')
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            user = authenticate(
-                email=request.POST['email'],
-                password=request.POST['password']
-            )
-            if user is not None:
-                if user.is_active and user.is_confirmed:
-                    django_login(request, user)
-
-                    return HttpResponseRedirect(next_page)
-                if not user.is_active:
-                    errors = form._errors.setdefault(
-                        NON_FIELD_ERRORS, ErrorList())
-                    errors.append(
-                        'The user is not active. Please contact our '
-                        'administrator to resolve this.')
-                if not user.is_confirmed:
-                    errors = form._errors.setdefault(
-                        NON_FIELD_ERRORS, ErrorList())
-                    errors.append(
-                        'Please confirm you registration email first!')
-            else:
-                errors = form._errors.setdefault(
-                    NON_FIELD_ERRORS, ErrorList())
-                errors.append(
-                    'Please enter a correct email and password. '
-                    'Note that both fields may be case-sensitive.')
-    else:
-        form = LoginForm()
-
-    return render_to_response(
-        'user_map/account/login.html',
-        {'form': form},
-        context_instance=RequestContext(request))
-
-
-def logout(request):
-    """Log out view.
-
-    :param request: A django request object.
-    :type request: request
-    """
-    django_logout(request)
-    return HttpResponseRedirect(reverse('user_map:index'))
-
-
-@login_required(login_url='user_map:login')
-def update_user(request):
-    """Update user view.
-
-    :param request: A django request object.
-    :type request: request
-    """
-    anchor_id = '#basic-information'
-    if request.method == 'POST':
-        if 'change_basic_info' in request.POST:
-            anchor_id = '#basic-information'
-            basic_info_form = BasicInformationForm(
-                data=request.POST, instance=request.user)
-            change_password_form = PasswordChangeForm(user=request.user)
-            if basic_info_form.is_valid():
-                user = basic_info_form.save()
-                messages.success(
-                    request, 'You have successfully changed your information!')
-                return HttpResponseRedirect(
-                    reverse('user_map:update_user') + anchor_id)
-            else:
-                anchor_id = '#basic-information'
-        elif 'change_password' in request.POST:
-            anchor_id = '#security'
-            change_password_form = PasswordChangeForm(
-                data=request.POST, user=request.user)
-            basic_info_form = BasicInformationForm(instance=request.user)
-            if change_password_form.is_valid():
-                user = change_password_form.save()
-                messages.success(
-                    request, 'You have successfully changed your password!')
-                return HttpResponseRedirect(
-                    reverse('user_map:update_user') + anchor_id)
-            else:
-                anchor_id = '#security'
-    else:
-        basic_info_form = BasicInformationForm(instance=request.user)
-        change_password_form = PasswordChangeForm(user=request.user)
-
-    return render_to_response(
-        'user_map/account/edit_user.html',
-        {
-            'basic_info_form': basic_info_form,
-            'change_password_form': change_password_form,
-            'anchor_id': anchor_id,
-        },
-        context_instance=RequestContext(request)
-    )
-
-
-@login_required(login_url='user_map:index')
-def delete_user(request):
-    """Delete user view.
-
-    :param request: A django request object.
-    :type request: request
-    """
-    if request.method == 'POST':
-        user = request.user
-        user.delete()
-        django_logout(request)
-
-        information = ('You have deleted your account. Please register to '
-                       'this site any time you want.')
-        context = {
-            'page_header_title': 'Delete Account',
-            'information': information
-        }
-        return render_to_response(
-            'user_map/information.html',
-            context,
-            context_instance=RequestContext(request)
+    @property
+    def leaflet_tiles(self):
+        """Get leaflet tiles for the template."""
+        return dict(
+            url=LEAFLET_TILES[0][1],
+            option=LEAFLET_TILES[0][2]
         )
-    else:
-        raise Http404
+
+    @property
+    def user_popup(self):
+        """Get user popup template."""
+        return loader.render_to_string(
+            'user_map/user_info_popup_content.html')
+
+    def get_user_menu(self):
+        """Get user menu at the left side."""
+        return loader.render_to_string(
+            'user_map/user_menu_button.html',
+            {'user': self.request.user, 'is_mapped': self.is_mapped}
+        )
+
+    def get_filter_menu(self):
+        """Get filter menu at the right side."""
+        roles = Role.objects.all()
+        return loader.render_to_string(
+            'user_map/filter_menu.html',
+            {'roles': roles}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context.update(
+            {
+                'data_privacy_content': self.data_privacy,
+                'information_modal': self.information_modal,
+                'user_menu_button': self.get_user_menu(),
+                'filter_menu': self.get_filter_menu(),
+                'leaflet_tiles': json.dumps(self.leaflet_tiles),
+                'is_mapped': self.is_mapped,
+                'marker': json.dumps(MARKER),
+                'user_info_popup_template': self.user_popup,
+                'roles': json.dumps(list(Role.objects.all().values()))
+            }
+        )
+        return context
 
 
-@login_forbidden
-def password_reset(request):
-    """The view for reset password that contains a form to ask for email.
-
-    :param request: A django request object.
-    :type request: request
-    """
-    return django_password_reset(
-        request,
-        password_reset_form=CustomPasswordResetForm,
-        template_name='user_map/account/password_reset_form.html',
-        email_template_name='user_map/account/password_reset_email.html',
-        post_reset_redirect=reverse('user_map:password_reset_done'))
+class UserMapList(generics.ListAPIView):
+    """List of User Map with REST."""
+    queryset = UserMap.objects.filter(is_hidden=False)
+    serializer_class = UserMapSerializer
 
 
-@login_forbidden
-def password_reset_done(request):
-    """The view telling the user that an email has been sent.
+class UserAddView(BaseTemplateMixin, CreateView):
+    """View to add user to the map."""
+    model = UserMap
+    form_class = UserMapForm
+    template_name = 'user_map/user_add_update.html'
 
-    :param request: A django request object.
-    :type request: request
-    """
-    return django_password_reset_done(
-        request,
-        template_name='user_map/account/password_reset_done.html')
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        messages.add_message(
+            self.request,
+            messages.INFO,
+            'You have been added successfully to the map!'
+        )
+        return super(UserAddView, self).form_valid(form)
 
+    def get_success_url(self):
+        return reverse('user_map:index')
 
-@login_forbidden
-def password_reset_confirm(request, uidb64=None, token=None):
-    """The view containing form to reset password and process it.
+    def dispatch(self, request, *args, **kwargs):
+        if self.is_mapped:
+            return HttpResponseRedirect(reverse('user_map:index'))
+        return super(UserAddView, self).dispatch(request, *args, **kwargs)
 
-    :param request: A django request object.
-    :type request: request
-
-    :param uidb64: An unique ID of the user.
-    :type uidb64: str
-
-    :param token: Token to check if the reset password link is valid.
-    :type token: str
-    """
-    return django_password_reset_confirm(
-        request,
-        uidb64=uidb64,
-        token=token,
-        template_name='user_map/account/password_reset_confirm.html',
-        set_password_form=SetPasswordForm,
-        post_reset_redirect=reverse('user_map:password_reset_complete'))
+    def get_context_data(self, **kwargs):
+        context = super(UserAddView, self).get_context_data(**kwargs)
+        context['title'] = 'Add me to the map!'
+        context['description'] = ('Hey %s, please provide your information '
+                                  'on the form below.') % self.request.user
+        return context
 
 
-@login_forbidden
-def password_reset_complete(request):
-    """The view telling the user that reset password has been completed.
+class UserUpdateView(BaseTemplateMixin, UpdateView):
+    """View to update a user."""
+    model = UserMap
+    form_class = UserMapForm
+    template_name = 'user_map/user_add_update.html'
 
-    :param request: A django request object.
-    :type request: request
-    """
-    return django_password_reset_complete(
-        request,
-        template_name='user_map/account/password_reset_complete.html')
+    def get(self, request, **kwargs):
+        try:
+            self.object = self.request.user.usermap
+        except ObjectDoesNotExist:
+            return HttpResponseRedirect(reverse('user_map:index'))
 
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        context = self.get_context_data(object=self.object, form=form)
+        return self.render_to_response(context)
 
-def download(request):
-    """The view to download users data as CSV.
+    def get_object(self, queryset=None):
+        return self.request.user.usermap
 
-    :param request: A django request object.
-    :type request: request
+    def get_success_url(self):
+        return reverse('user_map:index')
 
-    :return: A CSV file.
-    :type: HttpResponse
-    """
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="users.csv"'
+    def form_valid(self, form):
+        # form.instance.user = self.request.user
+        messages.add_message(
+            self.request,
+            messages.INFO,
+            'You are successfully updated!'
+        )
+        return super(UserUpdateView, self).form_valid(form)
 
-    users = User.objects.filter(role__sort_number__gte=1)
-    writer = csv.writer(response)
-
-    fields = ['name', 'website', 'role', 'location']
-    headers = ['No.']
-    for field in fields:
-        verbose_name_field = users.model._meta.get_field(field).verbose_name
-        headers.append(verbose_name_field)
-    writer.writerow(headers)
-
-    for idx, user in enumerate(users):
-        row = [idx + 1]
-        for field in fields:
-            field_value = getattr(user, field)
-            row.append(field_value)
-        writer.writerow(row)
-
-    return response
+    def get_context_data(self, **kwargs):
+        context = super(UserUpdateView, self).get_context_data(**kwargs)
+        context['title'] = 'Update Profile'
+        context['description'] = ('Hey %s, please change the information you '
+                                  'want to update below!') % self.request.user
+        return context

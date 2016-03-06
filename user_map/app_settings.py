@@ -4,51 +4,100 @@
 ..note: By design, you can override these settings from your project's
     settings.py with prefix 'USER_MAP' on the variable e.g
     'USER_MAP_USER_ICONS'.
-
-    For mailing. as the default, it wil use 'DEFAULT_FROM_MAIL' setting from
-    the project.
 """
 from django.conf import settings
 
-# PROJECT_NAME: The project name for this apps e.g InaSAFE
-default_project_name = 'InaSAFE'
-PROJECT_NAME = getattr(settings, 'USER_MAP_PROJECT_NAME', default_project_name)
 
-# LOGO/BRAND
-default_brand_logo = 'user_map/img/logo.png'
-BRAND_LOGO = getattr(settings, 'USER_MAP_BRAND_LOGO', default_brand_logo)
+# USER_MODEL: The auth user model is set in project's settings
+USER_MODEL = settings.AUTH_USER_MODEL
+
+# USER MAP Settings
+default_setting = {
+    'project_name': 'Django',
+    'favicon_file': '',
+    'login_view': 'django.contrib.auth.views.login',
+    'marker': {
+        # See leaflet icon valid options here:
+        # http://leafletjs.com /reference.html#icon-iconurl
+        'iconUrl': 'static/user_map/img/user-icon.png',
+        'shadowUrl': 'static/user_map/img/shadow-icon.png',
+        'iconSize': [19, 32],
+        'shadowSize': [42, 35],
+        'iconAnchor': [10, 0],
+        'shadowAnchor': [12, 0],
+    },
+    'leaflet_config': {
+        'TILES': [(
+            # The title
+            'MapQuest',
+            # Tile's URL
+            'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
+            # More valid leaflet option are passed here
+            # See here: http://leafletjs.com/reference.html#tilelayer
+            {
+                'attribution':
+                    '© <a href="http://www.openstreetmap.org" '
+                    'target="_parent">OpenStreetMap'
+                    '</a> and contributors, under an <a '
+                    'href="http://www.openstreetmap.org/copyright" '
+                    'target="_parent">open license</a>. Tiles Courtesy of '
+                    '<a '
+                    'href="http://www.mapquest.com/">MapQuest</a> <img '
+                    'src="http://developer.mapquest.com/content/osm/mq_logo'
+                    '.png"',
+                'subdomains': '1234'
+
+            }
+        )]
+    },
+    'roles': [
+        {
+            'id': 1,
+            'name': 'Django User',
+            'badge': 'user_map/img/badge-user.png'
+        },
+        {
+            'id': 2,
+            'name': 'Django Trainer',
+            'badge': 'user_map/img/badge-trainer.png'
+        },
+        {
+            'id': 3,
+            'name': 'Django Developer',
+            'badge': 'user_map/img/badge-developer.png'
+        }
+    ],
+    'api_user_fields': [
+        # e.g 'username', 'first_name', 'last_name'
+    ],
+}
+
+user_map_settings = getattr(settings, 'USER_MAP', default_setting)
+
+# PROJECT_NAME: The project name for this apps e.g InaSAFE
+PROJECT_NAME = user_map_settings.get(
+    'project_name', default_setting['project_name'])
 
 # FAVICON_FILE: Favicon for this apps
-default_favicon_file = 'user_map/img/user-icon.png'
-FAVICON_FILE = getattr(settings, 'USER_MAP_FAVICON_FILE', default_favicon_file)
+FAVICON_FILE = user_map_settings.get(
+    'favicon_file', default_setting['favicon_file'])
 
-#  USER ROLES: All user roles and their icons
-default_user_roles = [
-    dict(
-        name='User',
-        icon='user_map/img/user-icon.png',
-        shadow_icon='user_map/img/shadow-icon.png'),
-    dict(
-        name='Trainer',
-        icon='user_map/img/trainer-icon.png',
-        shadow_icon='user_map/img/shadow-icon.png'),
-    dict(
-        name='Developer',
-        icon='user_map/img/developer-icon.png',
-        shadow_icon='user_map/img/shadow-icon.png')]
-USER_ROLES = getattr(settings, 'USER_MAP_USER_ROLES', default_user_roles)
 
-# MAIL SENDER
-default_mail_sender = 'noreply@inasafe.org'
-DEFAULT_FROM_MAIL = getattr(settings, 'DEFAULT_FROM_MAIL', default_mail_sender)
+# LOGIN_VIEW: The view to the login page
+LOGIN_VIEW = user_map_settings.get(
+    'login_view', default_setting['login_view'])
 
-# LEAFLET CONFIG
-default_leaflet_tiles = (
-    'OpenStreetMap',
-    'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    ('© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap'
-     '</a> and contributors, under an <a '
-     'href="http://www.openstreetmap.org/copyright" target="_parent">open '
-     'license</a>')
-)
-LEAFLET_TILES = getattr(settings, 'LEAFLET_TILES', default_leaflet_tiles)
+# MARKER
+MARKER = user_map_settings.get(
+    'marker', default_setting['marker'])
+
+LEAFLET_CONFIG = user_map_settings.get(
+    'leaflet_config', default_setting['leaflet_config'])
+LEAFLET_TILES = LEAFLET_CONFIG['TILES']
+
+#  ROLES: All user roles and their badges
+ROLES = user_map_settings.get('roles', default_setting['roles'])
+
+#  API_USER_FIELDS
+API_USER_FIELDS = user_map_settings.get(
+    'api_user_fields', default_setting['api_user_fields'])
