@@ -2,7 +2,7 @@ Django User Map
 =================
 
 Django User Map is a reusable django application for making community user's 
-map. This app will rely on the current active auth user model and extend that 
+map. This app relies on the active auth user model and extend that 
 model with OneToOne relationship. Users can add themselves on the map by 
 providing some additional information:
 
@@ -14,30 +14,34 @@ providing some additional information:
 
 ## Installation
 1. Install django-user-map with pip:
-   ```
-    pip install django-user-map
-   ```
+
+```shell
+pip install django-user-map
+```
 
 2. Make sure you have these modules in INSTALLED_APPS of your django 
    project settings.py:
-   ```
-    INSTALLED_APPS = (
-        'django.contrib.gis',
-        'user_map',
-        'leaflet',
-        'bootstrapform',
-        'rest_framework',
-        'rest_framework_gis'
-    )
-   ```
+
+```python
+INSTALLED_APPS = (
+    'django.contrib.gis',
+    'user_map',
+    'leaflet',
+    'bootstrapform',
+    'rest_framework',
+    'rest_framework_gis'
+)
+```
 
 3. Include user-map URLconf in your project urls.py with namespace user_map (required) e.g:
-   ```
-    url(r'^user-map/', include('user_map.urls', namespace='user_map')),
-   ```
+
+```python
+url(r'^user-map/', include('user_map.urls', namespace='user_map')),
+```
 
 4. Configure user map with USER_MAP variable in your project's settings.py or
- override some templates. See Configuration section for further information.
+ override some templates. See [Configurations](#configurations) section for further 
+ information.
 
 5. Run ```python manage.py migrate``` to migrate the user_map models. 
 
@@ -49,66 +53,66 @@ You can configure Django User Map with one single USER_MAP variable in
 project's settings.py. Below setting is the default. Add this default to your
  project's setting and configure necessary bits that you want to change:
 
-    ```   
-    USER_MAP = {
-        'project_name': 'Django',
-        'favicon_file': '',
-        'login_view': 'django.contrib.auth.views.login',
-        'marker': {
-            # See leaflet icon valid options here:
-            # http://leafletjs.com /reference.html#icon-iconurl
-            'iconUrl': 'static/user_map/img/user-icon.png',
-            'shadowUrl': 'static/user_map/img/shadow-icon.png',
-            'iconSize': [19, 32],
-            'shadowSize': [42, 35],
-            'iconAnchor': [10, 0],
-            'shadowAnchor': [12, 0],
-        },
-        'leaflet_config': {
-            'TILES': [(
-                # The title
-                'MapQuest',
-                # Tile's URL
-                'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
-                # More valid leaflet option are passed here
-                # See here: http://leafletjs.com/reference.html#tilelayer
-                {
-                    'attribution':
-                        '© <a href="http://www.openstreetmap.org" '
-                        'target="_parent">OpenStreetMap'
-                        '</a> and contributors, under an <a '
-                        'href="http://www.openstreetmap.org/copyright" '
-                        'target="_parent">open license</a>. Tiles Courtesy of '
-                        '<a '
-                        'href="http://www.mapquest.com/">MapQuest</a> <img '
-                        'src="http://developer.mapquest.com/content/osm/mq_logo'
-                        '.png"',
-                    'subdomains': '1234'
-    
-                }
-            )]
-        },
-        'roles': [
+```python   
+USER_MAP = {
+    'project_name': 'Django',
+    'favicon_file': '',
+    'login_view': 'django.contrib.auth.views.login',
+    'marker': {
+        # See leaflet icon valid options here:
+        # http://leafletjs.com /reference.html#icon-iconurl
+        'iconUrl': 'static/user_map/img/user-icon.png',
+        'shadowUrl': 'static/user_map/img/shadow-icon.png',
+        'iconSize': [19, 32],
+        'shadowSize': [42, 35],
+        'iconAnchor': [10, 0],
+        'shadowAnchor': [12, 0],
+    },
+    'leaflet_config': {
+        'TILES': [(
+            # The title
+            'MapQuest',
+            # Tile's URL
+            'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
+            # More valid leaflet option are passed here
+            # See here: http://leafletjs.com/reference.html#tilelayer
             {
-                'id': 1,
-                'name': 'Django User',
-                'badge': 'user_map/img/badge-user.png'
-            },
-            {
-                'id': 2,
-                'name': 'Django Trainer',
-                'badge': 'user_map/img/badge-trainer.png'
-            },
-            {
-                'id': 3,
-                'name': 'Django Developer',
-                'badge': 'user_map/img/badge-developer.png'
+                'attribution':
+                    '© <a href="http://www.openstreetmap.org" '
+                    'target="_parent">OpenStreetMap'
+                    '</a> and contributors, under an <a '
+                    'href="http://www.openstreetmap.org/copyright" '
+                    'target="_parent">open license</a>. Tiles Courtesy of '
+                    '<a '
+                    'href="http://www.mapquest.com/">MapQuest</a> <img '
+                    'src="http://developer.mapquest.com/content/osm/mq_logo'
+                    '.png"',
+                'subdomains': '1234'
+
             }
-        ],
-        'api_user_fields': [
-            # e.g 'username', 'first_name', 'last_name'
-        ],
-    }
+        )]
+    },
+    'roles': [
+        {
+            'id': 1,
+            'name': 'Django User',
+            'badge': 'user_map/img/badge-user.png'
+        },
+        {
+            'id': 2,
+            'name': 'Django Trainer',
+            'badge': 'user_map/img/badge-trainer.png'
+        },
+        {
+            'id': 3,
+            'name': 'Django Developer',
+            'badge': 'user_map/img/badge-developer.png'
+        }
+    ],
+    'api_user_fields': [
+        # e.g 'username', 'first_name', 'last_name'
+    ],
+}
 ```
 
 ### Project Name
@@ -131,15 +135,16 @@ This variable represents the marker icon on the map. You can use any valid
 Leaflet ```L.icon``` options. Read here for the valid options http://leafletjs.com /reference.html#icon-iconurl 
 
 An example for this variable:
-```
- 'marker': {
-        'iconUrl': 'static/user_map/img/user-icon.png',
-        'shadowUrl': 'static/user_map/img/shadow-icon.png',
-        'iconSize': [19, 32],
-        'shadowSize': [42, 35],
-        'iconAnchor': [10, 0],
-        'shadowAnchor': [12, 0],
-    },
+
+```python
+'marker': {
+    'iconUrl': 'static/user_map/img/user-icon.png',
+    'shadowUrl': 'static/user_map/img/shadow-icon.png',
+    'iconSize': [19, 32],
+    'shadowSize': [42, 35],
+    'iconAnchor': [10, 0],
+    'shadowAnchor': [12, 0],
+}
 ```
 
 ### Map Configuration
@@ -147,31 +152,31 @@ You can configure the basemap of the form that uses LeafletWidget and the
 basemap of the homepage through  ```leaflet_config``` variable in settings.py
 . You can also pass leaflet tile layer options (read here: http://leafletjs.com/reference.html#tilelayer):
 
-    ```
-    'leaflet_config': {
-        'TILES': [(
-            # The title
-            'MapQuest',
-            # Tile's URL
-            'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
-            # More valid leaflet option are passed here
-            {
-                'attribution':
-                    '© <a href="http://www.openstreetmap.org" '
-                    'target="_parent">OpenStreetMap'
-                    '</a> and contributors, under an <a '
-                    'href="http://www.openstreetmap.org/copyright" '
-                    'target="_parent">open license</a>. Tiles Courtesy of '
-                    '<a '
-                    'href="http://www.mapquest.com/">MapQuest</a> <img '
-                    'src="http://developer.mapquest.com/content/osm/mq_logo'
-                    '.png"',
-                'subdomains': '1234'
-    
-            }
-        )]
-    },
-    ```
+```python
+'leaflet_config': {
+    'TILES': [(
+        # The title
+        'MapQuest',
+        # Tile's URL
+        'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
+        # More valid leaflet option are passed here
+        {
+            'attribution':
+                '© <a href="http://www.openstreetmap.org" '
+                'target="_parent">OpenStreetMap'
+                '</a> and contributors, under an <a '
+                'href="http://www.openstreetmap.org/copyright" '
+                'target="_parent">open license</a>. Tiles Courtesy of '
+                '<a '
+                'href="http://www.mapquest.com/">MapQuest</a> <img '
+                'src="http://developer.mapquest.com/content/osm/mq_logo'
+                '.png"',
+            'subdomains': '1234'
+
+        }
+    )]
+},
+```
 
 ### Roles
 
@@ -179,29 +184,30 @@ Using ```roles```, you can specify the user's role, its name, and its badge
 path. User can select multiple roles. In the map, visitors of the apps can 
 also filter the marker (users) based on their role(s).If not 
 specified, this variable will take this as the default:
-   ```
-    'roles': [
-            {
-                'id': 1,
-                'name': 'Django User',
-                'badge': 'user_map/img/badge-user.png'
-            },
-            {
-                'id': 2,
-                'name': 'Django Trainer',
-                'badge': 'user_map/img/badge-trainer.png'
-            },
-            {
-                'id': 3,
-                'name': 'Django Developer',
-                'badge': 'user_map/img/badge-developer.png'
-            }
-        ],
-        'api_user_fields': [
-            # e.g 'username', 'first_name', 'last_name'
-        ],
-    }
-   ```
+   
+```python
+'roles': [
+        {
+            'id': 1,
+            'name': 'Django User',
+            'badge': 'user_map/img/badge-user.png'
+        },
+        {
+            'id': 2,
+            'name': 'Django Trainer',
+            'badge': 'user_map/img/badge-trainer.png'
+        },
+        {
+            'id': 3,
+            'name': 'Django Developer',
+            'badge': 'user_map/img/badge-developer.png'
+        }
+    ],
+    'api_user_fields': [
+        # e.g 'username', 'first_name', 'last_name'
+    ],
+}
+```
    
 ### User Fields
 User fields are list of field from user model (AUTH_USER_MODEL) that will be 
@@ -209,9 +215,10 @@ shown on the popup content and will be added to the REST API. To specify
 which fields that should be visible from user model, you can configure it 
 through ```api_user_fields``` as a list of fields. For example if you want to show 
 username field from the user model, you must add this setting:`
-    ```
-    'api_user_fields': ['username'],
-    ```
+
+```python
+'api_user_fields': ['username'],
+```
 
 
 ## Changing Template
@@ -224,18 +231,20 @@ To modify the data privacy, create a directory ```user_map``` under
 ```templates``` dir of your Django project and create html file named 
 ```data_privacy.html```. The default content of this template looks like this:
 
-    ```
-    <script id="data-privacy-content-section" type="text/template">
-      The data you enter on this site may be visible to others. We suggest that
-      you approximate your physical location to the nearest
-      town or major center. Parts of your data will be made available for
-      others to download and use. Click the REST API link to see the data that are
-      available for public to use.
-    </script>
-    ```
+```html
+<script id="data-privacy-content-section" type="text/template">
+  The data you enter on this site may be visible to others. We suggest that
+  you approximate your physical location to the nearest
+  town or major center. Parts of your data will be made available for
+  others to download and use. Click the REST API link to see the data that are
+  available for public to use.
+</script>
+```
+
 In the new ```data_privacy.html``` file, copy that and edit the wording 
 yourself. Note that the ```<script>``` tag is needed completely with the same
  ```id``` and ```type```.
+
 
 ### Navigation
 By default, the map showing all users does not have navigation menu. This is 
@@ -254,62 +263,62 @@ To add navigation menu, add html file named ```navigation.html``` in
  
  As an example the content could be something like this:
  
-    ```
-    <nav class="navbar navbar-default" style="margin-bottom: 0px;">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Brand</a>
-        </div>
-    
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Link</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li>
-          </ul>
-          <form class="navbar-form navbar-left" role="search">
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
-            </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Link</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
-    </nav>
+```html
+<nav class="navbar navbar-default" style="margin-bottom: 0px;">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Brand</a>
+    </div>
 
-  ```
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+```
 
 ## Testing
 
