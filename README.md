@@ -13,13 +13,13 @@ providing some additional information:
 
 
 ## Installation
-1. Install django-user-map with pip:
+* Install django-user-map with pip:
 
 ```shell
 pip install django-user-map
 ```
 
-2. Make sure you have these modules in INSTALLED_APPS of your django 
+* Make sure you have these modules in INSTALLED_APPS of your django 
    project settings.py:
 
 ```python
@@ -33,19 +33,20 @@ INSTALLED_APPS = (
 )
 ```
 
-3. Include user-map URLconf in your project urls.py with namespace user_map (required) e.g:
+* Include user-map URLconf in your project urls.py with namespace user_map 
+(required) e.g:
 
 ```python
 url(r'^user-map/', include('user_map.urls', namespace='user_map')),
 ```
 
-4. Configure user map with USER_MAP variable in your project's settings.py or
+* Configure user map with USER_MAP variable in your project's settings.py or
  override some templates. See [Configurations](#configurations) section for further 
  information.
 
-5. Run ```python manage.py migrate``` to migrate the user_map models. 
+* Run ```python manage.py migrate``` to migrate the user_map models. 
 
-6. Visit the URL that you set before to see the apps.
+* Visit the URL that you set before to see the apps.
 
 
 ## Configurations
