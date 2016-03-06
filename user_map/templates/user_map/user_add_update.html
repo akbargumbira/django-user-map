@@ -16,9 +16,9 @@
     <div class="registration-form">
       <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form|bootstrap_horizontal:'col-lg-3'}}
+        {{ form|bootstrap_horizontal:'col-md-2'}}
         <div class="form-group">
-          <div class="col-lg-offset-3 col-lg-4">
+          <div class="col-md-offset-2 col-md-4">
             <input type="submit" value="Submit" class="btn btn-primary">
             <a href="{% url "user_map:index" %}" class="btn btn-default" role="button">Cancel</a>
           </div>

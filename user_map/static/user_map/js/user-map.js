@@ -27,7 +27,16 @@ function addUsers(url, users_layer, icon) {
     success: function (response) {
        L.geoJson(response, {
          onEachFeature: function (feature, layer) {
-           layer.bindPopup(feature.properties.popup_content);
+           var feature_roles = [];
+           for (i = 0; i < feature.properties.roles.length; ++i){
+             feature_roles.push(roles_dict[feature.properties.roles[i]]);
+           }
+           var data = {
+             properties: feature.properties,
+             roles: feature_roles
+           };
+           var popup_content = popup_template.render(data);
+           layer.bindPopup(popup_content);
          },
          pointToLayer: function(feature, latlng) {
            return L.marker(latlng, {icon: icon})
@@ -60,55 +69,6 @@ function filterUsers() {
       }
     }
   });
-}
-
-/**
- * Create basemap instance to be used.
- * @param {string} url The URL for the tiles layer
- * @param {string} attribution The attribution of the layer
- * @property tileLayer
- * @returns {object} base_map
- */
-function createBasemap(url, attribution) {
-  var base_map;
-  base_map = L.tileLayer(url, {
-    attribution: attribution,
-    maxZoom: 18
-  });
-  return base_map;
-}
-
-/**
- * Create IconMarkerBase that will be used for icon marker.
- * @param {string} shadow_icon_path The path to shadow icon.
- * @returns {object} IconMarkerBase
- * @property Icon
- */
-function createIconMarkerBase(shadow_icon_path) {
-  var IconMarkerBase;
-  IconMarkerBase = L.Icon.extend({
-    options: {
-      shadowUrl: shadow_icon_path,
-      iconSize: [19, 32],
-      shadowSize: [42, 35],
-      iconAnchor: [12, 32],
-      shadowAnchor: [12, 32],
-      popupAnchor: [-2, -32]
-    }
-  });
-  return IconMarkerBase;
-}
-
-/**
- * Create leaflet icon marker.
- *
- * @param {string} icon_path The icon path.
- * @param {string} shadow_path The shadow path.
- * @return {IconMarkerBase} icon_marker
- */
-function createIconMarker(icon_path, shadow_path) {
-  var IconMarkerBase = createIconMarkerBase(shadow_path);
-  return new IconMarkerBase({iconUrl: icon_path});
 }
 
 /**

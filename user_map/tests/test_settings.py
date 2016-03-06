@@ -46,9 +46,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-
-                # User map
-                'user_map.context_processors.user_map_settings',
             ],
         },
     },
@@ -77,36 +74,52 @@ USER_MAP = {
     'favicon_file': '',
     'login_view': 'django.contrib.auth.views.login',
     'marker': {
-        'icon': 'user_map/img/user-icon.png',
-        'shadow': 'user_map/img/shadow-icon.png',  # or 'shadow': None
+        'iconUrl': 'static/user_map/img/user-icon.png',
+        'shadowUrl': 'static/user_map/img/shadow-icon.png',
+        'iconSize': [19, 32],
+        'shadowSize': [42, 35],
+        'iconAnchor': [10, 0],
+        'shadowAnchor': [12, 0],
     },
     'leaflet_config': {
-        'TILES': [
-            (
-                'OpenStreetMap',  # The title
-                'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-                # The tile URL
-                ('© <a href="http://www.openstreetmap.org" '
-                 'target="_parent">OpenStreetMap</a> and contributors, under '
-                 'an <a href="http://www.openstreetmap.org/copyright" '
-                 'target="_parent">open license</a>')  # The attribution
-            )]
+        'TILES': [(
+            # The title
+            'MapQuest',
+            # Tile's URL
+            'http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
+            # More valid leaflet option are passed here
+            # See here: http://leafletjs.com/reference.html#tilelayer
+            {
+                'attribution':
+                    '© <a href="http://www.openstreetmap.org" '
+                    'target="_parent">OpenStreetMap'
+                    '</a> and contributors, under an <a '
+                    'href="http://www.openstreetmap.org/copyright" '
+                    'target="_parent">open license</a>. Tiles Courtesy of '
+                    '<a '
+                    'href="http://www.mapquest.com/">MapQuest</a> <img '
+                    'src="http://developer.mapquest.com/content/osm/mq_logo'
+                    '.png"',
+                'subdomains': '1234'
+
+            }
+        )]
     },
     'roles': [
         {
             'id': 1,
             'name': 'User',
-            'badge': 'user_map/img/inasafe-badge-user.png'
+            'badge': 'user_map/img/badge-user.png'
         },
         {
             'id': 2,
             'name': 'Trainer',
-            'badge': 'user_map/img/inasafe-badge-trainer.png'
+            'badge': 'user_map/img/badge-trainer.png'
         },
         {
             'id': 3,
             'name': 'Developer',
-            'badge': 'user_map/img/inasafe-badge-developer.png'
+            'badge': 'user_map/img/badge-developer.png'
         }
     ],
     'api_user_fields': [

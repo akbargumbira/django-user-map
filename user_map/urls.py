@@ -1,6 +1,6 @@
 # coding=utf-8
 """URI Routing configuration for this apps."""
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
@@ -21,15 +21,3 @@ urlpatterns = [
     url(r'^usermaps/$', user_map.views.UserMapList.as_view(),
         name='usermap-list'),
 ]
-
-# expose static files and uploaded media if DEBUG is active
-if settings.DEBUG:
-    urlpatterns += patterns(
-        '',
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
-            {
-                'document_root': settings.MEDIA_ROOT,
-                'show_indexes': True
-            }),
-        url(r'', include('django.contrib.staticfiles.urls'))
-    )

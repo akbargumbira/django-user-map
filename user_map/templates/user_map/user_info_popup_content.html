@@ -1,16 +1,19 @@
-{% spaceless %}
-  {% load staticfiles %}
+<script id="popup-content" type="text/x-jsrender">
   <div align='center'>
-    {% if user.image != "" %}
-      <img class='img-responsive' width='200px' src='{{ user.image.url }}'>
-    {% endif %}
+    <%if properties.image%>
+      <img class='img-responsive' width='200px' src='<%:properties.image%>'>
+    <%/if%>
 
-    {% for detail in user_detail %}
-        <p><b>{{ detail }}</b></p>
-    {% endfor %}
+    <%props properties.user%>
+      <p><b><%>prop%></b></p>
+    <%/props%>
 
-    {% for role in user.roles.all %}
-      <img class='img-rounded' style='margin: 0px 4px 0px 4px' height='20px' width='20px' src='{% static role.badge %}' data-toggle='tooltip' title='{{ role.name }}'>
-    {% endfor %}
-  </div>
-{% endspaceless %}
+    <%if properties.website %>
+      <p align='center'><a href='<%:properties.website %>' target='_blank'>Website</a><p align='center'>
+    <%/if %>
+
+    <%for roles%>
+      <img class='img-rounded' style='margin: 0px 4px 0px 4px' height='20px' width='20px' src='<%:badge %>' data-toggle='tooltip' title='<%:name %>'>
+    <%/for%>
+ </div>
+</script>
