@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-user-map',
-    version='1.0.0',
+    version='1.1.0',
     author='Akbar Gumbira',
     author_email='akbargumbira@gmail.com',
     packages=find_packages(),

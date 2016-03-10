@@ -72,7 +72,7 @@
     var user_menu = (is_mapped? ['edit', 'api'] : ['add', 'api']);
     user_menu_control = createUserMenuControl(user_menu);
     map.addControl(new user_menu_control);
-    $(".user-menu-control").tooltip({placement: 'right', container: 'body'});
+    $(".user-menu-control").tooltip({placement: 'right', container: '.bootstrap-wrapper'});
 
     // Create Filter Control
     filter_control = createFilterControl();

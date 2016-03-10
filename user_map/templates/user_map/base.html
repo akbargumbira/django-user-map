@@ -11,15 +11,17 @@
     {% block head_resources %}
       {% leaflet_js %}
       {% leaflet_css %}
+
+      {% include 'user_map/extra_resource.html' %}
+
       <!--Base Stylesheet -->
-      <link rel="stylesheet" href="{% static 'user_map/css/bootstrap.css' %}" type="text/css"/>
+      <link rel="stylesheet" href="{% static 'user_map/css/wrap-bootstrap.css' %}" type="text/css"/>
       <link rel="stylesheet" href="{% static 'user_map/css/user-map.css' %}" type="text/css"/>
 
       <!-- Base Javascript -->
       <script language="javascript" type="text/javascript" src="{% static 'user_map/js/jquery.js' %}"></script>
       <script language="javascript" type="text/javascript" src="{% static 'user_map/js/bootstrap.min.js' %}"></script>
       <script language="javascript" type="text/javascript" src="{% static 'user_map/js/validate.js' %}"></script>
-
     {% endblock head_resources %}
   </head>
 
@@ -28,11 +30,13 @@
       {% include 'user_map/navigation.html' %}
     </div>
 
-    {% block main_content %}
-    {% endblock main_content %}
+    <div class="bootstrap-wrapper">
+      {% block main_content %}
+      {% endblock main_content %}
 
-    {% block footer %}
-    {% endblock footer %}
+      {% block footer %}
+      {% endblock footer %}
+    </div>
 
     {% block js_container %}
     {% endblock js_container %}
