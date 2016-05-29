@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-user-map',
-    version='1.1.0',
+    version='1.1.1',
     author='Akbar Gumbira',
     author_email='akbargumbira@gmail.com',
     packages=find_packages(),
@@ -24,7 +24,7 @@ setup(
     long_description=open('README.md').read(),
     install_requires=[
         "Django>=1.8",
-        "django-leaflet",
+        "django-leaflet==0.18.0",
         "psycopg2",
         "django-bootstrap-form",
         "djangorestframework",
