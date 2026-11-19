@@ -8,7 +8,7 @@ Django User Map is a reusable django application for making community user's map
 3. Image, and
 4. Website
 
-Read here for the documentation: www.akbargumbira.com/django-user-map
+Read here for the documentation: https://akbargumbira.github.io/django-user-map/
 
 ## Installation
 * Install django-user-map with pip:
